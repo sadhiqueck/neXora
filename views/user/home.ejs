@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/styles/user.css" />
+    <link rel="stylesheet" href="/styles/output.css" />
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- navbar -->
+    <nav class="bg-white border-gray-200 shadow-md xl:pl-20">
+        <div class="max-w-screen-2xl flex flex-wrap items-center justify-evenly p-4 ">
+            <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="/Images/lOGO.png" class="h-8" alt="Nexora" />
+            </a>
+            <div class="flex md:order-2">
+                <button type="button" data-collapse-toggle="navbar-search" aria-controls="navbar-search"
+                    aria-expanded="false"
+                    class="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 me-1">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                    </svg>
+                    <span class="sr-only">Search</span>
+                </button>
+                <div class="relative hidden md:block pr-20">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                        <span class="sr-only">Search icon</span>
+                    </div>
+                    <input type="text" name="search-navbar"
+                        class="block w-full sm:w-20 md:w-24 lg:w-36 xl:w-[500px]  p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Search for products, brands, and more" />
+
+                </div>
+                <div class="w-30 pl-10 flex space-x-4">
+                    <!-- wishlist -->
+                    <div>
+                        <button> <img src="/Icons/Wishlist.svg" alt=""></button>
+                    </div>
+                    <!-- cart -->
+                    <div>
+                        <button> <img src="/Icons/Cart.svg" alt=""></button>
+                    </div>
+
+                    <!-- user button -->
+                    <div class="relative ml-3 ">
+                        <button type="button"
+                            class="relative flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                            id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                            <img src="/Icons/User.svg" alt="">
+                        </button>
+
+                        <!-- active -->
+                        <!-- <button type="button" class="relative flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                            <img src="/Icons/Active_user.svg" alt="">
+                          </button> -->
+
+
+                        <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none hidden"
+                            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+                            id="profile-dropdown">
+                            <!-- Active: "bg-gray-100 outline-none", Not Active: "" -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
+                                id="user-menu-item-0">Your Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
+                                id="user-menu-item-1">Settings</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
+                                id="user-menu-item-2">Sign out</a>
+                        </div>
+                    </div>
+                </div>
+                <div>
+
+                </div>
+                <button data-collapse-toggle="navbar-search" type="button"
+                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                    aria-controls="navbar-search" aria-expanded="false">
+                    <span class="sr-only">Open main menu</span>
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 17 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M1 1h15M1 7h15M1 13h15" />
+                    </svg>
+                </button>
+            </div>
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
+                <div class="relative mt-3 md:hidden">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                    </div>
+                    <input type="text" name="search-navbar"
+                        class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Search..." />
+                </div>
+                <ul
+                    class="flex flex-col p-4 md:p-0 mt-4 font-light border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 font-medium text-white bg-button-color rounded md:bg-transparent md:text-button-color md:p-0 md:dark:text-blue-500"
+                            aria-current="page">Home</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:to-button-color md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                            Shop</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-button-color md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                            About</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-button-color md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                            Contact Us</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-button-color md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                            Sign in</a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+    </nav>
+
+    <main class="bg-main-white mt-1 pb-20">
+        <!-- Carousel -->
+        <div id="default-carousel" class="relative w-[85%] mx-auto pt-10" data-carousel="slide">
+            <!-- Carousel wrapper -->
+            <div class="relative overflow-hidden rounded-lg md:h-[400px] lg:h-[500px] h-[250px] ">
+                <!-- Item 1 -->
+                <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full" data-carousel-item
+                    id="banner_1">
+
+                    <img src="/Images/Meta_banner.png" alt="" class="w-full h-full rounded-lg ">
+                    <a href="/product1-details"
+                        class="absolute lg:bottom-22 lg:right-[18%] md:bottom-[18%] md:right-[22%] md:px-4 right-[16%] bottom-[18%] py-1 px-5 text-[6px] bg-gray-900 text-main-white lg:py-2 lg:px-12 rounded-lg lg:text-xs hover:bg-gray-800">
+                        Buy Now
+                    </a>
+
+
+
+                </div>
+                <!-- Item 2 -->
+                <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full" data-carousel-item
+                    id="banner_3">
+                    <img src="/Images/Banner_3.jpg" alt="" class="w-full h-full bg-cover  rounded-lg ">
+
+                    <a href="/product1-details"
+                        class="absolute lg:bottom-28 lg:right-[30%] md:bottom-[23%] md:py-2 md:right-[30%] md:px-8 right-[29%] bottom-[23%] py-1 px-5 text-[6px] bg-main-white text-black lg:py-2 lg:px-16 rounded-lg lg:text-xs hover:bg-gray-200">
+                        Buy Now
+                    </a>
+                </div>
+            </div>
+            <!-- Slider indicators -->
+            <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
+                <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1"
+                    data-carousel-slide-to="0"></button>
+                <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2"
+                    data-carousel-slide-to="1"></button>
+            </div>
+            <!-- Slider controls -->
+            <button type="button"
+                class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-prev>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 1 1 5l4 4" />
+                    </svg>
+                    <span class="sr-only">Previous</span>
+                </span>
+            </button>
+            <button type="button"
+                class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-next>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 9 4-4-4-4" />
+                    </svg>
+                    <span class="sr-only">Next</span>
+                </span>
+            </button>
+        </div>
+
+
+        <!-- Sub Categories -->
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900 font-inter pl-20 pb-5 mt-20 ">Categories to explore</h2>
+        <div class="w-[90%] mx-auto pb-10  p-2 pt-3 bg-white rounded-xl">
+            <div class="flex flex-wrap justify-between">
+                <!-- Card 1 -->
+                <a href="#" class="card bg-base-100 w-1/2 sm:w-[48%] md:w-1/5 bg-transparent rounded-lg">
+                    <img src="/Images/Wearables_category.png" alt="Wearables"
+                        class="rounded-lg object-cover w-full h-auto" />
+                </a>
+
+                <!-- Card 2 -->
+                <a href="#" class="card bg-base-100 w-1/2 sm:w-[48%] md:w-1/5 bg-transparent rounded-lg">
+                    <img src="/Images/smartHome_category.png" alt="Smart Home"
+                        class="rounded-lg object-cover w-full h-auto" />
+                </a>
+
+                <!-- Card 3 -->
+                <a href="#" class="card bg-base-100 w-1/2 sm:w-[48%] md:w-1/5 bg-transparent rounded-lg">
+                    <img src="/Images/Accesories_category.png" alt="Accessories"
+                        class="rounded-lg object-cover w-full h-auto" />
+                </a>
+
+                <!-- Card 4 -->
+                <a href="#" class="card bg-base-100 w-1/2  md:w-1/3 lg:w-1/3 bg-transparent rounded-lg">
+                    <picture>
+                        <!-- Image for small screens -->
+                        <source srcset="/Images/entertainment_category_small.png"
+                            media="(max-width: 764px)">
+                        <!-- Image for larger screens -->
+                        <img src="/Images/entertainment_category.png" alt="Entertainment"
+                            class="rounded-lg object-cover w-full sm:h-full sm:object-cover md:object-contain" />
+                    </picture>
+                </a>
+            </div>
+        </div>
+
+        <div class="container w-[90%]  mx-auto px-4 py-8 pt-10 font-inter">
+            <!-- filtered products -->
+            <div class="flex space-x-6 text-sm font-medium text-gray-500 border-b border-gray-300 pb-2">
+                <a href="#" class="text-button-color border-button-color border-b-2 pb-1">New Arrival</a>
+                <a href="#" class="hover:text-button-color">Bestseller</a>
+                <a href="#" class="hover:text-button-color">Most Reviewed</a>
+            </div>
+
+            <!-- Product grid -->
+            <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 pt-10 mx-auto ">
+
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg md:text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+                   
+
+            </div>
+            <div class="w-full text-center mt-10">
+                <button type="button"
+                    class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">Show
+                    more</button>
+            </div>
+
+        </div>
+        <!-- discount Banner -->
+        <section class="bg- px-4  antialiased ">
+            
+            <div class="mx-auto grid max-w-screen-xl rounded-2xl bg-[#4cbadf] p-4 md:p-8 lg:grid-cols-12 lg:gap-8 lg:p-16 xl:gap-16">
+                <div class="  absolute"><img src="/Images/discount.png"  class=" pb-3"></div> 
+              <div class="lg:col-span-5 lg:mt-0 ">
+                <a href="#">
+                  <img class="mb-4 h-56 w-56 sm:h-96 sm:w-96 md:h-full md:w-full " src="/Images/SMart Home/WINBOT W2 PRO OMNI - ECOVACS Website/033333_5461-13.jpg.webp" alt="peripherals" />
+                  
+
+                </a>
+               
+              </div>
+              <div class="me-auto place-self-center lg:col-span-7 discount_banner">
+
+                <h1 class="mb-3 text-xl lg:text-6xl md:text-4xl sm:text-3xl font-extrabold leading-tight tracking-tight text-white dark:text-white  font-inter">
+                  Save 40% OFF on your purchase <br />
+                  of a new Roborock S8 Max.
+                </h1>
+                <p class="mb-6  text-main-white font-extralight">Combining advanced 3D structured light and an RGB camera,
+                    the S8 MaxV Ultra effortlessly Identifles floor and room types very easily.</p>
+                <a href="#" class="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-center text-base font-medium text-blue-500 hover:bg-main-white focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"> Order Now </a>
+              </div>
+            </div>
+          </section>
+
+          <!--  offer proucts -->
+          <h2 class="text-2xl font-inter font-bold  text-gray-900sm:text-2xl mt-20 pl-20 ">Exclusive Offers
+        </h2>
+         
+           
+
+            <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 pt-10 mx-auto w-[90%] pb-14">
+
+                <!-- card -->
+                <div
+                    class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4" href="#">
+                        <img class="object-cover" src="/Images/Meta quyest 3s.png" alt="product image" />
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">39%
+                            OFF</span>
+                    </a>
+                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
+                        <img src="/Icons/Wishlist.svg" class="opacity-20">
+                    </button>
+                    <div class="mt-4 px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-lg md:text-lg tracking-tight text-slate-900">Meta Quest 3 512GB - Breakthrough Mixed
+                                Reality </h5>
+                        </a>
+                        <div class="mt-2 mb-5 flex items-center justify-between">
+                            <p>
+                                <span class="text-3xl font-bold text-slate-900">₹449</span>
+                                <span class="text-sm text-gray-600 line-through">₹699</span>
+                            </p>
+                            <!-- Rating -->
+
+                  <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex"> <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg></span>5.0</div>
+
+                        </div>
+                        <a href="#"
+                            class="flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to cart</a>
+                    </div>
+                </div>
+        </div>
+        
+
+        <!-- services -->
+
+        <div class="flex justify-center items-center gap-5 py-5 px-2 mx-auto flex-wrap md:flex-nowrap ">
+            <!-- Free & Fast Delivery -->
+            <div class="flex flex-col items-center w-[30%] sm:w-[25%] md:w-[20%]">
+                <div class="rounded-full w-12 h-12 md:w-16 md:h-16 flex justify-center items-center">
+                    <img src="/Icons/Services_delivery.svg" alt="">
+                </div>
+                <h3 class="mt-2 md:mt-4 text-sm md:text-lg font-bold text-gray-900 text-center">Free & Fast Delivery
+                </h3>
+                <p class="text-center text-gray-600 text-xs md:text-sm">Free delivery on order over ₹499.</p>
+            </div>
+
+            <!-- 24/7 Support -->
+            <div class="flex flex-col items-center w-[30%] sm:w-[25%] md:w-[20%]">
+                <div class="rounded-full w-12 h-12 md:w-16 md:h-16 flex justify-center items-center">
+                    <img src="/Icons/Services_customer_service.svg" alt="">
+                </div>
+                <h3 class="mt-2 md:mt-4 text-sm md:text-lg font-bold text-gray-900 text-center">24/7 Support</h3>
+                <p class="text-center text-gray-600 text-xs md:text-sm">We are here to assist you at any time, day or
+                    night.</p>
+            </div>
+
+            <!-- Secure Payments -->
+            <div class="flex flex-col items-center w-[30%] sm:w-[25%] md:w-[20%]">
+                <div class="rounded-full w-12 h-12 md:w-16 md:h-16 flex justify-center items-center">
+                    <img src="/Icons/Services_policy.svg" alt="">
+                </div>
+                <h3 class="mt-2 md:mt-4 text-sm md:text-lg font-bold text-gray-900 text-center">Secure Payments</h3>
+                <p class="text-center text-gray-600 text-xs md:text-sm">Experience worry-free transactions with our
+                    secure systems.</p>
+            </div>
+        </div>
+
+ </main>
+
+
+    <!-- ====== Footer Section Start -->
+    <footer class="relative z-10 bg-[#c2abf4]  pt-10 pb-6 lg:pt-[120px] lg:pb-20 pl-10 pr-10 ">
+        <div class="container mx-auto">
+            <div class="flex flex-wrap -mx-4">
+                <div class="w-full px-4 sm:w-2/3 lg:w-3/12">
+                    <div class="w-full mb-10">
+                        <a href="javascript:void(0)" class="mb-6 inline-block max-w-[160px]">
+                            <img src="/Images/lOGO.png" alt="logo" class="max-w-full dark:hidden" />
+
+                        </a>
+                        <p class="text-base text-body-color dark:text-dark-6 mb-7">
+                            Step into the Future with Nexora: Where Cutting-Edge Technology Meets Boundless Innovation.
+                            Empowering Tech Enthusiasts with Gadgets That Redefine Tomorrow, Today.
+                        </p>
+                        <p class="flex items-center text-sm font-medium text-dark dark:text-white">
+                            <span class="mr-3 text-primary">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_941_15626)">
+                                        <path
+                                            d="M15.1875 19.4688C14.3438 19.4688 13.375 19.25 12.3125 18.8438C10.1875 18 7.84377 16.375 5.75002 14.2813C3.65627 12.1875 2.03127 9.84377 1.18752 7.68752C0.250019 5.37502 0.343769 3.46877 1.43752 2.40627C1.46877 2.37502 1.53127 2.34377 1.56252 2.31252L4.18752 0.750025C4.84377 0.375025 5.68752 0.562525 6.12502 1.18752L7.96877 3.93753C8.40627 4.59378 8.21877 5.46877 7.59377 5.90627L6.46877 6.68752C7.28127 8.00002 9.59377 11.2188 13.2813 13.5313L13.9688 12.5313C14.5 11.7813 15.3438 11.5625 16.0313 12.0313L18.7813 13.875C19.4063 14.3125 19.5938 15.1563 19.2188 15.8125L17.6563 18.4375C17.625 18.5 17.5938 18.5313 17.5625 18.5625C17 19.1563 16.1875 19.4688 15.1875 19.4688ZM2.37502 3.46878C1.78127 4.12503 1.81252 5.46877 2.50002 7.18752C3.28127 9.15627 4.78127 11.3125 6.75002 13.2813C8.68752 15.2188 10.875 16.7188 12.8125 17.5C14.5 18.1875 15.8438 18.2188 16.5313 17.625L18.0313 15.0625C18.0313 15.0313 18.0313 15.0313 18.0313 15L15.2813 13.1563C15.2813 13.1563 15.2188 13.1875 15.1563 13.2813L14.4688 14.2813C14.0313 14.9063 13.1875 15.0938 12.5625 14.6875C8.62502 12.25 6.18752 8.84377 5.31252 7.46877C4.90627 6.81252 5.06252 5.96878 5.68752 5.53128L6.81252 4.75002V4.71878L4.96877 1.96877C4.96877 1.93752 4.93752 1.93752 4.90627 1.96877L2.37502 3.46878Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M18.3125 8.90633C17.9375 8.90633 17.6563 8.62508 17.625 8.25008C17.375 5.09383 14.7813 2.56258 11.5938 2.34383C11.2188 2.31258 10.9063 2.00008 10.9375 1.59383C10.9688 1.21883 11.2813 0.906333 11.6875 0.937583C15.5625 1.18758 18.7188 4.25008 19.0313 8.12508C19.0625 8.50008 18.7813 8.84383 18.375 8.87508C18.375 8.90633 18.3438 8.90633 18.3125 8.90633Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M15.2187 9.18755C14.875 9.18755 14.5625 8.93755 14.5312 8.56255C14.3437 6.87505 13.0312 5.56255 11.3437 5.3438C10.9687 5.31255 10.6875 4.93755 10.7187 4.56255C10.75 4.18755 11.125 3.9063 11.5 3.93755C13.8437 4.2188 15.6562 6.0313 15.9375 8.37505C15.9687 8.75005 15.7187 9.0938 15.3125 9.1563C15.25 9.18755 15.2187 9.18755 15.2187 9.18755Z"
+                                            fill="currentColor" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_941_15626">
+                                            <rect width="20" height="20" fill="white" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </span>
+                            <span class="text-blue-900">+91 (1800) 899 999/ 899 998</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full px-4 sm:w-1/2 lg:w-2/12">
+                    <div class="w-full mb-10">
+                        <h4 class="text-lg font-semibold text-dark dark:text-white mb-9">
+                            Quick Links
+                        </h4>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Home
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Shop by Category
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    About Us
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Contact Us
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="w-full px-4 sm:w-1/2 lg:w-2/12">
+                    <div class="w-full mb-10">
+                        <h4 class="text-lg font-semibold text-dark dark:text-white mb-9">
+                            Let Us Help You
+                        </h4>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Your Account
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Orders
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Cancellation & Return
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Setting & Privacy
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Terms & Conditions
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="w-full px-4 sm:w-1/2 lg:w-2/12">
+                    <div class="w-full mb-10">
+                        <h4 class="text-lg font-semibold text-dark dark:text-white mb-9">
+                            Mail Us
+                        </h4>
+                        <ul class="space-y-3">
+                            <li>
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    Nexora Pvt.Ltd,11/534-c,Ground Floor, Kinfra Business park, Kakkanchery, Kozhikode,
+                                    Kerala , India-673636
+                                </a>
+                            </li>
+                            <li class="text-blue-900">
+                                <a href="javascript:void(0)"
+                                    class="inline-block text-base leading-loose text-body-color hover:text-primary dark:text-dark-6">
+                                    <i class='bx bx-envelope'></i>
+                                    support@nexora.com
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="w-full px-4 sm:w-1/2 lg:w-3/12 pl-16">
+                    <div class="w-full mb-10">
+                        <h4 class="text-lg font-semibold text-dark dark:text-white mb-9">
+                            Follow Us On
+                        </h4>
+                        <div class="flex items-center mb-6">
+                            <a href="javascript:void(0)"
+                                class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full text-dark hover:border-primary hover:bg-primary border-stroke dark:border-dark-3 dark:hover:border-primary dark:text-white hover:text-white sm:mr-4 lg:mr-3 xl:mr-4">
+                                <svg width="8" height="16" viewBox="0 0 8 16" class="fill-current">
+                                    <path
+                                        d="M7.43902 6.4H6.19918H5.75639V5.88387V4.28387V3.76774H6.19918H7.12906C7.3726 3.76774 7.57186 3.56129 7.57186 3.25161V0.516129C7.57186 0.232258 7.39474 0 7.12906 0H5.51285C3.76379 0 2.54609 1.44516 2.54609 3.5871V5.83226V6.34839H2.10329H0.597778C0.287819 6.34839 0 6.63226 0 7.04516V8.90323C0 9.26452 0.243539 9.6 0.597778 9.6H2.05902H2.50181V10.1161V15.3032C2.50181 15.6645 2.74535 16 3.09959 16H5.18075C5.31359 16 5.42429 15.9226 5.51285 15.8194C5.60141 15.7161 5.66783 15.5355 5.66783 15.3806V10.1419V9.62581H6.13276H7.12906C7.41688 9.62581 7.63828 9.41935 7.68256 9.10968V9.08387V9.05806L7.99252 7.27742C8.01466 7.09677 7.99252 6.89032 7.85968 6.68387C7.8154 6.55484 7.61614 6.42581 7.43902 6.4Z" />
+                                </svg>
+                            </a>
+                            <a href="javascript:void(0)"
+                                class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full text-dark hover:border-primary hover:bg-primary border-stroke dark:border-dark-3 dark:hover:border-primary dark:text-white hover:text-white sm:mr-4 lg:mr-3 xl:mr-4">
+                                <svg width="16" height="12" viewBox="0 0 16 12" class="fill-current">
+                                    <path
+                                        d="M14.2194 2.06654L15.2 0.939335C15.4839 0.634051 15.5613 0.399217 15.5871 0.2818C14.8129 0.704501 14.0903 0.845401 13.6258 0.845401H13.4452L13.3419 0.751468C12.7226 0.258317 11.9484 0 11.1226 0C9.31613 0 7.89677 1.36204 7.89677 2.93542C7.89677 3.02935 7.89677 3.17025 7.92258 3.26419L8 3.73386L7.45806 3.71037C4.15484 3.61644 1.44516 1.03327 1.00645 0.587084C0.283871 1.76125 0.696774 2.88845 1.13548 3.59296L2.0129 4.90802L0.619355 4.20352C0.645161 5.18982 1.05806 5.96477 1.85806 6.52838L2.55484 6.99804L1.85806 7.25636C2.29677 8.45401 3.27742 8.94716 4 9.13503L4.95484 9.36986L4.05161 9.93346C2.60645 10.8728 0.8 10.8024 0 10.7319C1.62581 11.7652 3.56129 12 4.90323 12C5.90968 12 6.65806 11.9061 6.83871 11.8356C14.0645 10.2857 14.4 4.41487 14.4 3.2407V3.07632L14.5548 2.98239C15.4323 2.23092 15.7935 1.8317 16 1.59687C15.9226 1.62035 15.8194 1.66732 15.7161 1.6908L14.2194 2.06654Z" />
+                                </svg>
+                            </a>
+                            <a href="javascript:void(0)"
+                                class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full text-dark hover:border-primary hover:bg-primary border-stroke dark:border-dark-3 dark:hover:border-primary dark:text-white hover:text-white sm:mr-4 lg:mr-3 xl:mr-4">
+                                <svg width="16" height="12" viewBox="0 0 16 12" class="fill-current">
+                                    <path
+                                        d="M15.6645 1.88018C15.4839 1.13364 14.9419 0.552995 14.2452 0.359447C13.0065 6.59222e-08 8 0 8 0C8 0 2.99355 6.59222e-08 1.75484 0.359447C1.05806 0.552995 0.516129 1.13364 0.335484 1.88018C0 3.23502 0 6 0 6C0 6 0 8.79263 0.335484 10.1198C0.516129 10.8664 1.05806 11.447 1.75484 11.6406C2.99355 12 8 12 8 12C8 12 13.0065 12 14.2452 11.6406C14.9419 11.447 15.4839 10.8664 15.6645 10.1198C16 8.79263 16 6 16 6C16 6 16 3.23502 15.6645 1.88018ZM6.4 8.57143V3.42857L10.5548 6L6.4 8.57143Z" />
+                                </svg>
+                            </a>
+                            <a href="javascript:void(0)"
+                                class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full text-dark hover:border-primary hover:bg-primary border-stroke dark:border-dark-3 dark:hover:border-primary dark:text-white hover:text-white sm:mr-4 lg:mr-3 xl:mr-4">
+                                <svg width="14" height="14" viewBox="0 0 14 14" class="fill-current">
+                                    <path
+                                        d="M13.0214 0H1.02084C0.453707 0 0 0.451613 0 1.01613V12.9839C0 13.5258 0.453707 14 1.02084 14H12.976C13.5432 14 13.9969 13.5484 13.9969 12.9839V0.993548C14.0422 0.451613 13.5885 0 13.0214 0ZM4.15142 11.9H2.08705V5.23871H4.15142V11.9ZM3.10789 4.3129C2.42733 4.3129 1.90557 3.77097 1.90557 3.11613C1.90557 2.46129 2.45002 1.91935 3.10789 1.91935C3.76577 1.91935 4.31022 2.46129 4.31022 3.11613C4.31022 3.77097 3.81114 4.3129 3.10789 4.3129ZM11.9779 11.9H9.9135V8.67097C9.9135 7.90323 9.89082 6.8871 8.82461 6.8871C7.73571 6.8871 7.57691 7.74516 7.57691 8.60323V11.9H5.51254V5.23871H7.53154V6.16452H7.55423C7.84914 5.62258 8.50701 5.08065 9.52785 5.08065C11.6376 5.08065 12.0232 6.43548 12.0232 8.2871V11.9H11.9779Z" />
+                                </svg>
+                            </a>
+                        </div>
+                        <p class="text-base text-body-color dark:text-dark-6">
+                            &copy; 2025 Nexora
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <span class="absolute left-0 bottom-0 z-[-1]">
+                <svg width="217" height="229" viewBox="0 0 217 229" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M-64 140.5C-64 62.904 -1.096 1.90666e-05 76.5 1.22829e-05C154.096 5.49924e-06 217 62.904 217 140.5C217 218.096 154.096 281 76.5 281C-1.09598 281 -64 218.096 -64 140.5Z"
+                        fill="url(#paint0_linear_1179_5)" />
+                    <defs>
+                        <linearGradient id="paint0_linear_1179_5" x1="76.5" y1="281" x2="76.5" y2="1.22829e-05"
+                            gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#3056D3" stop-opacity="0.08" />
+                            <stop offset="1" stop-color="#C4C4C4" stop-opacity="0" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </span>
+            <span class="absolute top-10 right-10 z-[-1]">
+                <svg width="75" height="75" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M37.5 -1.63918e-06C58.2107 -2.54447e-06 75 16.7893 75 37.5C75 58.2107 58.2107 75 37.5 75C16.7893 75 -7.33885e-07 58.2107 -1.63918e-06 37.5C-2.54447e-06 16.7893 16.7893 -7.33885e-07 37.5 -1.63918e-06Z"
+                        fill="url(#paint0_linear_1179_4)" />
+                    <defs>
+                        <linearGradient id="paint0_linear_1179_4" x1="-1.63917e-06" y1="37.5" x2="75" y2="37.5"
+                            gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#13C296" stop-opacity="0.31" />
+                            <stop offset="1" stop-color="#C4C4C4" stop-opacity="0" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </span>
+        </div>
+    </footer>
+    <!-- ====== Footer Section End -->
+
+
+    <script src="/js/user_script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"></script>
+</body>
+
+</html>
