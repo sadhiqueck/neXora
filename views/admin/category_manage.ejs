@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/styles/admin.css">
 </head>
 
-<body>
+<body id="category_manage">
     <!-- component -->
     <link rel="stylesheet" href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
             </div>
             <ul class="flex flex-col py-3">
                 <li>
-                    <a href="#"
+                    <a href="/admin/dashboard"
                         class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
                         <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                                 class="bx bx-home"></i></span>
@@ -33,7 +33,7 @@
 
                 </li>
                 <li>
-                    <a href="#"
+                    <a href="/admin/users"
                         class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
                         <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                                 class="bx bx-user"></i></span>
@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#"
+                    <a href="/admin/product"
                         class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
                         <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                                 class='bx bxs-store-alt'></i></span>
@@ -91,13 +91,17 @@
                     </a>
                 </li>
                 <li>
+                    <form id="logout-form" action="/admin/logout" method="POST" style="display: none;">
+                    </form>
                     <a href="#"
-                        class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
-                        <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
-                                class="bx bx-log-out"></i></span>
-                        <span class="text-sm font-medium">Logout</span>
+                       onclick="document.getElementById('logout-form').submit();" id="logoutButton"
+                       class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+                      <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800">
+                        <i class="bx bx-log-out"></i>
+                      </span>
+                      <span class="text-sm font-medium">Logout</span>
                     </a>
-                </li>
+                  </li>
             </ul>
         </div>
 
@@ -116,7 +120,7 @@
                 <nav class="flex" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                         <li class="inline-flex items-center">
-                            <a href="#"
+                            <a href="/admin/dashboard"
                                 class="inline-flex items-center text-sm font-medium text-button-color hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
                                 Dashboard
                             </a>
@@ -478,7 +482,7 @@
                                 <div class="ps-3">
                                     <div class="text-base font-semibold">Accessories</div>
                                     <div class="font-normal text-gray-500"> Innovative tech essentials like AI-powered mice, smart chargers, <br>
-                                        multi-functional adapters, premium cases, and other cutting-edge gadgets to enhance the user experience.</div>
+                                        </div>
                                 </div>
                             </th>
                             <td class="px-6 py-4">
