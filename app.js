@@ -1,14 +1,31 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const session = require("express-session");
 const path = require("path");
 const adminRoute= require('./routes/adminRoute');
 const userRoute= require('./routes/userRoute');
+const expressLayouts = require('express-ejs-layouts');
+const configurePassport=require("./middleware/passport")
+const passport=require('passport')
+const {loginStatus}=require('./middleware/userAuth')
+
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, "public")));
+app.set("view engine", "ejs");
+app.use('/user',expressLayouts);
+app.set('layout', 'layouts/userLayout');
+
+configurePassport();
 
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
   });
+
 app.use(session({
     secret:"Mysecret",
     resave:false,
@@ -17,15 +34,16 @@ app.use(session({
         maxAge:1000*60*60
     }
 }))
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.set("view engine", "ejs");
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 
 app.use('/admin',adminRoute)
-app.use('/user',userRoute)
+app.use('/user',loginStatus,userRoute)
+
+
+
+
 
 module.exports = app;

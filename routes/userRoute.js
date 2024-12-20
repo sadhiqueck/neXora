@@ -1,26 +1,58 @@
-const express= require('express')
-const router=express.Router();
+const express = require('express');
+const router = express.Router();
+const { login, loadHome, loadProductsPage, getProductsDetails, googleLogin } = require('../controllers/userController/userController');
+const { sendOTP, resendOtp } = require('../controllers/userController/otpController')
+const { signup } = require('../controllers/userController/authController');
+const { authsession, isLogin } = require("../middleware/userAuth")
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+// signup pages
+
+router.get('/login',isLogin, (req, res) => {
+    res.render('user/login', { title: 'User_login' })
+})
+router.get('/signup',isLogin, (req, res) => {
+    res.render('user/signup', { title: 'User_signup' })
+})
 
 
-router.get('/login',(req,res)=>{
-    res.render('user/login')
-})
-router.get('/signup',(req,res)=>{
-    res.render('user/signup')
-})
 
-router.get('/home',(req,res)=>{
-    res.render('user/home')
-})
-router.get('/products',(req,res)=>{
-    res.render('user/products')
-})
+// google signup
+
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Callback route after Google authentication   
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/signup' }), googleLogin);
 
 
-router.post('/verify',(req,res)=>{
-    res.render('user/otp_verify')
-})
-router.post('/product_details',(req,res)=>{
-    res.render('user/product_details')
-})
-module.exports=router
+// home page
+
+//default access
+router.get('/home', loadHome);
+
+router.post('/home', login)
+router.post('/send-otp', authsession, sendOTP);
+router.post('/verify-otp', authsession, signup);
+router.post('/resend-otp', authsession, resendOtp);
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+        }
+        res.redirect('/user/login');
+    });
+});
+
+
+// product page
+
+router.get('/products', loadProductsPage)
+
+router.get('/product/:id', getProductsDetails)
+
+
+
+
+
+module.exports = router
