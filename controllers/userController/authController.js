@@ -1,12 +1,15 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/userModel');
 const OTP = require('../../models/otpModel');
+const productsDB = require("../../models/productModel")
+
 
 const signup = async (req, res) => {
   try {
     // Extract data from the request
     const otp = req.body.otp?.[1];
     const { username, email, password } = req.session.userData;
+     const products = await productsDB.find({});
 
     // Validate empty fields
     if (!otp || !username || !email || !password) {
@@ -54,12 +57,14 @@ const signup = async (req, res) => {
         email,
         password: hashedPassword,
       });
+      console.log(newUser);
+      req.session.user = newUser;
+      req.session.isLoggedIn = true;
 
       // Delete the OTP after successful signup
       await OTP.deleteOne({ _id: otpRecord._id });
-
-      const isLoggedin = true;
-      return res.render('user/home', { title: 'HomePage', isLoggedin })
+      // return res.render('user/home', { title: 'HomePage', products })
+      return res.redirect('/user/home')
     }
   } catch (error) {
     console.error('Error during signup:', error.message);
@@ -71,7 +76,33 @@ const signup = async (req, res) => {
 };
 
 
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await Users.findOne({ email })
+
+    if (!user) return res.render('user/login', { title: 'Login_Page', mssg: "User not found!!" })
+
+    if (user.isBlocked || user.isDeleted) return res.render('user/login', { title: 'Login_Page', mssg: "You have no access!!" })
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (isMatch) {
+      req.session.user = user;
+      req.session.isLoggedIn = true;
+      const products = await productsDB.find({})
+      return res.redirect('/user/home')
+    } else {
+      return res.render('user/login', { title: 'HomePage', mssg: "Incorrect password!, Please try again" })
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.render('user/login', { title: 'HomePage', mssg: "An error occurred, please try again." });
+  }
+}
 
 
 
-module.exports = { signup };
+
+module.exports = { signup, login };

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { login, loadHome, loadProductsPage, getProductsDetails, googleLogin } = require('../controllers/userController/userController');
+const {loadHome, loadProductsPage, getProductsDetails, googleLogin } = require('../controllers/userController/userController');
 const { sendOTP, resendOtp } = require('../controllers/userController/otpController')
-const { signup } = require('../controllers/userController/authController');
+const { signup,login} = require('../controllers/userController/authController');
 const { authsession, isLogin } = require("../middleware/userAuth")
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -32,9 +32,9 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 router.get('/home', loadHome);
 
 router.post('/home', login)
-router.post('/send-otp', authsession, sendOTP);
-router.post('/verify-otp', authsession, signup);
-router.post('/resend-otp', authsession, resendOtp);
+router.post('/send-otp', isLogin, sendOTP);
+router.post('/verify-otp', isLogin, signup);
+router.post('/resend-otp', isLogin, resendOtp);
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -47,7 +47,7 @@ router.get('/logout', (req, res) => {
 
 // product page
 
-router.get('/products', loadProductsPage)
+router.get('/products/:category', loadProductsPage)
 
 router.get('/product/:id', getProductsDetails)
 

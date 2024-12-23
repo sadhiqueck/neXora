@@ -4,31 +4,7 @@ const bcrypt = require('bcrypt');
 const productsDB = require("../../models/productModel")
 
 
-const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await Users.findOne({ email })
 
-        if (!user) return res.render('user/login', { title: 'Login_Page', mssg: "User not found!!" })
-
-        if (user.isBlocked || user.isDeleted) return res.render('user/login', { title: 'Login_Page', mssg: "You have no access!!" })
-
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (isMatch) {
-            req.session.user = user;
-            req.session.isLoggedIn = true;
-            const products = await productsDB.find({})
-            return res.redirect('/user/home')
-        } else {
-            return res.render('user/login', { title: 'HomePage', mssg: "Incorrect password!, Please try again" })
-        }
-
-    } catch (error) {
-        console.log(error);
-        res.render('user/login', { title: 'HomePage', mssg: "An error occurred, please try again." });
-    }
-}
 
 const googleLogin = async (req, res) => {
     try {
@@ -55,7 +31,7 @@ const loadHome = async (req, res) => {
     try {
         if (req.session.isLoggedIn) {
             const products = await productsDB.find({})
-           return res.render("user/home", { title: 'HomePage', products })
+            return res.render("user/home", { title: 'HomePage', products })
         } else {
             const products = await productsDB.find({});
             return res.render("user/home", { title: 'HomePage', products });
@@ -71,11 +47,17 @@ const loadHome = async (req, res) => {
 
 const loadProductsPage = async (req, res) => {
     try {
-        // const isLoggedIn = req.session.user ? true : false;
-        const products = await productsDB.find({});
-        // const user = isLoggedIn ? req.session.user : null;
+        const category = req.params.category;
+        
+        if(category==="all"){
+            const products = await productsDB.find({});
+            return res.render("user/products", { title: 'Products', products, category });
+        }
+        const products = await productsDB.find({ category: category });
+      
+        
+        res.render("user/products", { title: 'Products', products, category });
 
-        res.render("user/products", { title: 'Products', products });
     } catch (error) {
         console.error("Error loading products page:", error);
         res.status(500).send("An error occurred while loading the products page. Please try again later.");
@@ -105,4 +87,4 @@ const getProductsDetails = async (req, res) => {
 }
 
 
-module.exports = { login, loadHome, loadProductsPage, getProductsDetails, googleLogin,  }
+module.exports = { loadHome, loadProductsPage, getProductsDetails, googleLogin, }
