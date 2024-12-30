@@ -37,7 +37,7 @@
                     <div>
                         <button class="relative"> <img src="/Icons/Wishlist.svg" alt="">
                             <div
-                                class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+                                class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-1 dark:border-gray-900">
                                 0</div>
                         </button>
                     </div>
@@ -45,11 +45,13 @@
 
                     <!-- cart -->
                     <div>
+                        <a href="/user/cart">
                         <button class="relative"> <img src="/Icons/Cart.svg" alt="">
                             <div
-                                class="absolute  inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-button-color border-2 border-white  rounded-full -top-2 -end-2  dark:border-gray-900">
+                                class="absolute  inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-button-color border-2 border-white  rounded-full -top-1 -end-1  dark:border-gray-900">
                                 0</div>
                         </button>
+                    </a>
                     </div>
 
                     <!-- user button -->
@@ -59,7 +61,7 @@
                             type="button">
                             <span class="sr-only">Open user menu</span>
                             <img class="w-8 h-8 me-2 rounded-full" src="/Icons/Active_user.svg" alt="user photo">
-                            <%= user.username%>
+                            Hello, <%= user.username.split(' ')[0] %>
                                 <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -75,7 +77,7 @@
                                     <img src="/Icons/account_circle.svg" alt="My Profile" width="24" height="24">
                                     <a href="#" class="block  px-4 py-2  truncate ">My Profile</a>
                                 </div>
-                                <p class="text-xs overflow-hidden mx-auto">
+                                <p class="text-xs overflow-hidden mx-auto truncate w-36">
                                     <%= user.email%>
                                 </p>
                             </div>

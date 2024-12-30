@@ -4,7 +4,7 @@ const authsession = (req, res, next) => {
         if (req.session.user) {
             next(); // Allow access if session exists
         } else {
-            res.redirect('/user/home'); // Redirect to home if no session
+            res.redirect('/user/login'); // Redirect to home if no session
         }
     } catch (error) {
         console.error("Error in authsession middleware:", error);

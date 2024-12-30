@@ -3,65 +3,74 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
   productName: {
     type: String,
-    require: true,
+    required: true,
   },
   price: {
     type: Number,
-    require: true,
+    required: true,
   },
   discount: {
     type: Number,
-    require: true,
+    required: true,
+    min: 0,
+    max: 100
   },
   category: {
     type: String,
-    require: true,
+    required: true,
   },
   categoryId: {
     type: mongoose.Types.ObjectId,
-    ref:'Category',
-    require: true,
+    ref: 'Category',
+    required: true,
   },
   quantity: {
     type: Number,
-    require: true,
+    required: true,
+    min: 0
   },
   description: {
     type: String,
-    require: true,
+    required: true,
   },
   brand: {
     type: String,
-    require: true,
+    required: true,
   },
   model: {
     type: String,
-    require: true,
+    required: true,
   },
   platform: {
     type: String,
-    require: true,
+    required: true,
   },
 
   additional: {
     type: String,
-    require: true,
+    required: true,
   },
   returnPeriod: {
     type: Number,
-    require: true,
+    required: true,
+    min: 0
   },
   warranty: {
     type: Number,
-    require: true,
+    required: true,
+    min: 0
   },
   qauntity: {
     type: Number,
-    require: true,
+    required: true,
   },
   images: {
     type: [String],
     default: false,
+  },
+  discountedPrice: {
+    type: Number,
+    required: true,
   },
   isDeleted: {
     type: Boolean,

@@ -15,7 +15,7 @@
                                     <% } %>
                         </p>
 
-                        <form action="/user/send-otp" method="POST" class="mt-8">
+                        <form action="/user/send-otp" method="POST" class="mt-8" id="form">
                             <div class="space-y-5">
                                 <div>
                                     <label for="username" class="text-base font-medium text-gray-900"> Full Name
@@ -128,5 +128,24 @@
 
 
     </main>
+    <script>
+        function toTitleCase(input) {
+            return input
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+
+        document.querySelector('#form').addEventListener("submit", (event) => {
+            const nameInput = document.getElementById("username");
+            const titleCasedName = toTitleCase(nameInput.value);
+
+            // Update the input value to the title-cased value
+            nameInput.value = titleCasedName;
+        });
+
+    </script>
+
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>

@@ -27,8 +27,9 @@ const loadProducts = async (req, res) => {
 const addProduct = async (req, res) => {
     try {
         const product = req.body;
+        const discountedPrice = product.price - (product.price * product.discount / 100);
         const imagePaths = req.files.map(file => `/uploads/${file.filename}`);
-        const newProduct = new productDB({ ...product, images: imagePaths })
+        const newProduct = new productDB({ ...product, discountedPrice, images: imagePaths, })
         await newProduct.save();
 
         res.redirect('/admin/products')
@@ -70,7 +71,7 @@ const editProduct = async (req, res) => {
             return res.status(400).send('Missing product ID');
         }
 
-        const updateObject = { ...productData };
+        const updateObject = { ...productData, discountedPrice: productData.price - (productData.price * productData.discount / 100).toFixed(0) };
 
         //image replacements
         if (req.files && req.files.length > 0) {
@@ -79,6 +80,7 @@ const editProduct = async (req, res) => {
 
             // Create $set object for image updates
             updateObject.$set = {};
+
 
             // Iterate through files and match with indices
             req.files.forEach((file, index) => {
@@ -89,7 +91,7 @@ const editProduct = async (req, res) => {
                 updateObject.$set[`images.${imageIndex}`] = `/uploads/${file.filename}`;
             });
         }
-       
+
 
 
         // Update the product

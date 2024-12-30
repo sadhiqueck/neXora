@@ -9,7 +9,7 @@ const signup = async (req, res) => {
     // Extract data from the request
     const otp = req.body.otp?.[1];
     const { username, email, password } = req.session.userData;
-     const products = await productsDB.find({});
+    const products = await productsDB.find({});
 
     // Validate empty fields
     if (!otp || !username || !email || !password) {
@@ -79,7 +79,7 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await Users.findOne({ email })
+    const user = await User.findOne({ email })
 
     if (!user) return res.render('user/login', { title: 'Login_Page', mssg: "User not found!!" })
 

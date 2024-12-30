@@ -8,7 +8,7 @@ const userRoute= require('./routes/userRoute');
 const expressLayouts = require('express-ejs-layouts');
 const configurePassport=require("./middleware/passport")
 const passport=require('passport')
-const {loginStatus}=require('./middleware/userAuth')
+const {loginStatus}=require('./middleware/userAuth');
 
 
 app.use(express.json());
