@@ -13,7 +13,6 @@ const sendVerificationEmail = async function (email, otp) {
             `<h2>Welcome to neXora ,Please confirm your OTP</h2>
      <p>Here is your OTP code: ${otp}</p>`
         );
-        console.log("Email sent successfully: ", mailResponse);
 
     } catch (error) {
         console.log("Error occurred while sending email: ", error);

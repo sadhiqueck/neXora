@@ -8,7 +8,7 @@ const loadCategories = async (req, res) => {
     try {
         if (req.session.admin) {
             const categories = await categoryDB.find({})
-            res.render("admin/category_manage", { categories })
+            res.render("admin/category_manage", { categories, title:"Category Management" })
         }
         else {
             return res.redirect('/admin/login')

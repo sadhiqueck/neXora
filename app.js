@@ -9,15 +9,26 @@ const expressLayouts = require('express-ejs-layouts');
 const configurePassport=require("./middleware/passport")
 const passport=require('passport')
 const {loginStatus}=require('./middleware/userAuth');
-
+app.use(expressLayouts);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
-app.use('/user',expressLayouts);
-app.set('layout', 'layouts/userLayout');
+
+// user layout 
+app.use('/user',(req,res,next)=>{
+    app.set('layout', 'layouts/userLayout');
+    next(); 
+});
+
+// admin Layout
+app.use('/admin',(req,res,next)=>{
+    app.set('layout', 'layouts/adminLayout');
+    next(); 
+});
+
 
 configurePassport();
 

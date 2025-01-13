@@ -29,33 +29,6 @@ const cartSchema = new Schema({
             },
         }
     ],
-    orderSummary: {
-        totalItems: {
-            type: Number,
-            required: false
-        },
-        subtotal: {
-            type: Number,
-            required: false
-        },
-        deliveryCharge: {
-            type: Number, 
-            default: 0
-        },
-        totalSavings: {
-            type: Number,
-            required: false,
-        },
-        tax:{
-            type:Number,
-            required:false, 
-        },
-
-        totalAmount: {
-            type: Number, 
-            required: false
-        }
-    },
     isOrdered: {
         type: Boolean,
         default: false,

@@ -1,37 +1,37 @@
-<!-- side Menu -->
-<div class="flex flex-col w-56 bg-theme-bg bg-opacity-10 rounded-r-3xl overflow-hidden">
+<aside class="w-1/6 h-screen/3 fixed bg-white shadow-md  rounded-lg overflow-hidden">
     <div class="flex items-center justify-center h-16">
         <img class="h-12" src="/Images/LOGO.png" alt="">
     </div>
     <ul class="flex flex-col py-3">
         <li>
-            <a href="/admin/dashboard"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <a href="/admin/dashboard" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 
+              <%= title === 'Dashboard' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class="bx bx-home"></i></span>
                 <span class="text-sm font-medium">Dashboard</span>
             </a>
-
         </li>
         <li>
-            <a href="/admin/users"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <a href="/admin/users" class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200
+                <%=title==='User Management' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class="bx bx-user"></i></span>
                 <span class="text-sm font-medium">User Management</span>
             </a>
         </li>
         <li>
-            <a href="#"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <a href="/admin/products"
+                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200
+                <%=title==='Product Management' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class='bx bxs-store-alt'></i></span>
-                <span class="text-sm font-medium text-button-color">Product Management</span>
+                <span class="text-sm font-medium">Product Management</span>
             </a>
         </li>
         <li>
-            <a href="#"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+            <a href="/admin/orders"
+                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200
+                <%=title==='Order Management' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class="bx bx-shopping-bag"></i></span>
                 <span class="text-sm font-medium">Order Management</span>
@@ -39,15 +39,17 @@
         </li>
         <li>
             <a href="/admin/category"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200
+                <%=title==='Category Management' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class='bx bxs-category'></i> </span>
-                <span class="text-sm font-medium">Category Management</span>
+                <span class="text-sm font-medium ">Category Management</span>
             </a>
         </li>
         <li>
             <a href="#"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200
+                <%=title==='Coupon Management' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class='bx bxs-coupon'></i></span>
                 <span class="text-sm font-medium">Coupon Management</span>
@@ -55,7 +57,8 @@
         </li>
         <li>
             <a href="#"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200
+                <%=title==='Offer Management' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class='bx bxs-offer'></i></span>
                 <span class="text-sm font-medium">Offers and Banner</span>
@@ -64,7 +67,8 @@
         </li>
         <li>
             <a href="#"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
+                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200
+                <%=title==='Sales Report' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
                 <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800"><i
                         class='bx bxs-objects-vertical-bottom'></i></span>
                 <span class="text-sm font-medium">Sales Report</span>
@@ -75,12 +79,12 @@
             <form id="logout-form" action="/admin/logout" method="POST" style="display: none;">
             </form>
             <a href="#" onclick="document.getElementById('logout-form').submit();" id="logoutButton"
-                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-500 hover:text-gray-800">
-                <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-gray-800">
+                class="flex flex-row items-center h-12 transform hover:translate-x-2 transition-transform ease-in duration-200<%=title==='User Management' ? 'text-button-color font-bold' : 'text-gray-500 hover:text-gray-800' %>">
+                <span class="inline-flex items-center justify-center h-12 w-12 text-lg text-red-500">
                     <i class="bx bx-log-out"></i>
                 </span>
-                <span class="text-sm font-medium">Logout</span>
+                <span class="text-sm font-medium text-red-500">Logout</span>
             </a>
         </li>
     </ul>
-</div>
+</aside>

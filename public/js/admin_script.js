@@ -1,3 +1,20 @@
+// global Notyf instance
+const notyf = new Notyf({
+  duration: 2000,
+  position: { x: 'right', y: 'top' }
+});
+
+// Add custom styles for Notyf
+const style = document.createElement('style');
+style.innerHTML = `
+.notyf__toast {
+  border-radius: 8px; 
+  margin-bottom: 10px; 
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+`;
+document.head.appendChild(style);
+
 
 document.addEventListener("DOMContentLoaded", () => {
 

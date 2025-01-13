@@ -1,0 +1,387 @@
+<!-- Main Container -->
+<div class="max-w-3xl mx-auto p-6 mb-10">
+    <!-- Progress Steps -->
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center">
+            <div class="bg-purple-600 text-white rounded-full h-8 w-8 flex items-center justify-center">
+                <span class="text-sm">1</span>
+            </div>
+            <span class="ml-2 text-sm font-medium ">Address</span>
+        </div>
+        <div class="flex items-center">
+            <div class="bg-gray-200 text-gray-400 rounded-full h-8 w-8 flex items-center justify-center">
+                <span class="text-sm">2</span>
+            </div>
+            <span class="ml-2 text-sm font-medium text-gray-400">Shipping</span>
+        </div>
+        <div class="flex items-center">
+            <div class="bg-gray-200 text-gray-400 rounded-full h-8 w-8 flex items-center justify-center">
+                <span class="text-sm">3</span>
+            </div>
+            <span class="ml-2 text-sm font-medium text-gray-400">Payment</span>
+        </div>
+    </div>
+
+    <!-- Select Address Section -->
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-4">Select Address</h2>
+
+        <!-- Address Cards -->
+        <div class="space-y-4">
+            <% if(addresses && addresses.length> 0) { %>
+                <% addresses.forEach((address, index)=> { %>
+                    <form action="/user/select-address" method="POST">
+                        <!-- Address Card -->
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200 relative">
+                            <label class="flex items-start w-full cursor-pointer">
+
+                                <input type="radio" name="selectedAddress" value="<%= address._id %>"
+                                    <%=(selectAddressId?.toString()===address._id.toString() ? 'checked' :
+                                    (!selectAddressId && address.isDefault ? 'checked' : '' )) %>
+                                class="mt-1 mr-3 h-4 w-4 text-purple-600
+                                address-radio" />
+
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-1">
+                                        <span class="font-medium">
+                                            <%= address.fullName %>
+                                        </span>
+                                        <span class="ml-2 text-xs bg-purple-600 text-white px-2 py-0.5 rounded">
+                                            <%= address.addressType %>
+                                        </span>
+                                        <% if(address.isDefault) { %>
+                                            <span class="ml-2 text-xs bg-black text-white px-2 py-0.5 rounded">
+                                                Default
+                                            </span>
+                                            <% } %>
+                                    </div>
+                                    <p class="text-sm text-gray-600">
+                                        <%= address.addressLine1 %>, <%= address.addressLine2 %>, <%= address.landmark
+                                                    || '' %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">
+                                        <%= address.city %>, <%= address.state %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">PIN: <%= address.pincode %>
+                                    </p>
+                                    <p class="text-sm text-gray-600">(+91) <%= address.phone %>
+                                    </p>
+                                </div>
+                                <a href="/user/profile-address">
+                                <div class="flex space-x-2">
+                                    <button class="p-1 flex text-blue-800 " type="button" >Edit
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-3.5 text-gray-600"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
+                                    </a>
+                                </div>
+                            </label>
+                        </div>
+                    </form>
+
+                    <% }) %>
+                        <% } else { %>
+                            <h2 class="text-center text-gray-600 font-semibold pb-4"><i>"No saved addresses found. Add a
+                                    new address to
+                                    proceed."</i></h2>
+                            <% } %>
+        </div>
+
+
+        <!-- Add New Address Button -->
+        <button id="addressAddBtn"
+            class="w-[90%] mx-auto mt-4 mb-4 py-3 border-2 border-dashed border-purple-300 rounded-lg text-purple-600 flex items-center justify-center hover:bg-purple-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add New Address
+        </button>
+
+
+        <!-- add new address form -->
+        <div class="mx-auto w-full max-w-[680px] bg-purple-50 p-10 rounded-lg border border-purple-300 relative"
+            id="adressAddForm" style="display:none; ">
+            <p id="mssg" class="text-red-600 text-center mb-4"></p>
+            <form action="/user/addAddress" method="POST" id="addressAddForm">
+                <div class="-mx-3 flex flex-wrap mb-5">
+                    <div class="w-full px-3 sm:w-1/2">
+                        <label for="name" class="mb-3 block text-base font-medium text-indigo-900">
+                            Full Name <span class="text-red-600">*</span>
+                        </label>
+                        <input type="text" name="fullName" id="fullName"
+                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]" />
+                    </div>
+                    <div class="w-full px-3 sm:w-1/2">
+                        <label for="phone" class="mb-3 block text-base font-medium text-indigo-900">
+                            Phone Number<span class="text-red-600">*</span>
+                        </label>
+                        <input type="text" name="phone" id="phone" placeholder="10 digit mobile number" maxlength="10"
+                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]" />
+                    </div>
+                </div>
+                <div class="-mx-3 flex flex-wrap">
+                    <div class="w-full px-3 sm:w-1/2">
+                        <div class="mb-3">
+                            <label for="addressLine1" class="mb-3 block text-base font-medium text-indigo-900">
+                                Flat, House no., Building, Company<span class="text-red-600">*</span>
+                            </label>
+                            <input type="text" name="addressLine1" id="addressLine1"
+                                class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]" />
+                        </div>
+                    </div>
+                    <div class="w-full px-3 sm:w-1/2">
+                        <div class="mb-3">
+                            <label for="adressLine2" class="mb-3 block text-base font-medium text-indigo-900">
+                                Area, Street, Sector, Village<span class="text-red-600">*</span>
+                            </label>
+                            <input type="text" name="addressLine2" id="adressLine2"
+                                class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="-mx-3 flex flex-wrap">
+                    <div class="w-full px-3 sm:w-1/2">
+                        <div class="mb-5">
+                            <label for="pincode" class="mb-3 block text-base font-medium text-indigo-900">
+                                Pincode<span class="text-red-600">*</span>
+                            </label>
+                            <input type="text" name="pincode" id="pincode" placeholder="6 digits [0-9] PIN code"
+                                maxlength="6"
+                                class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]" />
+                        </div>
+                    </div>
+                    <div class="w-full px-3 sm:w-1/2">
+                        <div class="mb-5">
+                            <label for="landmark" class="mb-3 block text-base font-medium text-indigo-900">
+                                Landmark(optional)
+                            </label>
+                            <input type="text" name="landmark" id="landmark" placeholder="near appolo hospital"
+                                class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]" />
+                        </div>
+                    </div>
+
+                    <div class="w-full px-3 sm:w-1/2">
+                        <label for="city" class="mb-3 block text-base font-medium text-indigo-900">
+                            City/Town<span class="text-red-600">*</span>
+                        </label>
+                        <input type="text" name="city" id="city"
+                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]" />
+                    </div>
+                    <div class="w-full px-3 sm:w-1/2">
+                        <label for="state" class="mb-3 block text-base font-medium text-indigo-900">
+                            State<span class="text-red-600">*</span>
+                        </label>
+                        <select name="state" id="state"
+                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-2 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1]">
+                            <option value="" disabled selected>Select your state</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="mb-5">
+                    <label class="mb-3 block text-base font-medium text-[#07074D]">
+                        Address Type
+                    </label>
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center">
+                            <input type="radio" name="addressType" id="homeRadio" value="HOME" required checked
+                                class="h-5 w-5  mr-2 text-button-color focus:ring-secondry-button" />
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+                                fill="#07074D">
+                                <path
+                                    d="M264-216h96v-240h240v240h96v-348L480-726 264-564v348Zm-72 72v-456l288-216 288 216v456H528v-240h-96v240H192Zm288-327Z" />
+                            </svg>
+                            <label for="radioButton1" class="pl-1 text-base font-medium text-[#07074D]">
+                                Home
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="radio" name="addressType" id="workRadio" value="WORK"
+                                class="h-5 w-5 mr-2 text-button-color focus:ring-secondry-button" />
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+                                fill="#07074D">
+                                <path
+                                    d="M144-144v-528h144v-144h360v288h168v384H528v-144h-96v144H144Zm72-72h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-156h72v-72h-72v72Zm144 156h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-144h72v-72h-72v72Zm144 300h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-144h72v-72h-72v72Zm168 456h72v-72h-72v72Zm0-156h72v-72h-72v72Z" />
+                            </svg>
+                            <label for="radioButton2" class="pl-1 text-base font-medium text-[#07074D]">
+                                Work
+                            </label>
+                        </div>
+                    </div>
+                    <!-- default cehckbox -->
+                    <div class="flex items-center space-x-3 mt-6">
+                        <input type="checkbox" id="defaultAddress"
+                            class="w-6 h-6 text-button-color bg-gray-100 rounded-md border-2 border-gray-300 focus:ring-2 focus:ring-secondry-button"
+                            name="isDefault" value="true" />
+                        <label for="defaultAddress" class="text-gray-700 font-medium">
+                            Make this my default address
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4  pt-4 w-full ">
+                    <button
+                        class="hover:shadow-form rounded-md bg-button-color py-2 px-8 text-center text-base font-semibold text-white outline-none"
+                        type="submit">
+                        Save Address
+                    </button>
+                    <button
+                        class="px-6 py-2 border border-button-color text-button-color rounded-lg hover:bg-purple-50 "
+                        type="reset" id="cancel">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Navigation Buttons -->
+    <div class="flex justify-end space-x-4 mt-8">
+        <a href="/user/cart">
+            <button
+                class="px-6 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
+                Back to Cart
+            </button>
+        </a>
+
+        <button type="submit" onclick="saveSelectedAddress()"
+            class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+            Continue
+        </button>
+
+
+
+    </div>
+</div>
+
+<script>
+    const form = document.querySelector('#addressAddForm');
+    const name = document.getElementById('fullName');
+    const phone = document.getElementById('phone');
+    const addressLine1 = document.getElementById('addressLine1');
+    const addressLine2 = document.getElementById('adressLine2');
+    const pincode = document.getElementById('pincode');
+    const landmark = document.getElementById('landmark');
+    const city = document.getElementById('city');
+    const state = document.getElementById('state');
+    const mssg = document.getElementById('mssg');
+
+    // address form validation
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const inputs = [name, phone, addressLine1, addressLine2, pincode, city, state];
+        inputs.forEach(input => {
+            input.style.border = '';
+        });
+        mssg.textContent = '';
+
+        if (name.value === '' || phone.value === '' || addressLine1.value === '' || addressLine2.value === '' || pincode.value === '' || city.value === '' || state.value === '') {
+            notyf.error('Please fill all the fields');
+            mssg.textContent = 'Field cannot be empty';
+
+        } else if (phone.value.length !== 10 && !/^\d{10}$/.test(phone.value)) {
+            notyf.error('Please enter a valid phone number');
+            mssg.textContent = 'Please enter a valid phone number';
+            phone.style.border = '1px solid red';
+            return;
+
+        } else if (!/^\d{6}$/.test(pincode.value)) {
+            notyf.error('Please enter a valid pincode');
+            mssg.textContent = 'Please enter a valid pincode';
+            pincode.style.border = '1px solid red';
+            return;
+
+        } else if (isNaN(city.value) === false) {
+            notyf.error('Please enter a valid city');
+            mssg.textContent = 'Please enter a valid city';
+            city.style.border = '1px solid red';
+            return;
+
+        } else if (state.value === '') {
+            notyf.error('Please select a valid state');
+            mssg.textContent = 'Please select a valid state';
+            state.style.border = '1px solid red';
+            return;
+        }
+        else {
+            form.submit();
+
+        }
+    });
+
+    function saveSelectedAddress() {
+        const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+        if (!selectedAddress) {
+            notyf.error('Please select an address');
+        } else {
+            selectedAddress.closest('form').submit();
+        }
+
+    }
+
+
+    const addressAddBtn = document.getElementById('addressAddBtn');
+    const addressForm = document.querySelector('#adressAddForm');
+    addressAddBtn.addEventListener('click', () => {
+        if (addressForm.style.display === 'none') {
+            addressForm.style.display = 'block';
+        } else {
+            addressForm.style.display = 'none';
+        }
+    });
+    const cancelBtn = document.getElementById('cancel');
+    cancelBtn.addEventListener('click', () => {
+        addressForm.style.display = 'none';
+    })
+
+    const radioButtons = document.querySelectorAll('.address-radio');
+
+    radioButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            radioButtons.forEach(otherButton => {
+                if (otherButton !== button) {
+                    otherButton.checked = false; // Deselect all other buttons
+                }
+            });
+        });
+    });
+
+
+
+
+
+</script>

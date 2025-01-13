@@ -1,0 +1,433 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+
+<div class="min-h-screen p-4 md:p-8">
+    <div class="w-[3/4] ml-24">
+        <h2 class="text-3xl font-bold mb-8 text-purple-600">Add new product</h2>
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="/admin/dashboard"
+                        class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-purple-700">
+                        <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 9 4-4-4-4" />
+                        </svg>
+                        <a href="/admin/products"
+                            class="ms-1 text-sm font-medium text-gray-700 hover:text-purple-700 md:ms-2">Product
+                            Management</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 9 4-4-4-4" />
+                        </svg>
+                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">Add New Product</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto">
+        <form action="/admin/add-product" method="post" enctype="multipart/form-data" class="space-y-8">
+            <!-- Basic Information Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-3xl font-bold mb-8 text-gray-800">Basic Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="col-span-2">
+                        <label for="productName" class="block text-base font-medium text-gray-700 mb-2">Product
+                            Name</label>
+                        <input type="text" name="productName" id="productName" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                    </div>
+
+                    <div>
+                        <label for="price" class="block text-base font-medium text-gray-700 mb-2">Base Price</label>
+                        <div class="mt-1 relative rounded-lg shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-lg">₹</span>
+                            </div>
+                            <input type="number" name="price" id="price" required class="pl-8 block w-full rounded-lg border-2 border-gray-300 
+                                    shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                    focus:ring-opacity-50 text-lg py-3 px-4">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="discount" class="block text-base font-medium text-gray-700 mb-2">Discount
+                            Percentage</label>
+                        <div class="mt-1 relative rounded-lg shadow-sm">
+                            <input type="number" name="discount" id="discount" required class="block w-full rounded-lg border-2 border-gray-300 
+                                    shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                    focus:ring-opacity-50 text-lg py-3 px-4">
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-lg">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="category" class="block text-base font-medium text-gray-700 mb-2">Category</label>
+                        <select id="category" name="category" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                            <option value="">Select a category</option>
+                            <% if (categories) { %>
+                                <% categories.forEach((category)=> { %>
+                                    <% if (!category.isDeleted) { %>
+                                        <option value="<%= category.categoryName %>">
+                                            <%= category.categoryName %>
+                                        </option>
+                                        <% } %>
+                                            <% }) %>
+                                                <% } %>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="brand" class="block text-base font-medium text-gray-700 mb-2">Brand</label>
+                        <input type="text" name="brand" id="brand" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                    </div>
+
+                    <div>
+                        <label for="model" class="block text-base font-medium text-gray-700 mb-2">Model</label>
+                        <input type="text" name="model" id="model" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                    </div>
+
+                    <div>
+                        <label for="platform" class="block text-base font-medium text-gray-700 mb-2">Platform/Os</label>
+                        <input type="text" name="platform" id="platform" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                    </div>
+                    <div>
+                        <label for="returnPeriod" class="block text-base font-medium text-gray-700 mb-2">Return Period
+                            (Days)</label>
+                        <input type="number" name="returnPeriod" id="returnPeriod" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                    </div>
+
+                    <div>
+                        <label for="warranty" class="block text-base font-medium text-gray-700 mb-2">Warranty
+                            (Months)</label>
+                        <input type="number" name="warranty" id="warranty" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                    </div>
+                    <div class="col-span-2">
+                        <label for="additional" class="block text-base font-medium text-gray-700 mb-2">Additional
+                            Informations</label>
+                        <input type="text" name="additional" id="additional" required
+                            placeholder="Two LCD displays with a resolution of 2064×2208" class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4">
+                    </div>
+
+                    <div class="col-span-2">
+                        <label for="description" class="block text-base font-medium text-gray-700 mb-2">Product
+                            Description</label>
+                        <textarea id="description" name="description" rows="5" required class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                focus:ring-opacity-50 text-lg py-3 px-4"></textarea>
+                    </div>
+                </div>
+            </div>
+            <!-- Porduct image Section -->
+            <div class="bg-white rounded-lg shadow-lg p-8" id="productImageContainer">
+                <h2 class="text-2xl font-bold mb-6">Product Images</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <% for(let i=0; i < 4; i++) { %>
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-full h-64 relative border-2 border-gray-300 border-dashed rounded-lg p-4 hover:border-purple-500 transition-colors">
+                                <input type="file" class="absolute inset-0 w-full h-full opacity-0 z-50 cursor-pointer"
+                                    required name="images" accept="image/*" id="file-upload-<%= i + 1 %>">
+                                <div class="h-full w-full flex flex-col items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-500">Click or drag to upload</p>
+                                    <p class="text-xs text-gray-400">PNG, JPG, JPEG only</p>
+                                    <span class="text-purple-500 mt-2 text-xs">
+                                        <%= i===0 ? 'Thumbnail' :'' %>
+                                    </span>
+                                </div>
+                                <img src="" class="hidden absolute inset-0 w-full h-full object-cover rounded-lg"
+                                    id="preview-<%= i + 1 %>">
+                            </div>
+                            <span class="mt-2 text-sm text-gray-500">Image <%= i + 1 %></span>
+                        </div>
+                        <% } %>
+                </div>
+            </div>
+
+            <!-- Variants Section -->
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Product Variants</h2>
+                    <button type="button" id="addVariant" class="inline-flex items-center px-6 py-3 border border-purple-500 
+                            rounded-lg shadow-sm text-base font-medium text-purple-700 
+                             focus:outline-none focus:ring-2 
+                            focus:ring-offset-2 focus:ring-purple-500">
+                        <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add Variant
+                    </button>
+                </div>
+
+                <!-- Variants Container -->
+                <div id="variantsContainer" class="space-y-8">
+                    <!-- Template Variant -->
+                    <div class="variant-item border-2 border-gray-200 rounded-xl p-6 bg-gray-50">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <!-- Color Selection -->
+                            <div>
+                                <label class="block text-base font-medium text-gray-700 mb-2">Color</label>
+                                <div class="mt-1 flex items-center space-x-4">
+                                    <input type="text" name="variants[0][color]" placeholder="e.g., Midnight Blue"
+                                        class="block w-full rounded-lg border-2 border-gray-300 
+                                            shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                            focus:ring-opacity-50 text-lg py-3 px-4">
+                                    <input type="color" name="variants[0][colorCode]"
+                                        class="h-12 w-16 rounded border-2 border-gray-300 cursor-pointer">
+                                </div>
+                            </div>
+
+                            <!-- Storage Option -->
+                            <div>
+                                <label class="block text-base font-medium text-gray-700 mb-2">Storage</label>
+                                <div class="mt-1 flex items-center space-x-4">
+                                    <input type="number" name="variants[0][storage]" placeholder="Size" class="block w-32 rounded-lg border-2 border-gray-300 
+                                            shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                            focus:ring-opacity-50 text-lg py-3 px-4">
+                                    <select name="variants[0][storageUnit]" class="block w-32 rounded-lg border-2 border-gray-300 
+                                            shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                            focus:ring-opacity-50 text-lg py-3 px-4">
+                                        <option value="GB">GB</option>
+                                        <option value="TB">TB</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Stock -->
+                            <div>
+                                <label class="block text-base font-medium text-gray-700 mb-2">Stock</label>
+                                <input type="number" name="variants[0][stock]" placeholder="Available quantity" class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                        shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                        focus:ring-opacity-50 text-lg py-3 px-4">
+                            </div>
+
+                            <!-- Additional Price -->
+                            <div>
+                                <label class="block text-base font-medium text-gray-700 mb-2">Additional Price</label>
+                                <div class="mt-1 relative rounded-lg shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 text-lg">₹</span>
+                                    </div>
+                                    <input type="number" name="variants[0][additionalPrice]" placeholder="0.00" class="pl-8 block w-full rounded-lg border-2 border-gray-300 
+                                            shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                            focus:ring-opacity-50 text-lg py-3 px-4">
+                                </div>
+                            </div>
+
+                            <!-- Status -->
+                            <div>
+                                <label class="block text-base font-medium text-gray-700 mb-2">Status</label>
+                                <select name="variants[0][status]" class="mt-1 block w-full rounded-lg border-2 border-gray-300 
+                                        shadow-sm focus:border-purple-600 focus:ring focus:ring-purple-200 
+                                        focus:ring-opacity-50 text-lg py-3 px-4">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!-- Remove Variant Button -->
+                        <div class="mt-8 flex justify-end">
+                            <button type="button" class="remove-variant inline-flex items-center px-6 py-3 
+                                        border-2 border-red-200 shadow-sm text-base font-medium rounded-lg 
+                                        text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 
+                                        focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                                <svg class="mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Remove Variant
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mt-8">
+                    <div class="flex flex-col md:flex-row justify-end space-y-4 md:space-y-0 md:space-x-6">
+                        <button type="button" onclick="history.back()" class="inline-flex items-center justify-center px-8 py-4 border-2 
+                                    border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 
+                                    bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 
+                                    focus:ring-offset-2 focus:ring-purple-500 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="inline-flex items-center justify-center px-8 py-4 border-2 
+                                    border-transparent rounded-lg shadow-sm text-base font-medium text-white 
+                                    bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 
+                                    focus:ring-offset-2 focus:ring-purple-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="24" viewBox="0 0 24 24"
+                                style="fill: rgba(255, 255, 255, 1);">
+                                <path
+                                    d="M5 21h14a2 2 0 0 0 2-2V8a1 1 0 0 0-.29-.71l-4-4A1 1 0 0 0 16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm10-2H9v-5h6zM13 7h-2V5h2zM5 5h2v4h8V5h.59L19 8.41V19h-2v-5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v5H5z">
+                                </path>
+                            </svg>
+                            Save Product
+                        </button>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+<script src="/js/admin_script.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const variantsContainer = document.getElementById('variantsContainer');
+        const addVariantButton = document.getElementById('addVariant');
+        let variantCount = 1;
+
+        // Add new variant with enhanced animation
+        addVariantButton.addEventListener('click', function () {
+            const template = variantsContainer.children[0].cloneNode(true);
+            template.style.opacity = '0';
+            template.style.transform = 'translateY(20px)';
+            template.style.transition = 'all 0.3s ease-out';
+
+
+
+
+            // Update input names with new index
+            template.querySelectorAll('input, select').forEach(input => {
+                if (input.name) {
+                    input.name = input.name.replace('[0]', `[${variantCount}]`);
+                }
+                if (input.type === 'file') {
+                    input.value = '';
+                }
+            });
+
+
+            // Reset file inputs and previews
+            template.querySelectorAll('input[type="file"]').forEach(input => {
+                input.value = '';
+            });
+
+            // Add remove functionality with animation
+            const removeButton = template.querySelector('.remove-variant');
+            removeButton.addEventListener('click', function () {
+                template.style.opacity = '0';
+                template.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    template.remove();
+                }, 300);
+            });
+
+            variantsContainer.appendChild(template);
+            // Trigger animation
+            setTimeout(() => {
+                template.style.opacity = '1';
+                template.style.transform = 'translateY(0)';
+            }, 50);
+
+            variantCount++;
+        });
+
+        // Enhanced image preview functionality with validation
+        function setupImagePreviews(container) {
+            container.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function (e) {
+                    if (this.files && this.files[0]) {
+                        const file = this.files[0];
+                        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                        const maxSize = 5 * 1024 * 1024;
+
+                        // Validate file type
+                        if (!validTypes.includes(file.type)) {
+                            notyf.error('Invalid file type! Please select a JPEG, JPG, or PNG image.');
+                            this.value = ''; // Clear the input
+                            return;
+                        }
+
+                        // Validate file size
+                        if (file.size > maxSize) {
+                            notyf.error('File size exceeds 5MB! Please select a smaller file.');
+                            this.value = ''; // Clear the input
+                            return;
+                        }
+
+                        // Proceed with file preview
+                        const reader = new FileReader();
+                        const preview = this.parentElement.querySelector('img');
+                        const placeholder = this.parentElement.querySelector('div');
+
+                        reader.onload = function (e) {
+                            if (preview) {
+                                preview.src = e.target.result;
+                                preview.classList.remove('hidden');
+                                if (placeholder) placeholder.classList.add('hidden');
+                            }
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+        }
+
+        const productImageContainer = document.querySelector('#productImageContainer')
+
+        // Setup initial variant
+        setupImagePreviews(productImageContainer);
+
+
+
+        // Remove variant functionality for initial variant
+        document.querySelector('.remove-variant').addEventListener('click', function (e) {
+            const variant = e.target.closest('.variant-item');
+            if (variantsContainer.children.length > 1) {
+                variant.style.opacity = '0';
+                variant.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    variant.remove();
+                }, 300);
+            }
+        });
+    });
+</script>

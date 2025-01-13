@@ -2,7 +2,7 @@
 <div class="max-w-3xl mx-auto p-4">
     <!-- Progress Steps -->
     <div class="flex items-center justify-between mb-8">
-        <a href="/user/address">
+        <a href="/user/selectAddress">
             <div class="flex items-center">
                 <div class="bg-gray-200 text-gray-400 rounded-full h-8 w-8 flex items-center justify-center">
                     <span class="text-sm">1</span>
@@ -27,7 +27,7 @@
     <!-- Shipment Method Section -->
     <div class="mb-6">
         <h2 class="text-lg font-semibold mb-4">Shipment Method</h2>
-        
+
         <!-- Shipping Options -->
         <div class="space-y-3">
             <!-- Regular Shipment -->
@@ -35,14 +35,17 @@
                 <div class="border rounded-lg p-4 cursor-pointer hover:border-purple-300 transition-colors">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <input type="radio" name="shipping" checked class="h-4 w-4 text-purple-600" 
-                                   onclick="document.getElementById('datePickerSection').classList.add('hidden')" />
+                            <input type="radio" name="shipping" checked class="h-4 w-4 text-purple-600" id="regular"
+                                <%=typeof selectedDeliveryMethod !=='undefined' &&
+                                selectedDeliveryMethod.deliveryType==='regular' ? 'checked' : '' %>/>
                             <div class="ml-3">
-                                <span class="font-medium">Free</span>
+                                <span class="font-medium deliveryCharge">
+                                    <%= deliveryCharge===0 ? 'Free' : `₹${deliveryCharge}.00` %>
+                                </span>
                                 <span class="ml-3 text-gray-600">Regular shipment</span>
                             </div>
                         </div>
-                        <span class="text-gray-500"><%=date.toDateString() %></span>
+                        <span class="text-gray-500 regularDate"></span>
                     </div>
                 </div>
             </label>
@@ -53,27 +56,31 @@
                     <div class="border rounded-lg p-4 cursor-pointer hover:border-purple-300 transition-colors">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                                <input type="radio" name="shipping" class="h-4 w-4 text-purple-600"
-                                       onclick="document.getElementById('datePickerSection').classList.remove('hidden')" />
+                                <input type="radio" name="shipping" class="h-4 w-4 text-purple-600" id="custom"
+                                    onclick="document.getElementById('datePickerSection').classList.remove('hidden')"
+                                    <%=typeof selectedDeliveryMethod !=='undefined' &&
+                                    selectedDeliveryMethod.deliveryType==='custom' ? 'checked' : '' %>/>
                                 <div class="ml-3">
                                     <span class="font-medium">Schedule</span>
                                     <span class="ml-3 text-gray-600">Pick a custom delivery date</span>
                                 </div>
                             </div>
-                            <div id="selectedDate" class="text-gray-500">Select Date</div>
+                            <div id="selectedDate" class="text-gray-500">
+                                <%= typeof selectedDeliveryMethod !=='undefined' && selectedDeliveryMethod.deliveryDate
+                                    ? selectedDeliveryMethod.deliveryDate : 'Select Date' %>
+                            </div>
                         </div>
                     </div>
                 </label>
-                
+
                 <!-- Date Picker Section (Hidden by default) -->
                 <div id="datePickerSection" class="hidden mt-3 p-4 border rounded-lg bg-gray-50">
                     <div class="flex flex-col space-y-2">
                         <label class="text-sm text-gray-600">Select Delivery Date</label>
-                        <input type="date" 
-                               class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                               min="<%= date.toISOString().split('T')[0] %>" 
-                               onchange="document.getElementById('selectedDate').textContent = new Date(this.value).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})" />
-                        <p class="text-xs text-gray-500">Select a date after regular delivery (<%=date.toDateString() %>)</p>
+                        <input type="date" required
+                            class=" w-1/4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dateSelection"
+                            min="" onkeydown="return false;" />
+                        <p class="text-xs text-gray-500">Select a date after regular delivery and within 7 days</p>
                     </div>
                 </div>
             </div>
@@ -81,25 +88,92 @@
     </div>
 
     <!-- Navigation Buttons -->
-     <a href="/user/address">
     <div class="flex justify-end space-x-4 mt-8">
-        <button class="px-6 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
-            Back
-        </button>
-    </a>
+        <a href="/user/selectAddress">
+            <button
+                class="px-6 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
+                Back
+            </button>
+        </a>
 
-    <a href="/user/payment">
-        <button class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+
+
+        <button type="submit" onclick="saveDeliveryType()"
+            class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
             Next
         </button>
-    </a>
     </div>
 </div>
 
 <script>
-// Set minimum date to day after regular shipping
-const today = new Date('2024-12-06');
-const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate() + 1);
-document.querySelector('input[type="date"]').min = tomorrow.toISOString().split('T')[0];
+
+    // Set minimum date to day after regular shipping
+    const today = new Date();
+    const regularDeliveryDate = new Date(today);
+
+    // setting delivery date to 3 days after today
+    regularDeliveryDate.setDate(regularDeliveryDate.getDate() + 3);
+
+    // for selection of date after regular delivery
+    const dayAfter = new Date(regularDeliveryDate);
+    dayAfter.setDate(dayAfter.getDate() + 1);
+
+    const maxScheduleDate = new Date(regularDeliveryDate);
+    maxScheduleDate.setDate(maxScheduleDate.getDate() + 7);
+
+    document.querySelector('input[type="date"]').min = dayAfter.toISOString().split('T')[0];
+    document.querySelector('input[type="date"]').max = maxScheduleDate.toISOString().split('T')[0];
+
+    const regularShipment = document.getElementById('regular');
+    const datePicker = document.getElementById('datePickerSection');
+    const selectedDate = document.getElementById('selectedDate');
+    const dateInput = document.querySelector('input[type="date"]');
+    const dateSelection = document.querySelector('.dateSelection');
+
+    const regularDate = document.querySelector('.regularDate');
+    regularShipment.addEventListener('change', () => {
+        datePicker.classList.add('hidden');
+    });
+    regularDate.textContent = regularDeliveryDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    // automatically seleting the date after regular delivery
+    if (dateSelection.value === '') {
+        dateSelection.value = dayAfter.toISOString().split('T')[0];
+        selectedDate.textContent = new Date(dateInput.value).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        datePicker.classList.add('hidden');
+    }
+    // if user select manuaally
+    dateInput.addEventListener('change', () => {
+        selectedDate.textContent = new Date(dateInput.value).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        datePicker.classList.add('hidden');
+
+    });
+
+    function saveDeliveryType() {
+        const deliveryType = document.querySelector('input[name="shipping"]:checked').id;
+        const deliveryDate = deliveryType === 'regular' ? regularDeliveryDate : new Date(dateInput.value);
+        const deliveryData = {
+            deliveryType,
+            deliveryDate
+        }
+        fetch('/user/save-delivery', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(deliveryData)
+        }).then(response => {
+            if (response.ok) {
+                console.log('Delivery details saved successfully!');
+                window.location.href = '/user/payment';
+            }
+            else {
+                notyf.error('Error in saving delivery details');
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+
+    }
+
 </script>

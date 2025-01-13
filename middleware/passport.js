@@ -12,15 +12,32 @@ const configurePassport = () => {
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 callbackURL: '/user/auth/google/callback',
             },
-            function (accessToken, refreshToken, profile,done) {
-                User.findOrCreate(
-                    { googleId: profile.id },
-                    { username: profile.displayName,email: profile.emails[0].value},
-                   
-                    function (err, user) {
-                        return done(err, user);
+            async (accessToken, refreshToken, profile, done) => {
+                try {
+                    const email = profile.emails[0].value;
+                    const googleId = profile.id
+
+                    // search for user exist in database
+                    let user = await User.findOne({ email });
+
+                    if (user) {
+                        if (!user.googleId) {
+                            user.googleId = googleId;
+                            await user.save();
+                        }
+                    } else {
+                        // if no user exist
+                        user = await User.create({
+                            googleId,
+                            email,
+                            username: profile.displayName
+                        })
                     }
-                );
+                    return done(null, user);
+                } catch (err) {
+                    return done(err,null);
+                }
+
             }
         )
     );

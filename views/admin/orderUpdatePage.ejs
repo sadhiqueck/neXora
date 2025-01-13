@@ -1,0 +1,410 @@
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section with Cancel Button -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Order Details</h1>
+
+        <!-- breadcrumbs -->
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                <li class="inline-flex items-center">
+                    <a href="/admin/dashboard"
+                        class="inline-flex items-center text-sm font-medium text-button-color hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                        Dashboard
+                    </a>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 9 4-4-4-4" />
+                        </svg>
+                        <a href="/admin/orders"><span
+                                class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Order
+                                Management</span></a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 9 4-4-4-4" />
+                        </svg>
+                        <span class="ms-1 text-sm font-medium text-gray-800 md:ms-2 dark:text-gray-400">Order
+                            Details</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="flex items-center space-x-3">
+            <span class="px-4 py-1 text-sm bg-blue-50 text-blue-600 rounded-full font-medium">
+                #<%= order.orderNumber %>
+            </span>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+            <p class="text-gray-500 text-sm pl-2 ">
+                <%= order.orderDate.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}) %>
+            </p>
+            <div class="space-x-2">
+                <button
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg <%= order.status === 'Cancelled' ? 'cursor-not-allowed :' : '' %>"
+                    onclick="cancelOrder()" <%=order.status==='Cancelled' ? 'disabled' :'' %>>
+                    <i class="fas fa-ban mr-2"></i>
+                    <%= order.status==='Cancelled' ? 'Order Cancelled' : 'Cancel Order' %>
+                </button>
+                <button class="bg-gray-200 hover:bg-gray-300 text-gray-600 px-4 py-2 rounded-lg">
+                    <i class="fas fa-print mr-2"></i>Print Order
+                </button>
+            </div>
+        </div>
+
+        <!-- Rest of the content remains exactly the same -->
+        <!-- Order Status and Details Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Status Card -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Order Status</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Order Status:</span>
+                        <span class="text-gray-800">
+                            <%= order.status %>
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Payment Status:</span>
+                        <% if (order.paymentMethod==="cod" ) { %>
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full  text-sm font-medium bg-indigo-100 text-indigo-800">
+                                COD
+                            </span>
+                            <% } else if (order.paymentStatus==="Pending" ) { %>
+                                <span
+                                    class="px-3 py-1 text-sm rounded-full bg-orange-100 text-orange-800">Pending</span>
+                                <% } else if (order.paymentStatus==="success" ) { %>
+                                    <span
+                                        class="px-3 py-1 text-sm rounded-full bg-purple-100 text-purple-800">Success</span>
+                                    <% } else {%>
+                                        <span
+                                            class="px-3 py-1 text-sm rounded-full bg-red-100 text-red-800">Cancelled</span>
+
+                                        <% }%>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Payment Method:</span>
+                        <span class="uppercase  text-sm text-gray-700 px-2">
+                            <%= order.paymentMethod %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Details -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">Delivery Details</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Delivery Method:</span>
+                        <span class="uppercase font-medium">
+                            <%= order.deliveryType %>
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <% if(order.deliveryType==='custom' ){ %>
+                            <span class="text-gray-600">Selected Delivery Date:</span>
+                            <p class="custom-date">
+                                <%= order.deliveryDate.toLocaleDateString('en-IN',{dateStyle:'medium'}) %>
+                            </p>
+                            <% } else{%>
+                                <span class="text-gray-600">Expected Delivery:</span>
+                                <%= order.deliveryDate.toLocaleDateString('en-IN',{dateStyle:'medium'}) %>
+                                    <% } %>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+        <!-- Order Items Section -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Items Card -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-6">Items</h2>
+                    <div class="space-y-6">
+                        <% order.products.forEach(product=>{ %>
+                            <!-- Items-->
+                            <div class="flex flex-col space-y-4  border-b border-gray-100 pb-3">
+                                <div class="flex items-start space-x-4 ">
+                                    <img src="<%=product.images %>" alt="Product"
+                                        class="w-16 h-14 rounded-lg object-fit bg-gray-100 " />
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-sm font-medium text-gray-900">
+                                            <%=product.productName %>
+                                        </h3>
+                                        <p class="text-gray-500 text-sm ">Model: <%=product.model %>
+                                        </p>
+                                        <p class="text-gray-500 text-sm mt-1">Color: Black | Size: Standard</p>
+                                        <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %>
+                                        </p>
+                                        <div class="mt-2 flex items-center space-x-4">
+                                            <span>Status:</span>
+                                            <select name="productStatus" data-productid="<%= product._id %>"
+                                                class="product-status border rounded-lg px-3 py-2 bg-white 
+                                                <%= product.status === 'Cancelled' ? 'border-red-500 focus:ring-red-500' : 'border-purple-700' %>">
+                                                <option value="Processing" <% if (product.status==="Processing" ) { %>
+                                                    selected<% } %>>Processing</option>
+                                                <option value="Shipped" <% if (product.status==="Shipped" ) { %>selected
+                                                    <% } %>>Shipped
+                                                </option>
+                                                <option value="Out for delivery" <% if
+                                                    (product.status==="Out for delivery" ) { %>
+                                                    selected <% } %>>Out for delivery </option>
+                                                <option value="Delivered" <% if (product.status==="Delivered" ) { %>
+                                                    selected<% } %>>Delivered </option>
+                                                <option value="Cancelled" <% if (product.status==="Cancelled" ) { %>
+                                                    selected <% } %>>Cancelled </option>
+                                                <option value="Returned" <% if (product.status==="Returned" ) { %>
+                                                    selected <% } %>>Returned </option>
+                                            </select>
+
+                                            <!--date Changig -->
+                                            <span>Delivery Date:</span>
+                                            <input type="date" data-productid="<%= product._id%>"
+                                                class=" deliveryDate border border-blue-700 rounded-lg px-3 py-2"
+                                                value="<%= new Date(product.deliveryDate).toISOString().split('T')[0] %>">
+
+                                        </div>
+                                    </div>
+                                    <div class="text-right space-y-1">
+                                        <p class="text-sm font-medium text-gray-900">
+                                            <%= product.discountedPrice.toLocaleString('en-IN',{style:'currency',currency:"INR"})
+                                                %>
+                                        </p>
+                                        <p class="text-xs text-gray-500">per unit</p>
+                                        <p class="text-xs text-gray-500">Return Period: <%=product.returnPeriod %> days
+                                        </p>
+                                        <p class="text-xs text-gray-500">Warranty: <%=product.warranty %> months</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Customer Details -->
+                <div class="bg-white rounded-lg shadow p-6 ">
+                    <h2 class="text-lg font-semibold mb-4">Customer Details</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-medium text-gray-800 mb-4 underline">Contact Information</h3>
+                            <p class="text-gray-700 font-medium">
+                                <%= order.userId.username %>
+                            </p>
+                            <p class="text-gray-600">
+                                <%= order.userId.email%>
+                            </p>
+                            <p class="text-gray-600">+91 <%= order.shippingAddress.phone %>
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 mb-4 underline">Shipping Address</h3>
+                            <p class="text-gray-700 font-medium">
+                                <%= order.shippingAddress.fullName %>,
+                            </p>
+                            <p class="text-gray-600">
+                                <%= order.shippingAddress.addressLine1 %>, <%= order.shippingAddress.addressLine2 %>,<%=
+                                            order.shippingAddress.landmark %>
+                            </p>
+                            <p class="text-gray-600">
+                                <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>, India
+                                        - <%= order.shippingAddress.pincode %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Order Summary Card -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Subtotal</span>
+                            <span>
+                                <%= new Intl.NumberFormat('en-IN', { style: 'currency' , currency: 'INR'
+                                    }).format(Math.round((order.subTotal*0.82))) %>
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Delivery Charge</span>
+                            <span>
+                                <%= order.deliveryCharge.toLocaleString('en-IN',{style:'currency', currency:'INR'}) %>
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Tax/GST</span>
+                            <span>
+                                <%= order.tax.toLocaleString('en-IN',{style:'currency', currency:'INR'}) %>
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-green-600">
+                            <span>Coupon Discount</span>
+                            <span>-00.00</span>
+                        </div>
+                        <div class="border-t pt-3 mt-3">
+                            <div class="flex justify-between font-semibold text-lg">
+                                <span>Total</span>
+                                <span>
+                                    <%= order.total.toLocaleString('en-IN',{style:'currency', currency:'INR'}) %>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm">
+                            <p class="text-green-600">
+                                <i class="fas fa-tag mr-2"></i>Coupon Code: HAPPY20
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Save Changes Btn -->
+            <!-- <div class="mt-6 flex justify-end">
+                <div class="space-x-2">
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                        onclick="updateOrderStatus()">
+                        <i class="fas fa-save mr-2"></i>Save Changes
+                    </button>
+                </div>
+            </div> -->
+        </div>
+
+        <!-- script -->
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+
+            const orderId = '<%= order._id %>';
+
+            const updateProductStatus = async (e) => {
+                const select = e.target;
+                const productId = select.dataset.productid;
+                const newStatus = select.value;
+
+                try {
+                    const response = await fetch('/admin/orders/update-product-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            orderId,
+                            productId,
+                            status: newStatus
+                        })
+                    })
+                    const data = await response.json();
+                    if (data.success) {
+                        notyf.success("Status update succesfully")
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+
+                    } else {
+                        throw new Error(data.error);
+                    }
+
+                } catch (error) {
+                    notyf.error(error.message || "Failed to update")
+                }
+            }
+
+
+            document.querySelectorAll('.product-status').forEach(select => {
+
+                // change listener
+                select.addEventListener('change', updateProductStatus,);
+            });
+
+
+            // cancel Entire Order
+            const cancelOrder = async () => {
+                try {
+                    const result = await Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want to cancel this order?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#EF4444',
+                        cancelButtonColor: '#6B7280',
+                        confirmButtonText: 'Yes, cancel it!'
+                    });
+                    if (result.isConfirmed) {
+                        const response = await fetch('/admin/orders/cancel-all', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ orderId })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            notyf.success("Order Cancelled Successully")
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 500);
+                        }
+                        else {
+                            throw new Error(data.error);
+                        }
+                    }
+                } catch (error) {
+                    notyf.error(error.message || "Failed to cancel order")
+
+                }
+            }
+
+
+            // update delivery date
+
+            document.querySelectorAll('.deliveryDate').forEach(select => {
+
+                select.addEventListener('change', async (e) => {
+                    const dateSelect = e.target;
+                    const productId = dateSelect.dataset.productid;
+                    const newDate = dateSelect.value;
+
+                    try {
+                        const response = await fetch('/admin/orders/date-change', {
+                            method: 'POST',
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                orderId,
+                                productId,
+                                newDate
+                            })
+                        })
+                        const data = await response.json();
+
+                        if (data.success) {
+                            notyf.success("Delivery date changed");
+                        } else {
+                            throw new Error(data.error)
+                        }
+
+                    } catch (error) {
+                        notyf.error(error.message || "failed to change date")
+                    }
+                })
+            })
+
+
+        </script>
+</body>

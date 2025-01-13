@@ -4,6 +4,13 @@ const bcrypt = require('bcrypt');
 const Users = require("../../models/userModel");
 
 
+
+
+const loadLogin = async (req, res) => {
+
+    res.render('admin/login', { title: "login", layout: false })
+
+}
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -12,12 +19,12 @@ const login = async (req, res) => {
 
 
         if (!admin) {
-            return res.render('admin/login', { mssg: "Invalid Username!!" })
+            return res.render('admin/login', { mssg: "Invalid Username!!", layout: false })
         } else {
 
             const isMatch = await bcrypt.compare(password, admin.password)
 
-            if (!isMatch) return res.render('admin/login', { mssg: "Invalid Password, Try Again" })
+            if (!isMatch) return res.render('admin/login', { mssg: "Invalid Password, Try Again", layout: false })
 
             req.session.admin = true;
 
@@ -27,22 +34,28 @@ const login = async (req, res) => {
 
     } catch (error) {
 
-        res.render('admin/login', { mssg: "Something Wrong, Please try again." });
+        res.render('admin/login', { mssg: "Something Wrong, Please try again.", layout: false });
         console.log(error);
 
     }
+}
+const logout = (req, res) => {
+    req.session.destroy((err) => {
+        res.redirect('/admin/login?mssg="Logged out Succesfully')
+    })
+
 }
 
 const loadDashboard = async (req, res) => {
     try {
         if (req.session.admin) {
-            res.render('admin/dashboard')
+            res.render('admin/dashboard', { title: 'Dashboard' })
         } else {
             return res.redirect('/admin/login')
         }
     } catch (error) {
         console.log(error);
-        res.render('admin/login', { mssg: "An error occurred, please try again." })
+        res.render('admin/login', { mssg: "An error occurred, please try again.", layout: false })
 
     }
 }
@@ -51,7 +64,7 @@ const loadUsers = async (req, res) => {
     try {
         if (req.session.admin) {
             const users = await Users.find({})
-            res.render("admin/user_manage", { users })
+            res.render("admin/user_manage", { users, title: 'User Management' })
         }
         else {
             return res.redirect('/admin/login')
@@ -91,10 +104,10 @@ const blockUser = async (req, res) => {
         const user = await Users.findById(id);
 
         if (!user) {
-            return res.status(404).send('User not found');
+            return res.sta
+            tus(404).send('User not found');
         }
-
-
+        // toggling
         user.isBlocked = !user.isBlocked;
 
         await user.save();
@@ -124,9 +137,11 @@ const viewUser = async (req, res) => {
 
 module.exports = {
     login,
+    loadLogin,
     loadDashboard,
     loadUsers,
     deleteUser,
     blockUser,
-    viewUser
+    viewUser,
+    logout
 };

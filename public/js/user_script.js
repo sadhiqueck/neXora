@@ -28,6 +28,16 @@ async function addToCart(button) {
 
         if (response.ok) {
             notyf.success('Moved to cart!');
+            // Get the cart badge element
+            const cartBadge = document.querySelector('.cartBadge');
+            let currentCount = parseInt(cartBadge.textContent) || 0;
+            currentCount += 1;
+            cartBadge.textContent = currentCount;
+
+            // Show the badge if it's hidden
+            if (cartBadge.classList.contains('hidden')) {
+                cartBadge.classList.remove('hidden');
+            }
         } else if (response.status === 400) {
             const error = await response.json();
             notyf.error(error.message || "Limit Exceed");
@@ -35,6 +45,7 @@ async function addToCart(button) {
             const error = await response.json();
             notyf.error("Failed to Move cart!!");
         }
+
 
 
     } catch (error) {

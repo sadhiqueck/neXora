@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/userModel');
 const OTP = require('../../models/otpModel');
-const productsDB = require("../../models/productModel")
+const productsDB = require("../../models/productModel");
+const Users = require('../../models/userModel');
 
 
 const signup = async (req, res) => {
@@ -57,7 +58,7 @@ const signup = async (req, res) => {
         email,
         password: hashedPassword,
       });
-      console.log(newUser);
+
       req.session.user = newUser;
       req.session.isLoggedIn = true;
 
@@ -76,13 +77,34 @@ const signup = async (req, res) => {
 };
 
 
+
+const googleLogin = async (req, res) => {
+  try {
+    const user=req.user
+    if (user.isBlocked || user.isDeleted) return res.render('user/login', { title: 'Login_Page', mssg: "You have no access!!" })
+    req.session.isLoggedIn = true;
+    req.session.user = user;
+
+    return res.redirect('/user/home');
+
+
+  } catch (error) {
+    console.error("Error during Google login:", error);
+    res.render('user/login', {
+      title: 'Login',
+      mssg: "An error occurred, please try again."
+    });
+  }
+};
+
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email })
 
-    if (!user) return res.render('user/login', { title: 'Login_Page', mssg: "User not found!!" })
-
+    if (!user) return res.render('user/login', { title: 'Login_Page', mssg: "User not found!!" });
+    if (!user.password) return res.render('user/login', { title: 'Login_Page', mssg: "Please sign in with google!!" })
     if (user.isBlocked || user.isDeleted) return res.render('user/login', { title: 'Login_Page', mssg: "You have no access!!" })
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -105,4 +127,4 @@ const login = async (req, res) => {
 
 
 
-module.exports = { signup, login };
+module.exports = { signup, login, googleLogin };

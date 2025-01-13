@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/styles/output.css">
+    <link rel="stylesheet" href="/styles/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+</head>
+
+<body class="font-inter min-h-screen flex gap-4  bg-main-white p-2">
+    <!-- component -->
+    <link rel="stylesheet" href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+    <div class="w-1/6 mt-4 ml-2">
+        <!-- side Menu -->
+        <%- include('../partials/admin_sidebar') %>
+    
+    </div>
+
+    <!--Content space -->
+    <main class="w-5/6 bg-main-white">
+
+        <%-body %>
+
+    </main>
+
+    <!-- Include Notyf JS -->
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="/js/admin_script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"></script>
+</body>
+
+</html>

@@ -11,7 +11,8 @@ const loadCart = async (req, res) => {
         const cart = await cartDb.findOne({ userId })
             .populate('products.productId');
 
-
+        if (cart) {
+            
         // Calculate the cart summary
         const totalItems = cart.products.reduce((total, product) => total + product.quantity, 0);
         const subTotal = cart.products.reduce((total, product) => total + product.quantity * product.productId.discountedPrice, 0)
@@ -21,6 +22,10 @@ const loadCart = async (req, res) => {
         const total = subTotal + deliveryCharge;
 
         res.render('user/cart', { title: 'Cart', cart, products, totalItems, subTotal, totalSavings, deliveryCharge, tax, total });
+        }
+         else { 
+            res.render('user/cart', { title: 'Cart', cart:0});
+        }
 
     } catch (error) {
         console.error('Error loading cart:', error);
@@ -34,8 +39,6 @@ const loadCart = async (req, res) => {
 const addToCart = async (req, res) => {
     const productId = req.body.productId
     const userId = req.session.user._id;
-
-
     try {
         let cart = await cartDb.findOne({ userId });
         if (!cart) {
@@ -120,7 +123,6 @@ const updateCart = async (req, res) => {
         const totalItems = cart.products.reduce((total, product) => total + product.quantity, 0);
         const subTotal = cart.products.reduce((total, product) => total + product.quantity * product.productId.discountedPrice, 0)
         const totalSavings = subTotal - (cart.products.reduce((totalPrice, product) => totalPrice + product.productId.price, 0));
-        console.log(totalSavings)
         const deliveryCharge = subTotal > 498 ? 0 : 99;
         const tax = Math.round(subTotal * 0.18);
         const total = subTotal + deliveryCharge;

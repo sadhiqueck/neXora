@@ -1,0 +1,231 @@
+<body class="bg-main-white">
+    <div class="max-w-fullxl mx-auto p-6 mb-20 mt-6 ">
+        <h1 class="text-2xl font-bold mb-6">Your Profile </h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-[300px,1fr] gap-6">
+            <!-- Left Sidebar -->
+            <div class="bg-white rounded-lg p-6 shadow-lg border-2 border-gray-200 h-fit ">
+                <div class="flex w-full  items-center mb-4 pb-5 border-b-2 ">
+                    <div class="w-1/4">
+                        <img src="/Icons/profile-pic-male.svg" alt="" class="w-10 h-10">
+                    </div>
+                    <div class=" w-3/4 ">
+                        <p class="text-xs">Hello,</p>
+                        <h2 class="font-semibold">
+                            <%=user.username %>
+                        </h2>
+                    </div>
+
+                </div>
+
+                <nav class="space-y-4">
+                    <a href="#" class="flex  items-center  text-secondry-button">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 20c0-3.5 3-6 6-6s6 2.5 6 6" />
+                        </svg>
+
+                        Profile Information
+                    </a>
+                    <a href="/user/orders"
+                        class="flex items-center transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-700 hover:text-gray-900">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        My orders
+                    </a>
+                    <a href="/user/profile-address"
+                        class="flex items-center transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-700 hover:text-gray-900">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Manage Addresses
+                    </a>
+                    <a href="#"
+                        class="flex items-center transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-700 hover:text-gray-900">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8h18M3 16h18M6 4h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" />
+                        </svg>
+                        My wallet
+                    </a>
+                    <a href="#"
+                        class="flex items-center transform hover:translate-x-2 transition-transform ease-in duration-200 text-gray-700 hover:text-gray-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                            class="w-5 h-5 mr-3" fill="currentColor">
+                            <path
+                                d="m480-144-50-45q-100-89-165-152.5t-102.5-113Q125-504 110.5-545T96-629q0-89 61-150t150-61q49 0 95 21t78 59q32-38 78-59t95-21q89 0 150 61t61 150q0 43-14 83t-51.5 89q-37.5 49-103 113.5T528-187l-48 43Zm0-97q93-83 153-141.5t95.5-102Q764-528 778-562t14-67q0-59-40-99t-99-40q-35 0-65.5 14.5T535-713l-35 41h-40l-35-41q-22-26-53.5-40.5T307-768q-59 0-99 40t-40 99q0 33 13 65.5t47.5 75.5q34.5 43 95 102T480-241Zm0-264Z" />
+                        </svg>
+
+
+                        My Wishlist
+                    </a>
+
+                    <a href="/user/logout"
+                        class="flex items-center text-red-600 hover:text-red-700 border-t-2 grey-600 pt-4 mt-3">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Log out
+                    </a>
+                </nav>
+            </div>
+
+
+            <!-- Right Content -->
+            <div class="space-y-6">
+
+                <!-- Account Data -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-semibold mb-6">Account data</h2>
+                    <div class="space-y-6">
+                        <!-- Full Namet -->
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Full Name</label>
+                                <div class="flex items-center gap-3 mt-1">
+                                   
+                                    <span id="nameDisplay" class="text-gray-900">
+                                        <%= user.username %>
+                                    </span>
+
+                                    <!-- hidden edit input -->
+                                    <input id="nameInput" type="text" class="hidden p-1 border rounded w-2/3"
+                                        value="<%= user.username %>" />
+
+                                    <!-- Edit Button -->
+                                    <button id="editButton" class="text-gray-400 hover:text-secondry-button"
+                                        onclick="toggleEditMode(event)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
+
+                                    <!-- Save Button (Hidden Initially) -->
+                                    <button id="saveButton" class="hidden text-blue-500 hover:underline"
+                                        onclick="saveName(event)">
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Email Address -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500">Email Address</label>
+                            <p class="mt-1 text-gray-900">
+                                <%= user.email %>
+                            </p>
+                        </div>
+
+                        <!-- Joined Date (Read-only) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500">Joined Date</label>
+                            <p class="mt-1 text-gray-900">
+                                <%= new Date(user.createdAt).toLocaleDateString('en-IN', { year: 'numeric' ,
+                                    month: 'long' , day: 'numeric' }) %>
+                            </p>
+                        </div>
+
+                        <!-- Default Address with Edit -->
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500">Default Address</label>
+                                <div class="flex items-start gap-3 mt-1">
+                                    <% if (typeof defaultAddress !=='undefined' && defaultAddress) { %>
+                                        <span class="text-gray-900">
+                                            <%= defaultAddress.addressLine1 %>, <%= defaultAddress.addressLine2 %>, <%=
+                                                        defaultAddress.landmark %>,<br>
+                                                        <%= defaultAddress.city %>, <%= defaultAddress.state %>- <%=
+                                                                    defaultAddress.pincode %>
+                                        </span>
+                                        <a href="/user/profile-address">
+                                            <button class="text-gray-400 hover:text-blue-500 mt-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            </button>
+                                        </a>
+                                        <% } else { %>
+                                            <span class="text-gray-900"><i>No saved address was found in your
+                                                    account</i></span>
+                                            <% } %>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+                function toggleEditMode(event) {
+                    event.preventDefault();
+
+                    // Elements
+                    const nameDisplay = document.getElementById('nameDisplay');
+                    const nameInput = document.getElementById('nameInput');
+                    const editButton = document.getElementById('editButton');
+                    const saveButton = document.getElementById('saveButton');
+
+                    // Toggle Visibility
+                    nameDisplay.classList.toggle('hidden');
+                    nameInput.classList.toggle('hidden');
+                    editButton.classList.toggle('hidden');
+                    saveButton.classList.toggle('hidden');
+
+                    // Focus the input field
+                    if (!nameInput.classList.contains('hidden')) {
+                        nameInput.focus();
+                    }
+                }
+
+                async function saveName(event) {
+                    event.preventDefault();
+
+                    // Get updated name
+                    const nameInput = document.getElementById('nameInput');
+                    const updatedName = nameInput.value.trim();
+
+                    if (!updatedName) {
+                        notyf.error('Name cannot be empty!');
+                        return;
+                    }
+
+                    // Send update request to the server
+                    try {
+                        const response = await fetch('/user/update-name', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ username: updatedName }),
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            document.getElementById('nameDisplay').textContent = data.username;
+                            toggleEditMode(event);
+                            window.location.href='/user/profile'
+                        } else {
+                            throw new Error('Failed to update name');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        notyf.error('Error updating name. Please try again later.');
+                    }
+                }
+
+
+            </script>

@@ -1,14 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { loadHome, googleLogin } = require('../controllers/userController/userController');
+const { loadHome, loadUserProfile, updateName, loadAddressprofile,
+    updateAddress, profileAddAddress, deleteAddress } = require('../controllers/userController/userController');
 const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
 const { sendOTP, resendOtp } = require('../controllers/userController/otpController')
-const { signup, login } = require('../controllers/userController/authController');
-const { isLogin, authsession } = require("../middleware/userAuth");
+const { signup, login, googleLogin } = require('../controllers/userController/authController');
+const { isLogin, authsession, checkoutAccess } = require("../middleware/userAuth");
 const { loadCart, addToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
-const { checkoutAddress } = require('../controllers/userController/checkoutAddress')
+const { loadAddress, addAddress, loadShippingMethod, saveDeliveryMethod,
+    shippingMethod, loadPaymentPage, placeOrder, orderSuccess } = require('../controllers/userController/checkoutController');
+const { loadOrder, loadOrderDetails,cancelItem, cancelOrder } = require('../controllers/userController/orderController');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const sharp = require('sharp')
 
 // signup pages
 
@@ -47,7 +51,6 @@ router.get('/logout', (req, res) => {
     });
 });
 
-
 // product page
 
 router.get('/products/:category', loadProductsPage)
@@ -59,30 +62,48 @@ router.get('/product/:id', getProductsDetails)
 router.get('/cart', authsession, loadCart)
 router.post('/cart/add/:id', authsession, addToCart)
 router.post('/cart/remove/:id', authsession, removeFromCart)
-router.post('/cart/update', updateCart)
-router.post('/cart/checkout', checkoutAddress)
-
+router.post('/cart/update', authsession, updateCart)
+router.post('/selectAddress', authsession, loadAddress)
+// checkout pages
 
 // address page
-router.get('/address', (req, res) => {
-    res.render('user/address', { title: 'Address' })
-});
+router.get('/selectAddress', authsession, checkoutAccess, loadAddress)
+router.post('/addAddress', authsession, addAddress)
+router.post('/select-address', authsession, loadShippingMethod)
+
 
 // shipping method
-router.get('/ship-method', (req, res) => {
-    res.render('user/shippingMethod', { title: 'Shipping_Method' })
-});
+router.get('/shipping', authsession, checkoutAccess, shippingMethod);
+router.post('/save-delivery', authsession, saveDeliveryMethod)
 
 // payment page
-router.get('/payment', (req, res) => {
-    res.render('user/payment', { title: 'Payment_Page' })
-});
+router.get('/payment', authsession, checkoutAccess, loadPaymentPage)
+router.post('/place-order', authsession, checkoutAccess, placeOrder)
+router.get('/order-success/', authsession, checkoutAccess, orderSuccess)
 
 // user dashboard
 
-router.get('/dashboard', (req, res) => {
-    res.render('user/user_dashboard', { title: 'User_dashboard' })
-});
+router.get('/profile', authsession, loadUserProfile)
+router.post('/update-name', authsession, updateName)
+
+
+//Profile address
+
+router.get('/profile-address', authsession, loadAddressprofile)
+router.post('/profile-addAddress', authsession, profileAddAddress)
+router.post('/update-address', authsession, updateAddress)
+router.post('/address-delete/:id', authsession, deleteAddress)
+
+// Orders
+
+router.get('/orders', authsession, loadOrder)
+
+router.get('/order-details/:orderId', authsession, loadOrderDetails)
+
+router.post('/order/cancel-item',cancelItem);
+
+// entire order cancel
+router.post('/order/cancel',cancelOrder)
 
 
 module.exports = router
