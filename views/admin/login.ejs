@@ -7,7 +7,7 @@
   <title>Admin_Login</title>
   <link rel="stylesheet" href="/styles/output.css">
   <link rel="stylesheet" href="/styles/admin.css">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
 </head>
 
 <body id="login-page">
@@ -17,7 +17,7 @@
       <img class="mx-auto h-10 w-auto" src="../Images/lOGO.png" alt="neXora">
       <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Admin Login</h2>
     </div>
-    <p id="mssg" class="text-center pt-4 text-red-600">
+    <p id="mssg" class="text-center pt-4 text-red-600" >
       <% if (typeof mssg !=='undefined' ) { %><%- mssg%>
           <% } %>
     </p>
@@ -61,8 +61,15 @@
     </div>
   </div>
 
-
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script src="/js/admin_script.js"></script>
+  <script>
+    const mssg = document.getElementById('mssg').textContent.trim()
+    if (mssg!== '') {
+      notyf.error(mssg);
+    }
+
+  </script>
 </body>
 
 </html>

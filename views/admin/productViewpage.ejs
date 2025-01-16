@@ -1,0 +1,210 @@
+<link rel="stylesheet" href="/styles/output.css">
+<link rel="stylesheet" href="/styles/admin.css">
+
+<div class="min-h-screen p-4 md:p-8">
+    <div class="w-[3/4] ml-24">
+        <div class="flex justify-between items-center">
+            <h2 class="text-3xl font-bold mb-8 text-purple-600">Product Details</h2>
+            <div class="flex gap-4">
+                <a href="'/admin/products/<%= product._id %>/edit'">
+                    <button
+                        class="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit Product
+                    </button>
+                </a>
+                <button onclick="history.back()"
+                    class="inline-flex items-center px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back
+                </button>
+            </div>
+        </div>
+
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="/admin/dashboard"
+                        class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-purple-700">
+                        <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 9 4-4-4-4" />
+                        </svg>
+                        <a href="/admin/products"
+                            class="ms-1 text-sm font-medium text-gray-700 hover:text-purple-700 md:ms-2">Products</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 9 4-4-4-4" />
+                        </svg>
+                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2">
+                            <%= product.productName %>
+                        </span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Product Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Product Images -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="mb-6">
+                        <img src="<%= product.images[0] %>" alt="<%= product.productName %>"
+                            class="w-full h-80 object-fit rounded-lg">
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <% product.images.slice(1).forEach(image=> { %>
+                            <img src="<%= image %>" alt="Product view" class="w-full h-34 object-cover rounded-lg">
+                            <% }) %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg p-6 space-y-6">
+                    <div class="border-b pb-6">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                            <%= product.productName %>
+                        </h1>
+                        <p class="text-gray-500">
+                            <%= product.description %>
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Base Price</h3>
+                            <p class="text-lg font-semibold">₹<%= product.price %>
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Discount</h3>
+                            <p class="text-lg font-semibold">
+                                <%= product.discount %>%
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Category</h3>
+                            <p class="text-lg">
+                                <%= product.category %>
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Brand</h3>
+                            <p class="text-lg">
+                                <%= product.brand %>
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Model</h3>
+                            <p class="text-lg">
+                                <%= product.model %>
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Platform</h3>
+                            <p class="text-lg">
+                                <%= product.platform %>
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Return Period</h3>
+                            <p class="text-lg">
+                                <%= product.returnPeriod %> days
+                            </p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Warranty</h3>
+                            <p class="text-lg">
+                                <%= product.warranty %> months
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Additional Information</h3>
+                        <p class="text-gray-600">
+                            <%= product.additional %>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Variants -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mt-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Product Variants</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Color
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Storage
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Additional Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <% product.variants.forEach(variant=> { %>
+                                    <tr>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="w-4 h-4 rounded-full mr-2 "style="background:<%-variant.color %>"></div>
+                                                <%= variant.color %>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <%= variant.storage %>
+                                                <%= variant.storageUnit %>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <%= variant.stock %>
+                                        </td>
+                                        <td class="px-6 py-4">₹<%= variant.additionalPrice %>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= variant.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                                                <%= variant.status %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

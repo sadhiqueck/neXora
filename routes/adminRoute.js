@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router();
 const cloudinary = require('../config/cloudinaryConfig');
-const upload = require('../config/multerConfig');
+const { multerUpload } = require('../config/multerConfig');
 
 // controllers
 const { login, loadLogin, loadDashboard, loadUsers, deleteUser, blockUser, viewUser, logout } = require("../controllers/adminController/adminController");
 const { loadCategories, addCatgeory, deleteCategory, editCategory, } = require("../controllers/adminController/categoryController");
-const { addProduct, loadProducts, deleteProduct, editProduct, loadAddProductpage, loadEditProductpage } = require('../controllers/adminController/productController')
+const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage, loadEditProductpage, editProduct, deleteProduct, } = require('../controllers/adminController/productController')
 const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate } = require('../controllers/adminController/orderController')
 
 // middlewares
@@ -40,11 +40,14 @@ router.post('/edit-category', authsession, editCategory)
 
 // product Management
 router.get('/products', authsession, loadProducts)
-router.post('/add-product', authsession,upload.array('images', 4), addProduct)
-router.post('/edit-product', authsession,upload.array('images', 4), editProduct)
+router.get('/add-products', authsession, loadAddProductpage)
+router.post('/add-product', authsession, multerUpload, addProduct)
+router.get('/product/:id', loadProductViewpage)
+router.get('/product/:id/edit', loadEditProductpage)
+router.post('/edit-product', multerUpload, editProduct)
 router.get('/delete-product/:id', authsession, deleteProduct)
-router.get('/add-products', loadAddProductpage)
-router.get('/edit-products', loadEditProductpage)
+
+
 
 
 // ordermanagement

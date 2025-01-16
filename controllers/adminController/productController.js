@@ -21,37 +21,120 @@ const loadProducts = async (req, res) => {
     }
 }
 
+const loadAddProductpage = async (req, res) => {
+    try {
+        if (req.session.admin) {
+
+            const categories = await categoryDB.find({})
+            res.render("admin/productAddpage", { categories, title: 'Product Management', layout: false })
+        }
+        else {
+            return res.redirect('/admin/login')
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const loadProductViewpage = async (req, res) => {
+    try {
+
+        const productId = req.params.id
+        const product = await productDB.findById(productId)
+        if(!product){
+            return res.send("error to find product")
+        }
+        res.render('admin/productViewpage',{title:"Product Details Page",product,layout:false})
+    } catch (error) {
+        console.log(error);
+        res.send("error to load view page")
+    }
+}
+
+const loadEditProductpage = async (req, res) => {
+    try {
+        const productId = req.params.id
+        const product = await productDB.findById(productId)
+        const categories = await categoryDB.find({})
+        res.render("admin/productEditpage", { product, categories, title: 'Product Management', layout: false })
+
+    }
+
+    catch (error) {
+        console.log(error);
+    }
+}
 
 
-// admins controller
 const addProduct = async (req, res) => {
     try {
-        if (!req.files || req.files.length === 0) {
-            throw new Error('No images uploaded');
+        const { price, discount, productName, ...productData } = req.body;
+
+        // Validate request body
+        if (!price || !discount) {
+            return res.status(400).json({
+                success: false,
+                message: 'Price and discount are required'
+            });
         }
 
-        const product = req.body;
-        const discountedPrice = product.price - (product.price * product.discount / 100);
-        const imageUrls = [];
+        // Validate files
+        if (!req.files || req.files.length < 3) {
+            return res.status(400).json({
+                success: false,
+                message: 'At least three images is required'
+            });
+        }
+        // Check if name is alraeady exists
+        const existingProduct = await productDB.findOne({
+            productName: { $regex: new RegExp(`^${productName}$`, 'i') }
+        })
 
-        // Upload all images to Cloudinary
-        for (const file of req.files) {
-            try {
-                const result = await uploadToCloudinary(file);
-                imageUrls.push(result.secure_url);
-            } catch (uploadError) {
-                console.error('Cloudinary upload error:', uploadError);
-                throw new Error('Failed to upload image');
-            }
+        if (existingProduct) {
+            return res.status(400).json({ message: 'Product name already exists.' });
         }
 
+
+        // Convert price and discount to numbers and validate
+        const numericPrice = parseFloat(price);
+        const numericDiscount = parseFloat(discount);
+
+        if (isNaN(numericPrice) || isNaN(numericDiscount)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid price or discount value'
+            });
+        }
+
+        if (numericDiscount < 0 || numericDiscount > 100) {
+            return res.status(400).json({
+                success: false,
+                message: 'Discount must be between 0 and 100'
+            });
+        }
+
+        // Calculate discounted price
+        const discountedPrice = numericPrice - (numericPrice * numericDiscount / 100);
+
+        // Upload images with concurrent processing
+        const imageUploadPromises = req.files.map(file => uploadToCloudinary(file));
+        const uploadResults = await Promise.all(imageUploadPromises);
+        const imageUrls = uploadResults.map(result => result.secure_url);
+
+        // Create and save new product
         const newProduct = new productDB({
-            ...product,
+            ...productData,
+            price: numericPrice,
+            productName: productName,
+            discount: numericDiscount,
             discountedPrice,
             images: imageUrls,
         });
+
         await newProduct.save();
-        res.redirect('/admin/products');
+        return res.status(200).json({ success: true, message: "Product added successfully" });
+
 
     } catch (error) {
         console.error('Error in addProduct:', error);
@@ -153,36 +236,6 @@ const editProduct = async (req, res) => {
     }
 };
 
-const loadAddProductpage = async (req, res) => {
-    try {
-        if (req.session.admin) {
 
-            const categories = await categoryDB.find({})
-            res.render("admin/productAddpage", { categories, title: 'Product Management', layout: false })
-        }
-        else {
-            return res.redirect('/admin/login')
-        }
 
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const loadEditProductpage = async (req, res) => {
-    try {
-        if (req.session.admin) {
-            const product = await productDB.find({})
-            const categories = await categoryDB.find({})
-            res.render("admin/productEditpage", { product, categories, title: 'Product Management', layout: false })
-        }
-        else {
-            return res.redirect('/admin/login')
-        }
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-module.exports = { addProduct, loadProducts, deleteProduct, editProduct, loadAddProductpage, loadEditProductpage }
+module.exports = { addProduct, loadProducts, deleteProduct, editProduct, loadAddProductpage, loadEditProductpage,loadProductViewpage }

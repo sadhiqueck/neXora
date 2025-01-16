@@ -34,9 +34,15 @@ const productSchema = new mongoose.Schema({
   variants: [
     {
       color: { type: String, required: false },
+      colorCode: { type: String, required: true },
       storage: { type: String, required: false },
       additionalPrice: { type: Number, default: 0 },
       stock: { type: Number, required: true, default: 0 },
+      status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active',
+    },
       // images: { type: [String], default: [] }, avoiding now because of complexity
     },
   ],
