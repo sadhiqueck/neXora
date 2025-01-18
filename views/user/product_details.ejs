@@ -167,138 +167,148 @@
 
                                 <a href="#productDescription" id="showMoreBtn"
                                     class="text-blue-500 hover:text-blue-700 text-md ">Know more</a>
-<!-- 
-                                <div class="mb-6 mt-10">
-                                    <h3 class="text-lg font-semibold mb-2">Color:</h3>
-                                    <div class="flex space-x-2">
-                                        <button
-                                            class="w-8 h-8 bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 ring-1 ring-offset-1 ring-gray-500  "></button>
-                                    </div>
-                                </div>
 
 
-                                <div class="block w-full mb-10">
-                                    <p class="font-medium text-lg leading-8 text-gray-900 mb-4">Size</p>
-                                    <div class="grid grid-cols-2 min-[400px]:grid-cols-4 gap-3">
+                                <!-- variants -->
+                                <% product.variants.forEach((variant)=>{ %>
 
-                                        <label class="">
-                                            <input type="radio" name="type" value="Powder" class="peer sr-only"
-                                                checked />
-                                            <p
-                                                class="peer-checked:text-gray-900 peer-checked:border-black text-gray-400 rounded-lg border border-gray-400 px-6 py-2 font-normal font-inter">
-                                                256 Gb</p>
-                                        </label>
-                                        <label class="">
-                                            <input type="radio" name="type" value="Whole Bean" class="peer sr-only" />
-                                            <p
-                                                class=" peer-checked:text-gray-900 rounded-lg peer-checked:border-black  text-gray-400 border border-gray-400 px-6 py-2 font-normal font-inter">
-                                                512 Gb</p>
-                                        </label>
-                                    </div>
-                                </div> -->
-
-
-
-
-                                <div class="grid grid-cols-2 space-x-4 mb-6 mt-10 ">
-                                    <button
-                                        class="group py-3 px-5 border border-button-color rounded-lg bg-indigo-50 text-secondry-button font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100"
-                                        <% if(isLoggedIn){%>
-                                        data-product_id="<%= product._id %>" onclick="addToCart(this)"
-                                            <%} else {%>
-                                                onclick="redirectToLogin()"title="⚠️ Please log in to add items"
-                                                <%}%> >
-
-                                                    <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-600 "
-                                                        width="22" height="22" viewBox="0 0 22 22" fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
-                                                            stroke="" stroke-width="1.6" stroke-linecap="round" />
-                                                    </svg>
-
-                                                    Add to cart</button>
-                                    <button
-                                        class="text-center w-full mx-auto px-5 py-4 rounded-lg   bg-button-color flex items-center justify-center font-semibold text-lg text-white shadow-sm transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
-                                        <img src="/Icons/flash.svg" alt="" class="w-6 h-6 mr-1">
-                                        Buy Now
-                                    </button>
-
-                                </div>
-
-                                <!-- waaranty and other details -->
-                                <div class=" grid grid-cols-3 items-center gap-6 mx-auto w-full p-6 ">
-
-                                    <div class="grow h-14 rounded-lg  justify-center gap-4 flex  ">
-                                        <div
-                                            class="p-4 bg-indigo-200 rounded-[11px] flex-col justify-start items-center gap-2 inline-flex overflow-hidden">
-                                            <div class="w-6 h-6 relative  overflow-hidden">
-                                                <img class="w-6 h-6 relative  overflow-hidden" src="/Icons/delivery.svg"
-                                                    alt="Delivery" />
-                                            </div>
-                                        </div>
-                                        <div class="w-full">
-                                            <span class="text-neutral-500 text-sm font-medium font-['Inter']">
-                                                <% if (product.price>498) { %> Eligible for free delivery <% } else { %>
-                                                        Delivery
-                                                        Charges
-                                                        Applicable <% } %>
-                                            </span>
-
+                                    <div class="mb-6 mt-10   justify-start ">
+                                        <h3 class="text-lg font-semibold mb-2">Color:</h3>
+                                        <div class="flex flex-col gap-2 mt-6">
+                                            <button style="background-color:<%-variant.colorCode %>"
+                                                class="color w-8 h-8 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 ring-1 ring-offset-1 ring-gray-500">
+                                            </button>
+                                            <span class="text-sm text-gray-700"><%-variant.color %></span>
                                         </div>
                                     </div>
 
 
+                                    <div class="block w-full mb-10">
+                                        <p class="font-medium text-lg leading-8 text-gray-900 mb-4">Size</p>
+                                        <div class="grid grid-cols-2 min-[400px]:grid-cols-4 gap-3">
 
-                                    <div class="grow  h-14 rounded-lg  justify-center gap-4 flex ">
+                                            <label class="">
+                                                <input type="radio" name="type" value="Powder" class="peer sr-only"
+                                                    checked />
+                                                <p
+                                                    class="peer-checked:text-gray-900 peer-checked:border-black text-gray-400 rounded-lg border border-gray-400 px-6 py-2 font-normal font-inter">
+                                                    256 Gb</p>
+                                            </label>
+                                            <label class="">
+                                                <input type="radio" name="type" value="Whole Bean"
+                                                    class="peer sr-only" />
+                                                <p
+                                                    class=" peer-checked:text-gray-900 rounded-lg peer-checked:border-black  text-gray-400 border border-gray-400 px-6 py-2 font-normal font-inter">
+                                                    512 Gb</p>
+                                            </label>
+                                        </div>
+                                    </div>
 
-                                        <div
-                                            class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex ">
-                                            <div
-                                                class="p-4 bg-indigo-200 rounded-[11px] justify-start items-center gap-2 flex overflow-hidden">
-                                                <div class="w-6 h-6 relative  overflow-hidden">
-                                                    <img class="w-6 h-6 relative  overflow-hidden"
-                                                        src="/Icons/return.svg" alt="return" />
+                                    <% }) %>
+
+
+                                        <div class="grid grid-cols-2 space-x-4 mb-6 mt-10 ">
+                                            <button
+                                                class="group py-3 px-5 border border-button-color rounded-lg bg-indigo-50 text-secondry-button font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100"
+                                                <% if(isLoggedIn){%>
+                                                data-product_id="<%= product._id %>" onclick="addToCart(this)"
+                                                    <%} else {%>
+                                                        onclick="redirectToLogin()"title="⚠️ Please log in to add items"
+                                                        <%}%> >
+
+                                                            <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-600 "
+                                                                width="22" height="22" viewBox="0 0 22 22" fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
+                                                                    stroke="" stroke-width="1.6"
+                                                                    stroke-linecap="round" />
+                                                            </svg>
+
+                                                            Add to cart</button>
+                                            <button
+                                                class="text-center w-full mx-auto px-5 py-4 rounded-lg   bg-button-color flex items-center justify-center font-semibold text-lg text-white shadow-sm transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
+                                                <img src="/Icons/flash.svg" alt="" class="w-6 h-6 mr-1">
+                                                Buy Now
+                                            </button>
+
+                                        </div>
+
+                                        <!-- waaranty and other details -->
+                                        <div class=" grid grid-cols-3 items-center gap-6 mx-auto w-full p-6 ">
+
+                                            <div class="grow h-14 rounded-lg  justify-center gap-4 flex  ">
+                                                <div
+                                                    class="p-4 bg-indigo-200 rounded-[11px] flex-col justify-start items-center gap-2 inline-flex overflow-hidden">
+                                                    <div class="w-6 h-6 relative  overflow-hidden">
+                                                        <img class="w-6 h-6 relative  overflow-hidden"
+                                                            src="/Icons/delivery.svg" alt="Delivery" />
+                                                    </div>
+                                                </div>
+                                                <div class="w-full">
+                                                    <span class="text-neutral-500 text-sm font-medium font-['Inter']">
+                                                        <% if (product.price>498) { %> Eligible for free delivery <% }
+                                                                else { %>
+                                                                Delivery
+                                                                Charges
+                                                                Applicable <% } %>
+                                                    </span>
+
                                                 </div>
                                             </div>
 
-                                            <div>
-                                                <span
-                                                    class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Return
-                                                    Policy<br></span>
 
-                                                <% if (product.returnPeriod>0) { %>
-                                                    <span class="text-black text-sm font-medium font-['Inter']">
-                                                        <%= product.returnPeriod %> days
-                                                    </span>
-                                                    <% } else { %>
-                                                        No return allowed
-                                                        <% } %>
+
+                                            <div class="grow  h-14 rounded-lg  justify-center gap-4 flex ">
+
+                                                <div
+                                                    class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex ">
+                                                    <div
+                                                        class="p-4 bg-indigo-200 rounded-[11px] justify-start items-center gap-2 flex overflow-hidden">
+                                                        <div class="w-6 h-6 relative  overflow-hidden">
+                                                            <img class="w-6 h-6 relative  overflow-hidden"
+                                                                src="/Icons/return.svg" alt="return" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <span
+                                                            class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Return
+                                                            Policy<br></span>
+
+                                                        <% if (product.returnPeriod>0) { %>
+                                                            <span class="text-black text-sm font-medium font-['Inter']">
+                                                                <%= product.returnPeriod %> days
+                                                            </span>
+                                                            <% } else { %>
+                                                                <span class="font-medium ">No return Policy</span>
+                                                                <% } %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex">
+                                                <div
+                                                    class="p-4 bg-indigo-200 rounded-[11px] justify-start items-center gap-2 flex overflow-hidden">
+                                                    <div class="w-6 h-6 relative  overflow-hidden">
+                                                        <img class="w-6 h-6 relative  overflow-hidden"
+                                                            src="/Icons/warranty.svg" alt="waaranty" />
+                                                    </div>
+                                                </div>
+                                                <div><span
+                                                        class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Warranty<br /></span>
+                                                    <% if (product.warranty>0) { %>
+                                                        <span
+                                                            class="text-black text-sm font-medium font-['Inter'] leading-normal">
+                                                            <%= product.warranty %> Months <% } else { %>
+                                                                    No Warranty
+                                                                    <% } %>
+                                                        </span>
+                                                        </di v>
+
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex">
-                                        <div
-                                            class="p-4 bg-indigo-200 rounded-[11px] justify-start items-center gap-2 flex overflow-hidden">
-                                            <div class="w-6 h-6 relative  overflow-hidden">
-                                                <img class="w-6 h-6 relative  overflow-hidden" src="/Icons/warranty.svg"
-                                                    alt="waaranty" />
-                                            </div>
-                                        </div>
-                                        <div><span
-                                                class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Warranty<br /></span>
-                                            <% if (product.warranty>0) { %>
-                                                <span
-                                                    class="text-black text-sm font-medium font-['Inter'] leading-normal">
-                                                    <%= product.warranty %> Months <% } else { %>
-                                                            No Warranty
-                                                            <% } %>
-                                                </span>
-                                                </di v>
-
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                 </div>
             </div>

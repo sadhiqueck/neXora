@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const Users = require("../../models/userModel");
 const productDB = require('../../models/productModel')
 const categoryDB = require('../../models/categoryModel')
+const cloudinary = require('../../config/cloudinaryConfig');
 const { uploadToCloudinary } = require('../../config/multerConfig');
 
 const loadProducts = async (req, res) => {
@@ -42,10 +43,10 @@ const loadProductViewpage = async (req, res) => {
 
         const productId = req.params.id
         const product = await productDB.findById(productId)
-        if(!product){
+        if (!product) {
             return res.send("error to find product")
         }
-        res.render('admin/productViewpage',{title:"Product Details Page",product,layout:false})
+        res.render('admin/productViewpage', { title: "Product Details Page", product, layout: false })
     } catch (error) {
         console.log(error);
         res.send("error to load view page")
@@ -115,7 +116,7 @@ const addProduct = async (req, res) => {
         }
 
         // Calculate discounted price
-        const discountedPrice = numericPrice - (numericPrice * numericDiscount / 100);
+        const discountedPrice = Math.round(numericPrice - (numericPrice * numericDiscount / 100));
 
         // Upload images with concurrent processing
         const imageUploadPromises = req.files.map(file => uploadToCloudinary(file));
@@ -147,6 +148,140 @@ const addProduct = async (req, res) => {
 
 
 
+const editProduct = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const { price, discount, productName, existingImages, deletedImages, variants, ...productData } = req.body;
+
+
+
+        const existingImagesArray = JSON.parse(existingImages || '[]');
+        const deletedImagesArray = JSON.parse(deletedImages || '[]');
+
+
+        // validate price 
+        if (!price || !discount) {
+            return res.status(400).json({
+                success: false,
+                message: 'Price and discount are required'
+            });
+        }
+
+        // Check if name already exists 
+        const existingProduct = await productDB.findOne({
+            productName: { $regex: new RegExp(`^${productName}$`, 'i') },
+            _id: { $ne: productId }
+        });
+
+        if (existingProduct) {
+            return res.status(400).json({ message: 'Product name already exists.' });
+        }
+
+        const numericPrice = parseFloat(price);
+        const numericDiscount = parseFloat(discount);
+
+        if (isNaN(numericPrice) || isNaN(numericDiscount)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid price or discount value'
+            });
+        }
+
+        if (numericDiscount < 0 || numericDiscount > 100) {
+            return res.status(400).json({
+                success: false,
+                message: 'Discount must be between 0 and 100'
+            });
+        }
+
+        const discountedPrice = Math.round(numericPrice - (numericPrice * numericDiscount / 100));
+
+        //current product to access existing images
+        const currentProduct = await productDB.findById(productId);
+        if (!currentProduct) {
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
+        }
+
+
+        let updatedImages = [...currentProduct.images];
+
+        for (const deletedImage of deletedImagesArray) {
+            const publicId = deletedImage.name.split('/').pop().split('.')[0];
+            console.log(publicId)
+            try {
+                await cloudinary.uploader.destroy(publicId);
+                updatedImages[deletedImage.index] = null;
+            } catch (error) {
+                console.error(`Failed to delete image ${publicId}:`, error);
+            }
+        }
+
+
+
+        // Handle new image uploads 
+
+        if (req.files && req.files.length > 0) {
+            console.log(req.files)
+            for (const file of req.files) {
+                const filename = file.originalname;
+                console.log(filename)
+                const index = parseInt(filename.match(/-(\d+)/).slice(1));
+                console.log(index)
+
+                const uploadResult = await uploadToCloudinary(file);
+
+                // delete  from clouidnary
+                if (updatedImages[index] && !deletedImagesArray.find(img => img.index === index)) {
+                    const oldPublicId = updatedImages[index].split('/').pop().split('.')[0];
+                    await cloudinary.uploader.destroy(oldPublicId);
+                }
+
+                updatedImages[index] = uploadResult.secure_url;
+            }
+        }
+
+        // Filter out null values and ensure we have at least 3 images
+        updatedImages = updatedImages.filter(img => img !== null);
+        if (updatedImages.length < 3) {
+            return res.status(400).json({
+                success: false,
+                message: 'At least three images are required'
+            });
+        }
+
+ 
+        const updatedProduct = await productDB.findByIdAndUpdate(
+            productId,
+            {
+                ...productData,
+                variants,
+                price: numericPrice,
+                productName: productName,
+                discount: numericDiscount,
+                discountedPrice,
+                images: updatedImages,
+            },
+            { new: true, runValidators: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Product updated successfully",
+            product: updatedProduct
+        });
+
+    } catch (error) {
+        console.error('Error in editProduct:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to update product'
+        });
+    }
+};
+
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -170,72 +305,49 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-const editProduct = async (req, res) => {
+//  stock Management  function
+
+const updateProductStock = async (req, res) => {
     try {
-        const { id, imageIndices, ...productData } = req.body;
+        const { productId, variantUpdates } = req.body;
 
-        // new code
+        console.log(req.body);
 
-        const imageUrls = [];
-        for (const file of req.files) {
-            const result = await uploadToCloudinary(file);
-            imageUrls.push(result.secure_url); // Store the Cloudinary URL
+        const product = await productDB.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-        // Assuming you're updating an existing product (example)
+        // Update stock for each variant
+        variantUpdates.forEach(update => {
+            const variant = product.variants.id(update.variantId);
+            if (variant) {
+                variant.stock = update.newStock;
 
-        // const updatedProduct = await Product.findByIdAndUpdate(req.body.productId, {
-        //   images: imageUrls, // Update the image URLs
-        // }, { new: true });
+                // calculate lowstock
+                if (variant.stock <= 0) {
+                    variant.stockStatus = 'out'; 
+                  } else if (variant.stock < variant.lowStockThreshold) {
+                    variant.stockStatus = 'low'; 
+                  } else {
+                    variant.stockStatus = 'normal'; 
+                  }
+            }
+        });
 
-        // end
+        await product.save();
 
-
-        if (!id) {
-            return res.status(400).send('Missing product ID');
-        }
-
-        const updateObject = { ...productData, discountedPrice: productData.price - (productData.price * productData.discount / 100).toFixed(0) };
-
-        //image replacements
-        if (req.files && req.files.length > 0) {
-            // Convert imageIndices to array if it's not already
-            const indices = Array.isArray(imageIndices) ? imageIndices : [imageIndices];
-
-            // Create $set object for image updates
-            updateObject.$set = {};
-
-
-            // Iterate through files and match with indices
-            req.files.forEach((file, index) => {
-                const imageIndex = indices[index] !== undefined
-                    ? indices[index]
-                    : index;
-
-                updateObject.$set[`images.${imageIndex}`] = `/uploads/${file.filename}`;
-            });
-        }
-
-
-
-        // Update the product
-        const updatedProduct = await productDB.findOneAndUpdate(
-            { _id: id },
-            updateObject,
-            { new: true }
-        );
-
-        if (!updatedProduct) {
-            return res.status(404).send('Product not found');
-        }
-
-        res.redirect('/admin/products');
+        return res.status(200).json({ success: true, message: 'Stock updated successfully', totalStock: product.totalStock });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        console.error('Error updating stock:', error);
+        return res.status(500).json({ success: false, message: error.message || 'Failed to update stock' });
     }
 };
 
 
-
-module.exports = { addProduct, loadProducts, deleteProduct, editProduct, loadAddProductpage, loadEditProductpage,loadProductViewpage }
+module.exports = {
+    addProduct, loadProducts,
+    editProduct, loadAddProductpage, loadEditProductpage,
+     loadProductViewpage, deleteProduct,updateProductStock
+}

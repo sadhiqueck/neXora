@@ -16,7 +16,7 @@ const multerUpload = multer({
     storage,
     limits: {
         fileSize: maxFileSize,
-        files: 4
+        files: 8
     },
     fileFilter: (req, file, cb) => {
         // Check if file exists
@@ -39,7 +39,7 @@ const multerUpload = multer({
 
         cb(null, true);
     }
-}).array('images', 4);
+}).array('images', 8);
 
 
 
@@ -89,12 +89,12 @@ module.exports = {
                             message: `File size should not exceed ${maxFileSize / (1024 * 1024)}MB`
                         });
                     }
-                    if (err.code === 'LIMIT_FILE_COUNT') {
-                        return res.status(400).json({
-                            success: false,
-                            message: 'Maximum 4 images allowed'
-                        });
-                    }
+                    // if (err.code === 'LIMIT_FILE_COUNT') {
+                    //     return res.status(400).json({
+                    //         success: false,
+                    //         message: 'Maximum 4 images allowed'
+                    //     });
+                    // }    
                     return res.status(400).json({
                         success: false,
                         message: err.message
@@ -109,13 +109,6 @@ module.exports = {
                     });
                 }
 
-                // Validate files presence
-                if (!req.files || req.files.length === 0) {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'No images uploaded'
-                    });
-                }
 
                 // Validate each file has proper buffer data
                 const invalidFiles = req.files.filter(file => !file.buffer || file.buffer.length === 0);

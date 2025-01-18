@@ -91,7 +91,6 @@ const updateProductStatus = async (req, res) => {
         const newOrderStatus = computeOrderStatus(order.products);
 
         order.status = newOrderStatus;
-        console.log(order)
         // stopre update date;
         if (newOrderStatus === 'Shipped') {
             order.shippedDate = new Date();

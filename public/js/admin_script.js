@@ -1,3 +1,15 @@
+
+
+// spinner
+
+function showSpinner() {
+  document.getElementById('loadingSpinner').classList.remove('hidden');
+}
+
+function hideSpinner() {
+  document.getElementById('loadingSpinner').classList.add('hidden');
+}
+
 // global Notyf instance
 const notyf = new Notyf({
   duration: 2000,

@@ -15,6 +15,10 @@ const productSchema = new mongoose.Schema({
     min: 0,
     max: 100
   },
+  discountedPrice: {
+    type: Number,
+    required: true,
+  },
   category: {
     type: String,
     required: true,
@@ -31,20 +35,36 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  totalStock: {
+    type: Number,
+    default: 0,
+    required: true
+  },
   variants: [
     {
       color: { type: String, required: false },
       colorCode: { type: String, required: true },
       storage: { type: String, required: false },
+      storageUnit: {type: String, required: false},
       additionalPrice: { type: Number, default: 0 },
       stock: { type: Number, required: true, default: 0 },
       status: {
         type: String,
         enum: ['active', 'inactive'],
         default: 'active',
-    },
-      // images: { type: [String], default: [] }, avoiding now because of complexity
-    },
+      },
+      // images: { type: [String], default: [] }, avoiding now because of complexity,can implement if necessary
+      lowStockThreshold: {
+        type: Number,
+        default: 5
+      },
+      stockStatus: {
+        type: String,
+        enum: ['low', 'out', 'normal'],
+        default: 'normal',
+      },
+    }
+
   ],
   platform: {
     type: String,
@@ -65,16 +85,13 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  qauntity: {
+  totalStock: {
     type: Number,
-    required: false,
+    default: 0,
+    required: true
   },
   images: {
     type: [String],
-    required: true,
-  },
-  discountedPrice: {
-    type: Number,
     required: true,
   },
   isDeleted: {
@@ -83,5 +100,15 @@ const productSchema = new mongoose.Schema({
   },
 
 }, { timestamps: true });
+
+
+// middleware to calculate totalStock
+
+productSchema.pre('save', function(next) {
+  this.totalStock = this.variants.reduce((total, variant) => {
+    return total + (variant.status === 'active' ? variant.stock : 0);
+  }, 0);
+  next();
+});
 
 module.exports = mongoose.model("Products", productSchema)

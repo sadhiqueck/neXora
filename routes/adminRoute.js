@@ -6,11 +6,13 @@ const { multerUpload } = require('../config/multerConfig');
 // controllers
 const { login, loadLogin, loadDashboard, loadUsers, deleteUser, blockUser, viewUser, logout } = require("../controllers/adminController/adminController");
 const { loadCategories, addCatgeory, deleteCategory, editCategory, } = require("../controllers/adminController/categoryController");
-const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage, loadEditProductpage, editProduct, deleteProduct, } = require('../controllers/adminController/productController')
+const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage,
+     loadEditProductpage, editProduct, deleteProduct,updateProductStock  } = require('../controllers/adminController/productController')
 const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate } = require('../controllers/adminController/orderController')
 
 // middlewares
 const { authsession, isLogin } = require('../middleware/adminAuth')
+const {validateStockUpdate} = require('../middleware/stockValidation')
 
 
 
@@ -41,12 +43,13 @@ router.post('/edit-category', authsession, editCategory)
 // product Management
 router.get('/products', authsession, loadProducts)
 router.get('/add-products', authsession, loadAddProductpage)
-router.post('/add-product', authsession, multerUpload, addProduct)
-router.get('/product/:id', loadProductViewpage)
-router.get('/product/:id/edit', loadEditProductpage)
-router.post('/edit-product', multerUpload, editProduct)
+router.post('/add-product', authsession,validateStockUpdate, multerUpload, addProduct)
+router.get('/product/:id',authsession, loadProductViewpage)
+router.get('/product/:id/edit',authsession, loadEditProductpage)
+router.put('/product/edit/:id',authsession,validateStockUpdate, multerUpload, editProduct)
 router.get('/delete-product/:id', authsession, deleteProduct)
-
+// stock upation
+router.put('/product/update-stock/:id',updateProductStock)
 
 
 

@@ -49,9 +49,9 @@
         <!-- page content -->
 
         <div
-            class=" px-6 py-5 flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4  dark:bg-gray-900">
+            class=" px-6 py-5 flex  w-full items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4  dark:bg-gray-900">
             <div>
-                <label for="table-search" class="sr-only">Search</label>
+                <label for="table-search-users" class="sr-only">Search</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
@@ -68,7 +68,7 @@
             </div>
 
             <!--  sort -->
-            <div class="relative inline-block mr-20">
+            <div class="relative inline-block ">
                 <button id="dropdownActionButton" data-dropdown-toggle="dropdownAction"
                     class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                     type="button"><img src="/Icons/slider.svg" alt="" class="pr-2">
@@ -117,7 +117,7 @@
                             <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                                 <input id="sort-radio" type="radio" value="" name="sort-option"
                                     class="w-4 h-4 text-button-color bg-gray-100 border-gray-300 focus:ring-button-color dark:focus:ring-buttontext-button-color dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                <label for="blocked"
+                                <label for="sort-radio"
                                     class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Blocked</label>
                             </div>
                         </li>
@@ -171,10 +171,10 @@
                                     class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
                                     <img class="w-10 h-10 rounded-sm" src="<%=product.images[0]  %>" alt="Jese image">
                                     <div class="ps-3">
-                                        <div class="text-base font-semibold p-3"
+                                        <div class="text-base font-semibold p-3 product-name"
                                             style="font-weight: normal; font-size: 0.9rem; color: #656565; width: 16rem; word-wrap: break-word; word-break: break-word; white-space: normal;">
                                             <%= product.productName %>
-                                        </div>
+                                        </div>  
                                         <div class="font-normal text-gray-500"></div>
                                     </div>
                                 </th>
@@ -183,10 +183,10 @@
                                 </td>
 
                                 <td class="px-6 py-4">
-                                    <%= product.quantity%>
+                                    <%= product.totalStock%>
                                 </td>
                                 <td class="px-6 py-4">
-                                    ₹<%= product.price%>
+                                    ₹<%= product.discountedPrice%>
                                 </td>
 
                                 <td class="px-6 py-4">
@@ -198,7 +198,7 @@
                                                 Deleted</div>
                                         </div>
 
-                                        <% } else if (product.quantity< 5) { %>
+                                        <% } else if (product.totalStock<10) { %>
                                             <div
                                                 class="h-7 px-3 py-1 bg-orange-100 rounded-[100px] flex-col justify-center items-center gap-2 inline-flex">
                                                 <div
@@ -232,252 +232,13 @@
 
                                 
                                     <!--edit button -->
-                                        <a href="/admin/products/:productId/edit">
+                                        <a href="/admin/product/<%=product._id%>/edit">
                                         <button class="edit-btn" type="button">
                                             <img src="/Icons/pen.svg" alt="Edit" style="height: 20px;">
                                         </button>
                                     </a>
 
-                                       <!-- edit modal -->
-                                       <div id="editProductModal<%= index %>" tabindex="-1" aria-hidden="true"
-                                        class="hidden overflow-y-auto fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                                        <div class="relative p-4 w-full max-w-2xl max-h-[90%]">
-                                            <div class="relative bg-white rounded-lg shadow dark:bg-gray-900">
-                                                <!-- Modal Header -->
-                                                <div
-                                                    class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                                        Update Product
-                                                    </h3>
-                                                    <button type="button"
-                                                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                                                        data-modal-toggle="editProductModal<%= index %>">
-                                                        <svg class="w-3 h-3" aria-hidden="true"
-                                                            xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                            viewBox="0 0 14 14">
-                                                            <path stroke="currentColor" stroke-linecap="round"
-                                                                stroke-linejoin="round" stroke-width="2"
-                                                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                                        </svg>
-                                                        <span class="sr-only">Close modal</span>
-                                                    </button>
-                                                </div>
-
-                                                <!-- Modal Body -->
-                                                <form class="p-4 md:p-5" action="/admin/edit-product" method="post"
-                                                    enctype="multipart/form-data">
-                                                    <!-- Hidden ID -->
-                                                    <input type="hidden" name="id" value="<%= product._id %>">
-
-                                                    <!-- Form Fields -->
-                                                    <div class="grid gap-4 mb-4 grid-cols-2">
-                                                        <div class="col-span-2">
-                                                            <label for="productName"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                                                            <input type="text" name="productName" id="productName"
-                                                                value="<%= product.productName %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                                                        </div>
-
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="price"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-                                                            <input type="number" name="price" id="price"
-                                                                value="<%= product.price %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="₹2999" required="">
-                                                        </div>
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="Discount"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Discount
-                                                                Percentage (%)</label>
-                                                            <input type="number" name="discount" id="discount"
-                                                                value="<%= product.discount %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="0%" required="">
-                                                        </div>
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="category"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                                                            <select id="category" name="category"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                                                <option value="">Select category</option>
-                                                                <% if (categories) { %>
-                                                                    <% categories.forEach((category, index)=> { %>
-                                                                        <% if (category.isDeleted==false){ %>
-                                                                            <option
-                                                                                value="<%= category.categoryName %>"
-                                                                                <%=product.category===category.categoryName
-                                                                                ? 'selected' : '' %>>
-                                                                                <%= category.categoryName %>
-                                                                            </option>
-                                                                            <% } %>
-                                                                                <% }) %>
-                                                                                    <% } %>
-
-
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="quantity"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Quantity</label>
-                                                            <input type="number" name="quantity" id="quantity"
-                                                                value="<%= product.quantity %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="1" required="">
-                                                        </div>
-                                                        <div class="col-span-2">
-                                                            <label for="description"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product
-                                                                Description</label>
-                                                            <textarea id="description" rows="4" name="description"
-                                                                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                                placeholder="Write product description here"><%= product.description %></textarea>
-                                                        </div>
-
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="brand"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Brand</label>
-                                                            <input type="text" name="brand" id="brand"
-                                                                value="<%= product.brand %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="samsung,sony,apple" required="">
-                                                        </div>
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="model"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Model</label>
-                                                            <input type="text" name="model" id="model"
-                                                                value="<%= product.model %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="galaxyRing,s24ultra" required="">
-                                                        </div>
-
-
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="Platform"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white pb-2">Platform/Os</label>
-                                                            <input type="text" name="platform" id="platform"
-                                                                value="<%= product.platform || '' %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="linux" required="">
-                                                        </div>
-
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="additional"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Additional
-                                                                Information</label>
-                                                            <input type="text" name="additional" id="additional"
-                                                                value="<%= product.additional || '' %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="Two LCD displays with a resolution of 2064×2208"
-                                                                required="">
-                                                        </div>
-
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="return_policy"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Return
-                                                                Policy (days)</label>
-                                                            <input type="number" name="returnPeriod"
-                                                                value="<%= product.returnPeriod || 0 %>"
-                                                                id="return_policy"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="0" required="">
-                                                        </div>
-                                                        <div class="col-span-2 sm:col-span-1">
-                                                            <label for="warranty"
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Warranty
-                                                                (months)</label>
-                                                            <input type="number" name="warranty" id="warranty"
-                                                                value="<%= product.warranty || 0 %>"
-                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                                placeholder="0" required="">
-                                                        </div>
-
-                                                        <label for="description"
-                                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Upload
-                                                            product images</label><br>
-
-
-                                                        <!-- Image Uploading  -->
-
-
-                                                        <div class="col-span-2">
-                                                            <label
-                                                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product
-                                                                Images (Max 4)</label>
-                                                            <div class="grid grid-cols-2 gap-4">
-                                                                <% for (let i=0; i < 4; i++) { %>
-                                                                    <div class="w-[300px] relative border-2 border-gray-300 border-dashed rounded-lg p-6"
-                                                                        id="dropzone-edit-<%= product._id %>-<%= i %>">
-
-                                                                        <!--Image Input -->
-                                                                        <input type="file"
-                                                                            class="absolute inset-0 w-full h-full opacity-0 z-50"
-                                                                            id="file-upload-input-edit-<%= product._id %>-<%= i %>"
-                                                                            name="images"
-                                                                            onchange="replaceImagePreview(event, '<%= product._id %>', '<%= i %>')" />
-                                                                        <!-- Hidden input to track the specific index -->
-                                                                        <input type="hidden" name="imageIndices"
-                                                                            value="<%= i %>"
-                                                                            id="image-index-<%= product._id %>-<%= i %>" />
-
-                                                                        <!-- Display Existing Image -->
-                                                                        <% if (product.images && product.images[i])
-                                                                            { %>
-                                                                            <div class="text-center">
-                                                                                <img id="preview-edit-<%= product._id %>-<%= i %>"
-                                                                                    src="<%= product.images[i] %>"
-                                                                                    class="mt-4 mx-auto max-h-40 object-cover rounded cursor-pointer"
-                                                                                    onclick="triggerFileInput('<%= product._id %>', '<%= i %>')" />
-                                                                                <button type="button"
-                                                                                    class="absolute top-1 right-1 bg-red-500 text-white text-xs rounded px-1"
-                                                                                    onclick="clearImageSlot('<%= product._id %>', '<%= i %>')"></button>
-                                                                            </div>
-                                                                            <% } else { %>
-                                                                                <!-- Placeholder for Empty Slots -->
-                                                                                <div class="text-center">
-                                                                                    <img class="mx-auto h-12 w-12 opacity-50"
-                                                                                        src="https://www.svgrepo.com/show/357902/image-upload.svg"
-                                                                                        alt="Upload Icon">
-                                                                                    <h3
-                                                                                        class="mt-2 text-sm font-medium text-gray-900">
-                                                                                        <label
-                                                                                            for="file-upload-input-edit-<%= product._id %>-<%= i %>"
-                                                                                            class="relative cursor-pointer">
-                                                                                            <span>Drag and
-                                                                                                drop</span>
-                                                                                            <span
-                                                                                                class="text-indigo-600">
-                                                                                                or browse</span>
-                                                                                        </label>
-                                                                                    </h3>
-                                                                                    <p
-                                                                                        class="mt-1 text-xs text-gray-500">
-                                                                                        PNG, JPG, JPEG Only</p>
-                                                                                </div>
-                                                                                <img id="preview-edit-<%= product._id %>-<%= i %>"
-                                                                                    src=""
-                                                                                    class="mt-4 mx-auto max-h-40 hidden" />
-                                                                                <% } %>
-                                                                    </div>
-                                                                    <% } %>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button type="submit"
-                                                        class="text-white inline-flex items-center bg-button-color hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                                        <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor"
-                                                            viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill-rule="evenodd"
-                                                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                                                clip-rule="evenodd"></path>
-                                                        </svg>
-                                                        Save Changes
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+                                  
 
 
                                      
@@ -543,6 +304,19 @@
 
 
     <script>
+         document.getElementById("table-search-users").addEventListener("input", function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#userTable tbody tr");
+
+        rows.forEach(row => {
+            const productName = row.querySelector(".product-name").textContent.toLowerCase();
+            if (productName.includes(filter)) {
+                row.style.display = ""; 
+            } else {
+                row.style.display = "none"; 
+            }
+        });
+    });
 
 
 
@@ -555,15 +329,9 @@
             window.location.href = `/admin/edit-product/${productId}`;
 
         }
-
-
     </script>
-
 
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
 
-
 </body>
-
-</html>
