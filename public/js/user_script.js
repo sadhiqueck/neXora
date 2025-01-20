@@ -1,4 +1,14 @@
 
+// spinner
+
+function showSpinner() {
+    document.getElementById('loadingSpinner').classList.remove('hidden');
+  }
+  
+  function hideSpinner() {
+    document.getElementById('loadingSpinner').classList.add('hidden');
+  }
+  
 // global Notyf instance
 const notyf = new Notyf({
     duration: 2000,
@@ -33,7 +43,20 @@ async function addToCart(button) {
             let currentCount = parseInt(cartBadge.textContent) || 0;
             currentCount += 1;
             cartBadge.textContent = currentCount;
-
+            const buttonContainer = button.parentElement; //to change button to go to cart
+            buttonContainer.innerHTML = `
+                <a href="/user/cart" class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Go to Cart
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1)"><path
+                    d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z"> </path>
+                    <path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
+                     </path></svg>
+                </a>
+            `;
             // Show the badge if it's hidden
             if (cartBadge.classList.contains('hidden')) {
                 cartBadge.classList.remove('hidden');
@@ -305,48 +328,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Resend otp timer
 
-        const resendForm = document.getElementById('resendForm');
-        const resendLink = document.getElementById('resendLink');
-        let countdown = 15;
+       const resendLink = document.getElementById('resendLink');
+        const timerSpan = document.getElementById('timer');
+        let timer = 15;
+        let countdown;
 
-        function startTimer() {
-            resendLink.style.pointerEvents = "none";
-            resendLink.style.opacity = "0.6";
+        const startTimer = () => {
+            clearInterval(countdown);
+            timer = 15;
+            resendLink.setAttribute('disabled', 'true');
+            timerSpan.textContent = timer;
 
-            const timerSpan = document.getElementById('timer');
-            countdown = 15;
-            timerSpan.textContent = countdown;
+            countdown = setInterval(() => {
+                timer--;
+                timerSpan.textContent = timer;
 
-            const timerInterval = setInterval(() => {
-                countdown--;
-                timerSpan.textContent = countdown;
-                if (countdown === 0) {
-                    clearInterval(timerInterval);
-                    resendLink.style.pointerEvents = "auto";
-                    resendLink.style.opacity = "1";
-                    resendLink.textContent = "Resend OTP";
+                if (timer <= 0) {
+                    clearInterval(countdown);
+                    resendLink.removeAttribute('disabled');
+                    resendLink.textContent = 'Resend OTP';
                 }
             }, 1000);
-        }
+        };
 
-        function resendOTP(event) {
+        // Resend OTP function
+        const resendOTP = () => {
+            try {
+                fetch('/user/resend-otp', { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) {
+                            notyf.success('OTP re-sent successfully.');
+                          
+                        } else {
+                            notyf.error('Failed to resend OTP. Please try again.');
+                        }
+                    })
+            } catch (error) {
+                console.error('Error resending OTP:', error);
+                notyf.error('Something went wrong. Please try again.');
+            } 
+        };
+
+
+        resendLink.addEventListener('click', (event) => {
+            resendLink.textContent = 'Resend OTP in ';
+            resendLink.appendChild(timerSpan);
+            startTimer();
             event.preventDefault();
-            fetch('/resend-otp', { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
-                        console.log("OTP resent");
-                        startTimer();
-                    } else {
-                        console.log("Failed to resend OTP. Please try again.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Resend OTP error:', error);
-                });
-        }
-
-        resendForm.addEventListener("submit", resendOTP);
-
+            resendOTP();
+        });
 
         startTimer();
     }

@@ -1,28 +1,37 @@
 const express = require('express');
 const router = express.Router();
 const { loadHome, loadUserProfile, updateName, loadAddressprofile,
-    updateAddress, profileAddAddress, deleteAddress } = require('../controllers/userController/userController');
+    updateAddress, profileAddAddress, deleteAddress,LoadChangePassword,
+    updatePassword } = require('../controllers/userController/userController');
+    
 const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
-const { sendOTP, resendOtp } = require('../controllers/userController/otpController')
-const { signup, login, googleLogin } = require('../controllers/userController/authController');
-const { isLogin, authsession, checkoutAccess } = require("../middleware/userAuth");
+const { sendOTP, resendOtp,sendresetOtp } = require('../controllers/userController/otpController')
+const { signup, login, googleLogin,logout,forgotPassword,loadResetOtpPage,resetPassword} = require('../controllers/userController/authController');
 const { loadCart, addToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
 const { loadAddress, addAddress, loadShippingMethod, saveDeliveryMethod,
     shippingMethod, loadPaymentPage, placeOrder, orderSuccess } = require('../controllers/userController/checkoutController');
 const { loadOrder, loadOrderDetails,cancelItem, cancelOrder } = require('../controllers/userController/orderController');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const sharp = require('sharp')
+
+// middlewares
+const { isLogin, authsession, checkoutAccess,validateResetFlow } = require("../middleware/userAuth");
+
 
 // signup pages
 
 router.get('/login', isLogin, (req, res) => {
-    res.render('user/login', { title: 'User_login' })
+    const sccsmssg= req.query;
+    res.render('user/login', { title: 'User_login',sccsmssg })
 })
 router.get('/signup', isLogin, (req, res) => {
     res.render('user/signup', { title: 'User_signup' })
 })
 
+router.get('/forgot-password',forgotPassword)
+router.post('/forgot-password',sendresetOtp);
+router.get('/otp-verify',validateResetFlow,loadResetOtpPage)
+router.post('/forgot/verify-otp',validateResetFlow,resetPassword)
 
 
 // google signup
@@ -37,22 +46,13 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 
 //default access
 router.get('/home', loadHome);
-
 router.post('/home', login)
 router.post('/send-otp', isLogin, sendOTP);
 router.post('/verify-otp', isLogin, signup);
-router.post('/resend-otp', isLogin, resendOtp);
-router.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Logout error:', err);
-        }
-        res.redirect('/user/login');
-    });
-});
+router.post('/resend-otp',isLogin, resendOtp);
+router.get('/logout',authsession,logout)
 
 // product page
-
 router.get('/products/:category', loadProductsPage)
 
 router.get('/product/:id', getProductsDetails)
@@ -82,9 +82,10 @@ router.post('/place-order', authsession, checkoutAccess, placeOrder)
 router.get('/order-success/', authsession, checkoutAccess, orderSuccess)
 
 // user dashboard
-
 router.get('/profile', authsession, loadUserProfile)
 router.post('/update-name', authsession, updateName)
+router.get('/change-password',authsession,LoadChangePassword)
+router.post('/update-password',authsession,updatePassword)
 
 
 //Profile address

@@ -10,8 +10,123 @@ const sendVerificationEmail = async function (email, otp) {
         const mailResponse = await otpSender(
             email,
             "Verification Email",
-            `<h2>Welcome to neXora ,Please confirm your OTP</h2>
-     <p>Here is your OTP code: ${otp}</p>`
+            `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>neXora Verification</title>
+    <style>
+        /* Reset styles for email clients */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* Base styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 20px;
+            background-color: #f8fafc;
+            border-radius: 0 0 10px 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .otp-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .otp-code {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            color: #4c1d95;
+            padding: 10px 20px;
+            background-color: #f3f4f6;
+            border-radius: 6px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+        .message {
+            color: #4b5563;
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .security-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>neXora</h1>
+            <p style="color: #ffffff; font-size: 16px;">Verify Your Account</p>
+        </div>
+        
+        <div class="content">
+            <div class="message">
+                <p>Hello,</p>
+                <p>Thank you for choosing neXora. To complete your account verification, please use the following OTP code:</p>
+            </div>
+            
+            <div class="otp-container">
+                <p style="color: #6b7280; font-size: 14px;">Your Verification Code</p>
+                <div class="otp-code">${otp}</div>
+                <p style="color: #6b7280; font-size: 14px;">This code will expire in 5 minutes</p>
+            </div>
+            
+            <div class="security-notice">
+                <strong>Security Notice:</strong> Never share this OTP with anyone. Our team will never ask for your OTP.
+            </div>
+            
+            <div class="footer">
+                <p>This is an automated message, please do not reply.</p>
+                <p style="margin-top: 10px;">© ${new Date().getFullYear()} neXora. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`
         );
 
     } catch (error) {
@@ -70,13 +185,13 @@ const sendOTP = async function (req, res) {
 
 const resendOtp = async (req, res) => {
     try {
-        const { email } = req.session.userData;
+        const {email} = req.session.userData;
+        console.log(req.session.userData)
 
-        if (!email) {
-            return res.render('user/otp_verify', {
-                title: "otp_verify",
-                mssg: "Something Wrong. Please try signing up again."
-            });
+        if(!email){
+            console.log("daskjda")
+            return res.status(404).json({error:"User not Found"})
+           
         }
 
         let newOtp = otpGenerator.generate(4, {
@@ -96,24 +211,68 @@ const resendOtp = async (req, res) => {
             result = await OTP.findOne({ otp: newOtp });
         }
 
-        // Save the new OTP in the database
+      
         const otpRecord = new OTP({ email, otp: newOtp, createdAt: new Date() });
         await otpRecord.save();
 
 
         await sendVerificationEmail(email, newOtp);
-        return res.render('user/otp_verify', {
-            title: "otp_verify",
-            mssg: "A new OTP has been sent to your email."
-        });
+
+        return res.status(200).json({message:"A new OTP has been sent to your email."})
     } catch (error) {
-        console.error('Error during OTP resend:', error.message);
-        return res.render('user/otp_verify', {
-            title: "otp_verify",
-            mssg: "An error occurred while resending the OTP. Please try again."
-        });
+        console.log('Error during OTP resend:', error.message);
+       
+        return res.status(404).json({error:error.message})
     }
 };
 
+const sendresetOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.render('user/forgot-passsword', {
+                title: "Forgot Password",
+                mssg: "Something Wrong. Please try again."
+            });
+        }
+        let otp = otpGenerator.generate(4, {
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+        });
 
-module.exports = { sendVerificationEmail, sendOTP, resendOtp }
+
+        let result = await OTP.findOne({ otp: otp });
+        while (result) {
+            newOtp = otpGenerator.generate(4, {
+                upperCaseAlphabets: false,
+                lowerCaseAlphabets: false,
+                specialChars: false,
+            });
+            result = await OTP.findOne({ otp: otp });
+        }
+
+        const otpRecord = new OTP({ email, otp, createdAt: new Date() });
+        await otpRecord.save();
+
+        req.session.resetFlow = true;
+        req.session.userData = {email}
+        await sendVerificationEmail(email, otp);
+
+        return res.status(200).json({
+            success: true,
+            message: "OTP sent successfully.",
+        });
+
+    } catch (error) {
+        console.error('Error during OTP resend:', error.message);
+
+    }
+
+
+
+
+}
+
+
+module.exports = { sendVerificationEmail, sendOTP, resendOtp, sendresetOtp }

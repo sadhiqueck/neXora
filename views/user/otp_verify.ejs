@@ -39,11 +39,9 @@
             </form>
             <div class="text-sm text-slate-500 mt-4">
                 Didn't receive code?
-                <form id="resendForm" action="/user/resend-otp" method="POST">
-                    <a id="resendLink" class="font-medium text-secondry-button hover:text-indigo-600" href="#"
-                        onclick="event.preventDefault(); this.closest('form').submit();" disabled>
-                        Resend OTP in <span id="timer">15</span> seconds
-                    </a>
+                <button id="resendLink" class="font-medium text-secondry-button hover:text-indigo-600" disabled>
+                    Resend OTP in <span id="timer">15</span> seconds
+                </button>
                 </form>
             </div>
         </div>

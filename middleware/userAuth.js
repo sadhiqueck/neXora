@@ -60,4 +60,12 @@ async function loginStatus(req, res, next) {
     next();
 }
 
-module.exports = { authsession, loginStatus, isLogin, checkoutAccess }
+
+const validateResetFlow = (req, res, next) => {
+    if (!req.session.resetFlow) {
+        return res.redirect('/user/login');
+    }
+    next();
+};
+
+module.exports = { authsession, loginStatus, isLogin, checkoutAccess,validateResetFlow }
