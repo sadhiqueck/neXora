@@ -149,10 +149,9 @@
                                                         <% } %>
                                         </div>
                                     </div>
-                                    <span class="text-2xl font-bold mr-2">
-                                        <%= new Intl.NumberFormat('en-IN', { style: 'currency' , currency: 'INR'
-                                            }).format(Math.round((product.price - (product.price * product.discount /
-                                            100)))) %>
+                                    <span class="text-2xl font-bold mr-2" id="finalPrice">
+                                        <%= product.discountedPrice.toLocaleString('en-IN',{style:'currency',currency:'INR'})
+                                            %>
                                     </span>
                                     <span class="text-gray-500 line-through">₹<%=product.price.toLocaleString("en-IN")
                                             %></span>
@@ -171,13 +170,17 @@
 
                                 <!-- variants -->
 
+                                <!-- Color variants -->
                                 <div class="mb-6 mt-10 justify-start">
                                     <h3 class="text-lg font-semibold mb-2">Color:</h3>
                                     <div class="flex flex-wrap gap-6">
-                                        <% colors.forEach((color)=> { %>
-                                            <div class="flex flex-col items-center gap-2 ">
-                                                <button style="background: <%- color.colorCode %>"
-                                                    class="variant-colors w-8 h-8 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 ring-1 ring-gray-700">
+                                        <% colors.forEach((color, index)=> { %>
+                                            <div class="flex flex-col items-center gap-2">
+                                                <button data-color="<%- color.color %>"
+                                                    style="background: <%- color.colorCode %>"
+                                                    class="variant-colors w-8 h-8 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 ring-1
+                                                     ring-gray-700 transition-all <%= index === 0 ? 'ring-2 ring-purple-600 ring-offset-2' : '' %>"
+                                                    onclick="selectColor(this, '<%- color.color %>')">
                                                 </button>
                                                 <div class="text-sm text-gray-700"><%- color.color %></div>
                                             </div>
@@ -185,168 +188,197 @@
                                     </div>
                                 </div>
 
-
-
+                                <!-- storage -->
                                 <div class="block w-full mb-10">
                                     <p class="font-medium text-lg leading-8 text-gray-900 mb-4">Size</p>
                                     <div class="grid grid-cols-2 min-[400px]:grid-cols-4 gap-3">
-                                        <% storages.forEach((storage)=>{ %>
-                                            <label>
-                                                <input type="radio" name="type" value="Powder" class="peer sr-only"
-                                                    checked />
-                                                <p
-                                                    class="peer-checked:text-gray-900 peer-checked:border-black text-gray-400 rounded-lg border border-gray-400 px-6 py-2 font-normal font-inter">
-                                                    <%=storage.storage%>
-                                                        <%=storage.storageUnit%>
-                                                </p>
+                                        <% storages.forEach((storage, index)=> { %>
+                                            <label class="relative">
+                                                <input type="radio" name="storage" <%=storage.stock===0 ? 'disabled'
+                                                    : '' %>
+                                                value="<%= storage.storage + storage.storageUnit %>"
+                                                    class="peer sr-only" <%=index===0 ? 'checked' : '' %>
+                                                        data-price="<%= storage.additionalPrice %>"
+                                                            data-stock="<%= storage.stock %>">
+
+                                                                <p class="peer-checked:text-gray-900 peer-checked:border-black peer-checked:bg-gray-50
+                                                         text-gray-400 rounded-lg border border-gray-400 px-6 py-2 
+                                                         font-normal font-inter cursor-pointer transition-all">
+                                                                    <%= storage.storage %>
+                                                                        <%= storage.storageUnit %>
+                                                                            <span class="block text-sm">
+                                                                                <%= (product.discountedPrice +
+                                                                                    storage.additionalPrice).toLocaleString('en-IN',{style:'currency',currency:'INR'})
+                                                                                    %>
+                                                                            </span>
+
+                                                                </p>
+                                                                <% if (storage.stock < 5 &&storage.stock> 0 ) { %>
+                                                                    <span
+                                                                        class="absolute -top-4 right-0 text-xs text-orange-500 pt-6 p-2">Low
+                                                                        Stock</span>
+                                                                    <% }else if(storage.stock===0) {%>
+                                                                        <span
+                                                                            class="absolute -top-2 right-0 text-xs text-orange-500 pt-4 p-2">Out
+                                                                            of
+                                                                            Stock</span>
+                                                                        <% }%>
+
                                             </label>
                                             <% }) %>
                                     </div>
                                 </div>
+                                <!-- hidden form for getting variant data -->
+                                <form id="productVariantForm" method="POST" action="user/cart/add">
+                                    <input type="hidden" name="productId" value="<%= product._id %>">
+                                    <input type="hidden" name="selectedColor" value="<%= colors[0]?.color %>">
+                                    <input type="hidden" name="selectedStorage"
+                                        value="<%= storages[0]?.storage + storages[0]?.storageUnit %>">
 
 
-
-
-                                <div class="grid grid-cols-2 space-x-4 mb-6 mt-10">
-                                    <div>
-                                        <% if(isLoggedIn) { %>
-                                            <% if(product.inCart) { %>
-                                                <!-- Go to Cart Button when product is in cart -->
-                                                <a href="/cart"
-                                                    class="group py-3 px-5 border border-indigo-600 rounded-lg bg-indigo-50 text-indigo-700 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
-                                                    <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-700"
-                                                        width="22" height="22" viewBox="0 0 22 22" fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
-                                                            stroke="" stroke-width="1.6" stroke-linecap="round" />
-                                                    </svg>
-                                                    Go to Cart
-
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
-                                                        viewBox="0 0 24 24" style="fill:currentColor">
-                                                        <path
-                                                            d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
-                                                        </path>
-                                                        <path
-                                                            d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
-                                                        </path>
-                                                    </svg>
-                                                </a>
-                                                <% } else { %>
-
-                                                    <button data-product_id="<%= product._id %>"
-                                                        onclick="productDetailsAddToCart(this)"
-                                                        class="group py-3 px-5 border border-button-color rounded-lg bg-indigo-50 text-secondry-button font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
-                                                        <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-600"
+                                    <div class="grid grid-cols-2 space-x-4 mb-6 mt-10">
+                                        <div>
+                                            <% if(isLoggedIn) { %>
+                                                <% if(product.inCart) { %>
+                                                    <!-- Go to Cart Button when product is in cart -->
+                                                    <a href="/user/cart"
+                                                        class="group py-3 px-5 border border-indigo-600 rounded-lg bg-indigo-50 text-indigo-700 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
+                                                        <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-700"
                                                             width="22" height="22" viewBox="0 0 22 22" fill="none"
                                                             xmlns="http://www.w3.org/2000/svg">
                                                             <path
                                                                 d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
                                                                 stroke="" stroke-width="1.6" stroke-linecap="round" />
                                                         </svg>
-                                                        Add to Cart
-                                                    </button>
-                                                    <% } %>
+                                                        Go to Cart
 
-                                                        <% } else { %>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                                                            viewBox="0 0 24 24" style="fill:currentColor">
+                                                            <path
+                                                                d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
+                                                            </path>
+                                                            <path
+                                                                d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
+                                                            </path>
+                                                        </svg>
+                                                    </a>
+                                                    <% } else { %>
 
-                                                            <button onclick="redirectToLogin()"
-                                                                title="⚠️ Please log in to add items"
-                                                                class="group py-3 px-5 border border-button-color rounded-lg bg-indigo-50 text-secondry-button font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
-                                                                <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-600"
-                                                                    width="22" height="22" viewBox="0 0 22 22"
-                                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path
-                                                                        d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
-                                                                        stroke="" stroke-width="1.6"
-                                                                        stroke-linecap="round" />
-                                                                </svg>
-                                                                Add to Cart
-                                                            </button>
-                                                            <% } %>
+                                                        <button data-product_id="<%= product._id %>"
+                                                            onclick="productDetailsAddToCart(this)"
+                                                            class="group py-4 px-5 border border-button-color rounded-lg bg-indigo-50 text-secondry-button font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
+                                                            <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-600"
+                                                                width="22" height="22" viewBox="0 0 22 22" fill="none"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
+                                                                    stroke="" stroke-width="1.6"
+                                                                    stroke-linecap="round" />
+                                                            </svg>
+                                                            Add to Cart
+                                                        </button>
+                                                        <% } %>
+
+                                                            <% } else { %>
+
+                                                                <button onclick="redirectToLogin()"
+                                                                    title="⚠️ Please log in to add items"
+                                                                    class="group py-4 px-5 border border-button-color rounded-lg bg-indigo-50 text-secondry-button font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
+                                                                    <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-600"
+                                                                        width="22" height="22" viewBox="0 0 22 22"
+                                                                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <path
+                                                                            d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
+                                                                            stroke="" stroke-width="1.6"
+                                                                            stroke-linecap="round" />
+                                                                    </svg>
+                                                                    Add to Cart
+                                                                </button>
+                                                                <% } %>
+                                        </div>
+                                        <button
+                                            class="text-center w-full mx-auto px-5 py-4 rounded-lg   bg-button-color flex items-center justify-center font-semibold text-lg text-white shadow-sm transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
+                                            <img src="/Icons/flash.svg" alt="" class="w-6 h-6 mr-1">
+                                            Buy Now
+                                        </button>
+
                                     </div>
-                                    <button
-                                        class="text-center w-full mx-auto px-5 py-4 rounded-lg   bg-button-color flex items-center justify-center font-semibold text-lg text-white shadow-sm transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
-                                        <img src="/Icons/flash.svg" alt="" class="w-6 h-6 mr-1">
-                                        Buy Now
-                                    </button>
 
-                                </div>
+                                    <!-- waaranty and other details -->
+                                    <div class=" grid grid-cols-3 items-center gap-6 mx-auto w-full p-6 ">
 
-                                <!-- waaranty and other details -->
-                                <div class=" grid grid-cols-3 items-center gap-6 mx-auto w-full p-6 ">
+                                        <div class="grow h-14 rounded-lg  justify-center gap-4 flex  ">
+                                            <div
+                                                class="p-4 bg-indigo-200 rounded-[11px] flex-col justify-start items-center gap-2 inline-flex overflow-hidden">
+                                                <div class="w-6 h-6 relative  overflow-hidden">
+                                                    <img class="w-6 h-6 relative  overflow-hidden"
+                                                        src="/Icons/delivery.svg" alt="Delivery" />
+                                                </div>
+                                            </div>
+                                            <div class="w-full">
+                                                <span class="text-neutral-500 text-sm font-medium font-['Inter']">
+                                                    <% if (product.price>498) { %> Eligible for free delivery <% } else
+                                                            { %>
+                                                            Delivery
+                                                            Charges
+                                                            Applicable <% } %>
+                                                </span>
 
-                                    <div class="grow h-14 rounded-lg  justify-center gap-4 flex  ">
-                                        <div
-                                            class="p-4 bg-indigo-200 rounded-[11px] flex-col justify-start items-center gap-2 inline-flex overflow-hidden">
-                                            <div class="w-6 h-6 relative  overflow-hidden">
-                                                <img class="w-6 h-6 relative  overflow-hidden" src="/Icons/delivery.svg"
-                                                    alt="Delivery" />
                                             </div>
                                         </div>
-                                        <div class="w-full">
-                                            <span class="text-neutral-500 text-sm font-medium font-['Inter']">
-                                                <% if (product.price>498) { %> Eligible for free delivery <% } else { %>
-                                                        Delivery
-                                                        Charges
-                                                        Applicable <% } %>
-                                            </span>
 
+
+
+                                        <div class="grow  h-14 rounded-lg  justify-center gap-4 flex ">
+
+                                            <div
+                                                class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex ">
+                                                <div
+                                                    class="p-4 bg-indigo-200 rounded-[11px] justify-start items-center gap-2 flex overflow-hidden">
+                                                    <div class="w-6 h-6 relative  overflow-hidden">
+                                                        <img class="w-6 h-6 relative  overflow-hidden"
+                                                            src="/Icons/return.svg" alt="return" />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <span
+                                                        class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Return
+                                                        Policy<br></span>
+
+                                                    <% if (product.returnPeriod>0) { %>
+                                                        <span class="text-black text-sm font-medium font-['Inter']">
+                                                            <%= product.returnPeriod %> days
+                                                        </span>
+                                                        <% } else { %>
+                                                            <span class="font-medium ">No return Policy</span>
+                                                            <% } %>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-
-
-
-                                    <div class="grow  h-14 rounded-lg  justify-center gap-4 flex ">
-
                                         <div
-                                            class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex ">
+                                            class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex">
                                             <div
                                                 class="p-4 bg-indigo-200 rounded-[11px] justify-start items-center gap-2 flex overflow-hidden">
                                                 <div class="w-6 h-6 relative  overflow-hidden">
                                                     <img class="w-6 h-6 relative  overflow-hidden"
-                                                        src="/Icons/return.svg" alt="return" />
+                                                        src="/Icons/warranty.svg" alt="waaranty" />
                                                 </div>
                                             </div>
-
-                                            <div>
-                                                <span
-                                                    class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Return
-                                                    Policy<br></span>
-
-                                                <% if (product.returnPeriod>0) { %>
-                                                    <span class="text-black text-sm font-medium font-['Inter']">
-                                                        <%= product.returnPeriod %> days
+                                            <div><span
+                                                    class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Warranty<br /></span>
+                                                <% if (product.warranty>0) { %>
+                                                    <span
+                                                        class="text-black text-sm font-medium font-['Inter'] leading-normal">
+                                                        <%= product.warranty %> Months <% } else { %>
+                                                                No Warranty
+                                                                <% } %>
                                                     </span>
-                                                    <% } else { %>
-                                                        <span class="font-medium ">No return Policy</span>
-                                                        <% } %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex">
-                                        <div
-                                            class="p-4 bg-indigo-200 rounded-[11px] justify-start items-center gap-2 flex overflow-hidden">
-                                            <div class="w-6 h-6 relative  overflow-hidden">
-                                                <img class="w-6 h-6 relative  overflow-hidden" src="/Icons/warranty.svg"
-                                                    alt="waaranty" />
-                                            </div>
-                                        </div>
-                                        <div><span
-                                                class="text-neutral-500 text-sm font-medium font-['Inter'] leading-normal">Warranty<br /></span>
-                                            <% if (product.warranty>0) { %>
-                                                <span
-                                                    class="text-black text-sm font-medium font-['Inter'] leading-normal">
-                                                    <%= product.warranty %> Months <% } else { %>
-                                                            No Warranty
-                                                            <% } %>
-                                                </span>
-                                                </di v>
+                                                    </di v>
 
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                             </div>
                 </div>
             </div>
@@ -903,50 +935,53 @@
 
 
     <script>
-        // special add to cart for product detail paage
-        async function productDetailsAddToCart(button) {
 
+        async function productDetailsAddToCart(button) {
+            // Get selected variants
+            const selectedColor = document.querySelector('.variant-colors.ring-purple-600').getAttribute('data-color');
+            const selectedStorage = document.querySelector('input[name="storage"]:checked').value;
             const productId = button.getAttribute('data-product_id');
+
             try {
                 const response = await fetch(`/user/cart/add/${productId}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId })
+                    body: JSON.stringify({
+                        productId,
+                        selectedColor,
+                        selectedStorage
+                    })
                 });
 
                 if (response.ok) {
                     notyf.success('Moved to cart!');
-                    // Get the cart badge element
+                    // Update cart badge
                     const cartBadge = document.querySelector('.cartBadge');
                     let currentCount = parseInt(cartBadge.textContent) || 0;
                     currentCount += 1;
                     cartBadge.textContent = currentCount;
-                    const buttonContainer = button.parentElement; //to change button to go to cart
-                    buttonContainer.innerHTML = `
-             <a href="/cart"
-                                                class="group py-3 px-5 border border-indigo-600 rounded-lg bg-indigo-50 text-indigo-700 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
-                                                <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-700"
-                                                    width="22" height="22" viewBox="0 0 22 22" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
-                                                        stroke="" stroke-width="1.6" stroke-linecap="round" />
-                                                </svg>
-                                                Go to Cart
 
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="32"
-                                                height="32" viewBox="0 0 24 24"
-                                                style="fill:currentColor">
-                                                <path
-                                                    d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
-                                                </path>
-                                                <path
-                                                    d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
-                                                </path>
-                                            </svg>
-                                            </a>
-        `;
-                    // Show the badge if it's hidden
+                    // Replace add to cart button with go to cart button
+                    const buttonContainer = button.parentElement;
+                    buttonContainer.innerHTML = `
+                <a href="/user/cart"
+                    class="group py-3 px-5 border border-indigo-600 rounded-lg bg-indigo-50 text-indigo-700 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
+                    <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-700"
+                        width="22" height="22" viewBox="0 0 22 22" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
+                            stroke="" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                    Go to Cart
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                        style="fill:currentColor">
+                        <path d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z"></path>
+                        <path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z"></path>
+                    </svg>
+                </a>`;
+
+                    // Show the badge if hidden
                     if (cartBadge.classList.contains('hidden')) {
                         cartBadge.classList.remove('hidden');
                     }
@@ -957,52 +992,89 @@
                     const error = await response.json();
                     notyf.error("Failed to Move cart!!");
                 }
-
-
-
             } catch (error) {
                 console.error("Error adding to cart:", error);
                 notyf.error('Something went wrong!');
-
             }
         }
-        document.addEventListener("DOMContentLoaded", () => {
 
+        // Add validation before cart addition
+        function validateVariantSelection() {
+            const selectedColor = document.querySelector('.variant-colors.ring-purple-600');
+            const selectedStorage = document.querySelector('input[name="storage"]:checked');
 
-            //     document.head.appendChild(style);
+            if (!selectedColor || !selectedStorage) {
+                notyf.error('Please select both color and storage options');
+                return false;
+            }
+            return true;
+        }
 
+        // Add click handlers for variants
+        document.addEventListener('DOMContentLoaded', function () {
+            // Color selection
+            document.querySelectorAll('.variant-colors').forEach(button => {
+                button.addEventListener('click', function () {
+                    // Remove active state from all colors
+                    document.querySelectorAll('.variant-colors').forEach(btn => {
+                        btn.classList.remove('ring-2', 'ring-purple-600', 'ring-offset-2');
+                    });
+                    // Add active state to selected color
+                    this.classList.add('ring-2', 'ring-purple-600', 'ring-offset-2');
+                });
+            });
 
-            //     // Initialize EasyZoom instance
-            //     const easyzoom = new EasyZoom();
-
-            //     // Get the zoom link and main image elements
-            //     const zoomLink = document.getElementById('zoomLink');
-            //     const mainImage = document.getElementById('mainImage');
-
-            //     // Initialize EasyZoom for the first image
-            //     easyzoom.setup();
-
-            //     // Function to change the main image and update the zoom
-            //     window.changeImage = function (src) {
-            //         // Update the main image src
-            //         mainImage.src = src;
-
-            //         // Update the zoom link href to the new image
-            //         zoomLink.href = src;
-
-            //         // Re-initialize EasyZoom to apply zoom to the new image
-            //         easyzoom.destroy();
-            //         easyzoom.setup();
-
-
-            //     };
-
+            // Add to cart button handler
+            const addToCartButton = document.querySelector('[data-product_id]');
+            if (addToCartButton) {
+                const originalClick = addToCartButton.onclick;
+                addToCartButton.onclick = function (e) {
+                    if (!validateVariantSelection()) {
+                        e.preventDefault();
+                        return;
+                    }
+                    if (originalClick) originalClick.call(this, e);
+                };
+            }
         });
+
+
+        function selectColor(button, color) {
+            // Remove active state from all color buttons
+            document.querySelectorAll('.variant-colors').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-purple-600', 'ring-offset-2');
+            });
+
+            // Add active state to selected button
+            button.classList.add('ring-2', 'ring-purple-600', 'ring-offset-2');
+
+            // Update hidden input or form data
+            document.querySelector('input[name="selectedColor"]').value = color;
+        }
+
+        // Handle storage selection and price updates
+        document.querySelectorAll('input[name="storage"]').forEach(input => {
+            input.addEventListener('change', function () {
+                const additionalPrice = parseFloat(this.dataset.price) || 0;
+                const Price = parseInt('<%= product.discountedPrice %>');
+
+
+                // Calculate new price with variant
+                const finalPrice = Math.round(Price + additionalPrice);
+
+                // Update price display
+                document.getElementById('finalPrice').textContent =
+                    finalPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+            });
+        });
+
+
 
 
         function changeImage(src) {
             document.getElementById('mainImage').src = src;
         }
+
 
 
     </script>

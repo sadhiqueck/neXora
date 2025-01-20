@@ -15,12 +15,12 @@ const loadProductsPage = async (req, res) => {
 
         if (req.session.user) {
             const userId = req.session.user._id;
-            const userCart = await Cart.findOne({ 
+            const userCart = await Cart.findOne({
                 userId,
-                isOrdered: false 
+                isOrdered: false
             });
 
-           
+
             const cartProductIds = new Set();
             if (userCart) {
                 userCart.products.forEach(item => {
@@ -28,23 +28,23 @@ const loadProductsPage = async (req, res) => {
                 });
             }
 
-           
+
             const productsWithCartStatus = products.map(product => {
                 const productObj = product.toObject();
                 productObj.inCart = cartProductIds.has(product._id.toString());
                 return productObj;
             });
 
-            return res.render("user/products", { 
-                title: 'Products', 
-                products: productsWithCartStatus, 
-                category, 
+            return res.render("user/products", {
+                title: 'Products',
+                products: productsWithCartStatus,
+                category,
             });
         }
 
-        res.render("user/products", { 
-            title: 'Products', 
-            products, 
+        res.render("user/products", {
+            title: 'Products',
+            products,
             category,
         });
 
@@ -92,7 +92,7 @@ const getProductsDetails = async (req, res) => {
 
         if (req.session.user) {
             const userId = req.session.user._id;
-            const userCart = await Cart.findOne({ 
+            const userCart = await Cart.findOne({
                 userId,
                 isOrdered: false
             });
@@ -105,7 +105,7 @@ const getProductsDetails = async (req, res) => {
                 });
             }
 
-           
+
             const productWithCart = product.toObject();
             productWithCart.inCart = cartProductIds.has(product._id.toString());
 
@@ -115,6 +115,7 @@ const getProductsDetails = async (req, res) => {
                 return relProductObj;
             });
 
+
             return res.render('user/product_details', {
                 title: 'Product_details',
                 product: productWithCart,
@@ -123,7 +124,6 @@ const getProductsDetails = async (req, res) => {
                 storages,
             });
         }
-
         res.render('user/product_details', {
             title: 'Product_details',
             product,
@@ -138,4 +138,4 @@ const getProductsDetails = async (req, res) => {
     }
 };
 
-module.exports = { getProductsDetails,loadProductsPage};
+module.exports = { getProductsDetails, loadProductsPage };

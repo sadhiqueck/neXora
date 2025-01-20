@@ -54,7 +54,6 @@ router.get('/logout',authsession,logout)
 
 // product page
 router.get('/products/:category', loadProductsPage)
-
 router.get('/product/:id', getProductsDetails)
 
 
