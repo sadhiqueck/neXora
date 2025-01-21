@@ -66,23 +66,40 @@ const getProductsDetails = async (req, res) => {
         const activeVariants = product.variants.filter(variant => variant.status === 'active');
 
         //  unique colors
-        const colors = [...new Map(activeVariants.map(variant =>
-            [variant.color.toLowerCase(), {
-                color: variant.color,
-                colorCode: variant.colorCode
-            }]
-        )).values()];
+        const colors = [...new Map(activeVariants
+            .filter(variant =>
+                variant.color &&
+                variant.color.trim() !== '' &&
+                // check stock in this color
+                activeVariants.some(v =>
+                    v.color.toLowerCase() === variant.color.toLowerCase() &&
+                    v.stock > 0
+                )
+            ).map(variant =>
+                [variant.color.toLowerCase(), {
+                    color: variant.color,
+                    colorCode: variant.colorCode
+                }]
+            )).values()];
 
         // unique storage combinations
-        const storages = [...new Map(activeVariants.map(variant =>
-            [`${variant.storage}${variant.storageUnit}`, {
-                storage: variant.storage,
-                storageUnit: variant.storageUnit,
-                additionalPrice: variant.additionalPrice,
-                stock: variant.stock,
-                stockStatus: variant.stockStatus
-            }]
-        )).values()];
+        const storages = [...new Map(activeVariants
+            .filter(variant =>
+                // Only include variants have valid storage and storage unit
+                variant.storage &&
+                variant.storage.trim() !== '' &&
+                variant.storageUnit &&
+                variant.storageUnit.trim() !== 'NULL'
+            ).map(variant =>
+                [`${variant.storage}${variant.storageUnit}`, {
+                    storage: variant.storage,
+                    storageUnit: variant.storageUnit,
+                    additionalPrice: variant.additionalPrice,
+                    stock: variant.stock,
+                    stockStatus: variant.stockStatus
+                }]
+            )).values()];
+
 
         //  related products
         let relatedProducts = await productsDB.find({

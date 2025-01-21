@@ -198,7 +198,7 @@
                             <h3 class="text-xl font-semibold">Crop Image</h3>
                         </div>
 
-                        <!-- Modal Body -->     
+                        <!-- Modal Body -->
                         <div class="p-4 flex items-center justify-center overflow-hidden max-h-[70vh]">
                             <div class="w-full h-full flex items-center justify-center">
                                 <img id="cropperImage" src="" alt="Image to crop"
@@ -269,6 +269,7 @@
                                             focus:ring-opacity-50 text-lg py-3 px-4">
                                         <option value="GB">GB</option>
                                         <option value="TB">TB</option>
+                                        <option value="NIL">NIL</option>
                                     </select>
                                 </div>
                             </div>
@@ -371,9 +372,59 @@
     let cropper = null;
     let croppedBlobs = [];
     let imageFormat = 'image/jpeg'; // Default format
+    const variantsContainer = document.getElementById('variantsContainer');
+    const addVariantButton = document.getElementById('addVariant');
+    let variantCount = 1;
+    let activeInput = null;
 
 
- 
+
+
+    // Add new variant with enhanced animation
+    addVariantButton.addEventListener('click', function () {
+        const template = variantsContainer.children[0].cloneNode(true);
+        template.style.opacity = '0';
+        template.style.transform = 'translateY(20px)';
+        template.style.transition = 'all 0.3s ease-out';
+
+
+
+
+        // Update input names with new index
+        template.querySelectorAll('input, select').forEach(input => {
+            if (input.name) {
+                input.name = input.name.replace('[0]', `[${variantCount}]`);
+            }
+        });
+
+
+        // Reset file inputs and previews
+        template.querySelectorAll('input').forEach(input => {
+            input.value = '';
+        });
+
+
+        variantsContainer.appendChild(template);
+        // Trigger animation
+        setTimeout(() => {
+            template.style.opacity = '1';
+            template.style.transform = 'translateY(0)';
+        }, 50);
+
+        variantCount++;
+
+        // Add remove functionality with animation
+        const removeButton = template.querySelector('.remove-variant');
+        removeButton.addEventListener('click', function () {
+            template.style.opacity = '0';
+            template.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                template.remove();
+            }, 300);
+        });
+    });
+
+
 
     // Handle form submission
     const form = document.querySelector('form');
@@ -470,7 +521,7 @@
                     type: imageFormat
                 });
                 formData.append('images', file);
-             
+
             });
 
             notyf.success('Uploading product...');
@@ -495,5 +546,8 @@
             hideSpinner();
         }
     });
+
+
+
 
 </script>

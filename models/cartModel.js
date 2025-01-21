@@ -19,14 +19,6 @@ const cartSchema = new Schema({
                 required: true,
                 min: 1
             },
-            price: {
-                type: Number,
-                required: false 
-            },
-            discount: {
-                type: Number, // Discount percentage
-                default: 0
-            },
         }
     ],
     isOrdered: {

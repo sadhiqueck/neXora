@@ -50,9 +50,9 @@ const addToCart = async (req, res) => {
         // find variant
         const variant = product.variants.find(variant =>
             variant.color === selectedColor &&
-            variant.storage + variant.storageUnit === selectedStorage
+            `${variant.storage}${variant.storageUnit}` === selectedStorage
         );
-
+        console.log(variant)
         if (!variant) {
             return res.status(400).json({ message: "Selected variant not available" });
         }
@@ -67,24 +67,21 @@ const addToCart = async (req, res) => {
             cart = new cartDb({ userId, products: [] });
         }
 
-        const existingProduct = cart.products.find(item =>
-            item.productId.toString() === productId &&
-            item.variantDetails.color === selectedColor &&
-            item.variantDetails.storage === selectedStorage
-        );
+        // no need to check because will cahnge to go to cart
 
-        if (existingProduct) {
-            if (existingProduct.quantity >= 3) {
-                return res.status(400).json({ message: "Maximum 3 products allowed!" });
-            }
+        // if (existingProduct) {
+        //     if (existingProduct.quantity >= 3) {
+        //         return res.status(400).json({ message: "Maximum 3 products allowed!" });
+        //     }
 
 
-            if (variant.stock < existingProduct.quantity + 1) {
-                return res.status(400).json({ message: "Not enough stock available!" });
-            }
+        //     if (variant.stock < existingProduct.quantity + 1) {
+        //         return res.status(400).json({ message: "Not enough stock available!" });
+        //     }
 
-            existingProduct.quantity += 1;
-        } else {
+        //     existingProduct.quantity += 1;
+        // } 
+        
             cart.products.push({
                 productId,
                 quantity: 1,
@@ -94,7 +91,7 @@ const addToCart = async (req, res) => {
                     price: product.discountedPrice + variant.additionalPrice
                 }
             });
-        }
+        
 
 
         try {
@@ -106,15 +103,15 @@ const addToCart = async (req, res) => {
                     "variants.storage": selectedStorage.replace(variant.storageUnit, "")
                 },
                 { $inc: { "variants.$.stock": -1 } }
-                
+
             );
 
             await cart.save();
 
-        
+
         } catch (error) {
             throw error;
-        } 
+        }
 
         return res.status(200).json({ message: 'Item added to cart successfully' });
 

@@ -152,8 +152,7 @@ const resetPassword = async (req, res) => {
 
     const { otp, newPassword } = req.body;
     console.log(req.query.params)
-    const email = req.session.userData;
-    console.log(email)
+    const{ email} = req.session.userData;
 
     if (!otp || !newPassword) {
       return res.render('user/forgotUpdatePassword', { title: "Verify otp", mssg: "Fields cannot be empty" })
