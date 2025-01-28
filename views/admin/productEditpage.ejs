@@ -161,13 +161,14 @@
                                 <input type="file" class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
                                     name="images" accept="image/*" id="file-upload-<%= i + 1 %> "
                                     data-productId="<%= product._id  %>">
+                                    
                                 <div class="h-full w-full flex flex-col items-center justify-center">
                                     <% if (product.images && product.images[i]) { %>
                                         <!-- Delete button -->
                                         <button type="button" data-imageindex="<%= i %>"
                                             data-imagename="<%= product.images[i] %>"
                                             data-productid="<%= product._id  %>"
-                                            class="delete-image-btn absolute top-2 right-2 z-[60] bg-red-500 hover:bg-red-700 text-white rounded-full p-1 px-3 shadow-lg transition-colors">
+                                            class="delete-image-btn absolute top-2 right-2 z-50 bg-red-500 hover:bg-red-700 text-white rounded-full p-1 px-3 shadow-lg transition-colors">
                                             X
                                         </button>
                                         <% } else { %>
@@ -207,7 +208,7 @@
                             </div>
                         </div>
                         <div class="p-4 border-t flex justify-end gap-3">
-                            <button id="cancelCrop"
+                            <button id="cancelCrop"  type="button"
                                 class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
                                 Cancel
                             </button>
@@ -641,7 +642,9 @@
             }
 
             notyf.success('Product updated successfully');
-            window.location.href = '/admin/products';
+            setTimeout(() => {
+                window.location.href = '/admin/products';
+            }, 500);
         } catch (error) {
             notyf.error(error.message || 'Failed to update product');
             console.error('Update error:', error);

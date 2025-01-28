@@ -7,7 +7,8 @@ const { loadHome, loadUserProfile, updateName, loadAddressprofile,
 const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
 const { sendOTP, resendOtp,sendresetOtp } = require('../controllers/userController/otpController')
 const { signup, login, googleLogin,logout,forgotPassword,loadResetOtpPage,resetPassword} = require('../controllers/userController/authController');
-const { loadCart, addToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
+
+const { loadCart, addToCart,productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
 const { loadAddress, addAddress, loadShippingMethod, saveDeliveryMethod,
     shippingMethod, loadPaymentPage, placeOrder, orderSuccess } = require('../controllers/userController/checkoutController');
 const { loadOrder, loadOrderDetails,cancelItem, cancelOrder } = require('../controllers/userController/orderController');
@@ -59,7 +60,8 @@ router.get('/product/:id', getProductsDetails)
 
 // cart page
 router.get('/cart', authsession, loadCart)
-router.post('/cart/add/:id', authsession, addToCart)
+router.post('/cart/add', authsession, addToCart)
+router.post('/cart/:productId/add', authsession, productDetailsaddToCart)
 router.post('/cart/remove/:id', authsession, removeFromCart)
 router.post('/cart/update', authsession, updateCart)
 router.post('/selectAddress', authsession, loadAddress)

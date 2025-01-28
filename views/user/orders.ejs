@@ -78,7 +78,7 @@
                             <div class="flex flex-col gap-0.5">
                               <h3
                                 class="font-normal <%= order.status === 'Cancelled' ? 'text-gray-500' : 'text-gray-900' %>">
-                                <%= product.productName %>
+                                <%= product.productName %>- <%=product.variant.storage||' '%> (<%=product.variant.color  %>)
                               </h3>
                               <p class="text-sm font-light text-gray-500">
                                 Quantity: <%= product.quantity %>
@@ -113,7 +113,7 @@
                           <div class="<%= order.status === 'Cancelled' ? 'text-red-700 line-through' : 
                                               order.status === 'Delivered' ? 'text-green-700' : 
                                               'text-blue-700' %> font-medium">
-                            ₹ <%= order.subTotal.toLocaleString('en-IN')%>.00
+                            <%= order.total.toLocaleString('en-IN',{style:'currency',currency:"INR"})%>
                           </div>
                         </div>
 

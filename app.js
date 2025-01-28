@@ -11,6 +11,7 @@ const passport=require('passport')
 const {loginStatus}=require('./middleware/userAuth');
 app.use(expressLayouts);
 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

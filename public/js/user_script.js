@@ -27,10 +27,9 @@ style.innerHTML = `
 document.head.appendChild(style);
 
 async function addToCart(button) {
-
     const productId = button.getAttribute('data-product_id');
     try {
-        const response = await fetch(`/user/cart/add/${productId}`, {
+        const response = await fetch('/user/cart/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productId })
@@ -38,43 +37,42 @@ async function addToCart(button) {
 
         if (response.ok) {
             notyf.success('Moved to cart!');
-            // Get the cart badge element
+            //  cart badge and button update
             const cartBadge = document.querySelector('.cartBadge');
             let currentCount = parseInt(cartBadge.textContent) || 0;
             currentCount += 1;
             cartBadge.textContent = currentCount;
-            const buttonContainer = button.parentElement; //to change button to go to cart
+
+            const buttonContainer = button.parentElement;
             buttonContainer.innerHTML = `
-                <a href="/user/cart" class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    Go to Cart
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1)"><path
-                    d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z"> </path>
-                    <path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
-                     </path></svg>
-                </a>
-            `;
-            // Show the badge if it's hidden
+        <a href="/user/cart" class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+           <svg xmlns="http://www.w3.org/2000/svg"
+           class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Go to Cart
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                style="fill: rgba(255, 255, 255, 1)">
+                <path d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
+                </path>
+                <path d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
+                </path>
+                </svg>
+        </a>
+    `;
+
             if (cartBadge.classList.contains('hidden')) {
                 cartBadge.classList.remove('hidden');
             }
-        } else if (response.status === 400) {
-            const error = await response.json();
-            notyf.error(error.message || "Limit Exceed");
         } else {
             const error = await response.json();
-            notyf.error("Failed to Move cart!!");
+            notyf.error(error.message || "Failed to add to cart");
         }
-
-
-
     } catch (error) {
         console.error("Error adding to cart:", error);
         notyf.error('Something went wrong!');
-
     }
 }
 

@@ -7,26 +7,26 @@ const cartSchema = new Schema({
         ref: 'user',
         required: true
     },
-    products: [
-        {
-            productId: {
-                type: Schema.Types.ObjectId,
-                ref: 'Products', 
-                required: true
-            },
-            quantity: {
-                type: Number,
-                required: true,
-                min: 1
-            },
+    products: [{
+        productId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Products',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true,
+        },
+        variantDetails: {
+            color: String,
+            storage: String,
+            additionalPrice: Number
         }
-    ],
+    }],
     isOrdered: {
         type: Boolean,
-        default: false,
-    },
-}, {timestamps: true}
-
-);
+        default: false
+    }
+}, { timestamps: true });
 
 module.exports = mongoose.model('cart', cartSchema);

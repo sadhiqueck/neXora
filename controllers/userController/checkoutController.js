@@ -1,7 +1,8 @@
 const productsDB = require('../../models/productModel');
 const cartDb = require('../../models/cartModel');
 const addressDb = require('../../models/addressModel');
-const ordersDb = require('../../models/ordersModel')
+const ordersDb = require('../../models/ordersModel');
+const e = require('connect-flash');
 
 const loadAddress = async (req, res) => {
     try {
@@ -102,6 +103,7 @@ const saveDeliveryMethod = async (req, res) => {
         }
         req.session.selectedDeliveryMethod = selectedDeliveryMethod;
         return res.status(200).json({ success: 'Delivery method saved successfully' });
+
         // if ersponse ok redirect to payment page in frontend
 
 
@@ -126,14 +128,74 @@ const loadPaymentPage = async (req, res) => {
             return res.redirect('/user/selectAddress');
         } else {
 
+            const cartWithDetails = cart.products.map((item) => {
+                const product = item.productId;
+
+                // Find the matching variant with flexible storage check
+                const variant = product.variants.find(v => {
+                    const colorMatch = v.color === item.variantDetails.color;
+
+                    // If cart item has storage specification
+                    if (item.variantDetails.storage) {
+                        return colorMatch &&
+                            v.storage !== null &&
+                            v.storageUnit !== 'NIL' &&
+                            `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
+                    }
+
+                    return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
+                });
+
+
+                const basePrice = product.price;
+
+                const variantPrice = Math.round((basePrice + (variant?.additionalPrice || 0)) * (1 - product.discount / 100));
+
+                // checkk product id out of stock
+                const isOutOfStock = !variant || variant.stock < 1;
+
+                return {
+                    ...item.toObject(),
+                    variantPrice,
+                    productImage: product.images[0],
+                    outOfStock: isOutOfStock,
+                };
+            });
+            const hasOutOfStock = cart.products.some(item => {
+                const product = item.productId;
+                const variant = product.variants.find(v => {
+                    const colorMatch = v.color === item.variantDetails.color;
+
+                    if (item.variantDetails.storage) {
+                        return colorMatch &&
+                            v.storage !== null &&
+                            v.storageUnit !== 'NIL' &&
+                            `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
+                    }
+
+                    return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
+                });
+
+                return !variant || variant.stock < 1;
+            });
+
+            if (hasOutOfStock) {
+                res.redirect('/user/cart');
+            }
+
             // Calculate the cart summary
-            const subTotal = cart.products.reduce((total, product) => total + product.quantity * product.productId.discountedPrice, 0)
-            const totalSavings = subTotal - (cart.products.reduce((totalPrice, product) => totalPrice + product.productId.price, 0));
+            const validProducts = cartWithDetails.filter(product => !product.outOfStock);
+            const totalItems = validProducts.reduce((total, product) => total + product.quantity, 0);
+            const subTotal = validProducts.reduce((total, product) => total + product.quantity * product.variantPrice, 0);
+            const originalTotal = validProducts.reduce((total, product) => total + product.quantity * (product.productId.price + (product.variantDetails.additionalPrice || 0)), 0);
+            const totalSavings = originalTotal - subTotal;
             const deliveryCharge = subTotal > 498 ? 0 : 99;
             const tax = Math.round(subTotal * 0.18);
             const total = subTotal + deliveryCharge;
-            req.session.orderSummary = { subTotal, totalSavings, deliveryCharge, tax, total };
-            res.render('user/payment', { title: 'Payment', selectedAddress, deliveryType, deliveryDate, subTotal, totalSavings, deliveryCharge, tax, total })
+
+            req.session.orderSummary= {originalTotal, subTotal, totalSavings, deliveryCharge, tax, total };
+
+            res.render('user/payment', { title: 'Payment', selectedAddress, deliveryType, deliveryDate, subTotal, totalSavings, deliveryCharge, originalTotal, tax, total })
         }
 
     } catch (error) {
@@ -146,7 +208,6 @@ const loadPaymentPage = async (req, res) => {
 }
 
 const placeOrder = async (req, res) => {
-
     try {
         const { paymentMethod } = req.body;
         const userId = req.session.user._id;
@@ -154,42 +215,80 @@ const placeOrder = async (req, res) => {
 
         const cart = await cartDb.findOne({ userId }).populate({
             path: 'products.productId',
-            select: 'productName model price discount  discountedPrice category returnPeriod warranty images',
+            select: 'productName model price discount discountedPrice category returnPeriod warranty images stockQuantity variants',
         });
 
         if (!cart || cart.products.length === 0) {
             return res.status(400).json({ error: 'Cart is empty. Cannot place order.' });
         }
+
+        let fetchedVariant = null;
+        
+        // check if any product is out of stock
+        const hasOutOfStock = cart.products.some(item => {
+            const product = item.productId;
+            const variantDetails = item.variantDetails;
+            if (variantDetails) {
+                const variant = product.variants.find(v =>
+                    v.color === variantDetails.color &&
+                    (!variantDetails.storage ||
+                        `${v.storage}${v.storageUnit}` === variantDetails.storage)
+                );
+                return !variant || variant.stock < 1;
+            }
+        });
+
+        if (hasOutOfStock) {
+            return res.status(400).json({ error: 'No stock available' });
+        }
+        
+        
         const selectedAddress = await addressDb.findById(req.session.selectedAddressId);
         if (!selectedAddress) {
             return res.status(400).json({ error: 'No address selected for shipping.' });
         }
 
-        const { subTotal, totalSavings, deliveryCharge, tax, total } = req.session.orderSummary;
-        //array of product details 
-        const products = cart.products.map(item => ({
-            productId: item.productId._id,
-            productName: item.productId.productName,
-            model: item.productId.model,
-            price: item.productId.price,
-            discount: item.productId.discount || 0,
-            discountedPrice: item.productId.discountedPrice || item.productId.price,
-            category: item.productId.category,
-            quantity: item.quantity,
-            returnPeriod: item.productId.returnPeriod || 0,
-            warranty: item.productId.warranty || 0,
-            images: item.productId.images[0],
-            deliveryDate:deliveryDate
-            
-        }));
+        const {originalTotal, subTotal, totalSavings, deliveryCharge, tax, total } = req.session.orderSummary;
 
+        // Enhanced product details array with variant information
+        const products = cart.products.map(item => {
+            const product = item.productId;
+            const variantDetails = item.variantDetails;
+
+            // Calculate final price including variant additional price
+            const basePrice = product.price;
+            const orginalPrice = product.price + (variantDetails.additionalPrice || 0);
+            const finalPrice = variantDetails
+                ? Math.floor((basePrice + (variantDetails.additionalPrice || 0)) * (1 - product.discount / 100))
+                : basePrice;
+
+            return {
+                productId: product._id,
+                productName: product.productName,
+                model: product.model,
+                price: orginalPrice,
+                discount: product.discount || 0,
+                discountedPrice: finalPrice, // Discounted price including variant additional price
+                category: product.category,
+                quantity: item.quantity,
+                returnPeriod: product.returnPeriod || 0,
+                warranty: product.warranty || 0,
+                images: product.images[0],
+                deliveryDate: deliveryDate,
+                variant: variantDetails ? {
+                    color: variantDetails.color,
+                    storage: variantDetails.storage,
+                    additionalPrice: variantDetails.additionalPrice || 0
+                } : null
+            };
+        });
 
         const newOrder = new ordersDb({
             userId,
             products,
             deliveryDate,
             deliveryType,
-            status: 'Processing', // Default status
+            status: 'Processing',
             paymentMethod,
             paymentStatus: 'Pending',
             shippingAddress: {
@@ -204,6 +303,7 @@ const placeOrder = async (req, res) => {
                 pincode: selectedAddress.pincode,
                 addressType: selectedAddress.addressType,
             },
+            originalTotal,
             subTotal,
             totalSavings,
             deliveryCharge,
@@ -213,21 +313,50 @@ const placeOrder = async (req, res) => {
 
         const savedOrder = await newOrder.save();
 
+        // Update stock quantities for products and variants
+        for (const item of cart.products) {
+
+            const product = item.productId;
+            // const variantDetails = item.variantDetails;
+
+            if (fetchedVariant) {
+                // Update variant stock
+
+                await productsDB.updateOne(
+                    {
+                        _id: product._id,
+                        'variants': {
+                            $elemMatch: {
+                                color: fetchedVariant.color,
+                                storage: fetchedVariant.storage,
+                                storageUnit: fetchedVariant.storageUnit,
+                            }
+                        }
+                    },
+                    {
+                        $inc: {
+                            'variants.$.stock': -item.quantity,
+                            totalStock: -item.quantity
+                        }
+                    }
+                );
+            }
+        }
+
         // Clear the cart
         await cartDb.findOneAndUpdate({ userId }, { products: [], isOrdered: true });
 
-        // Reset session data 
+        // Reset session data
         req.session.selectedAddressId = null;
         req.session.selectedDeliveryMethod = null;
         req.session.orderSummary = null;
 
         return res.status(200).json({ message: 'Order placed successfully' });
-
     } catch (error) {
         console.error('Error placing order:', error);
         res.status(500).json({ error: 'An error occurred while placing the order' });
     }
-}
+};
 
 
 const orderSuccess = (req, res) => {

@@ -202,7 +202,11 @@
                             </div>
                             <p class="text-gray-500 text-sm">Model: <%=product.model %>
                             </p>
-                            <p class="text-gray-500 text-sm mt-1">Color: Black | Size: Standard</p>
+                          
+                            <p class="text-gray-500 text-sm mt-1">
+                                Color: <%= product.variant.color %> 
+                                <%= product.variant.storage ? '| Size: ' + product.variant.storage : '' %>
+                              </p>
                             <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %>
                             </p>
                             <div class="mt-4">
@@ -246,8 +250,7 @@
             <div class="flex justify-between text-gray-600">
                 <span class="text-gray-700">Subtotal</span>
                 <span>
-                    <%= new Intl.NumberFormat('en-IN', { style: 'currency' , currency: 'INR'
-                        }).format(Math.round((order.subTotal*0.82))) %>
+                    <%=order.originalTotal.toLocaleString('en-IN',{style:'currency', currency:'INR'})%>
                 </span>
             </div>
             <div class="flex justify-between text-gray-600">

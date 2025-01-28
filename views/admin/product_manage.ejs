@@ -198,12 +198,19 @@
                                                 Deleted</div>
                                         </div>
 
-                                        <% } else if (product.totalStock<10) { %>
+                                        <% } else if (product.totalStock<10 && product.totalStock>0) { %>
                                             <div
                                                 class="h-7 px-3 py-1 bg-orange-100 rounded-[100px] flex-col justify-center items-center gap-2 inline-flex">
                                                 <div
-                                                    class="text-center text-orange-400 text-sm font-semibold font-inter leading-tight tracking-tight p-1.5">
+                                                    class="text-center text-red-400 text-sm font-semibold font-inter leading-tight tracking-tight p-1.5">
                                                     Low Stock</div>
+                                            </div>
+                                        <% } else if (product.totalStock===0) { %>
+                                            <div
+                                                class="h-7 px-3 py-1 bg-orange-100 rounded-[100px] flex-col justify-center items-center gap-2 inline-flex">
+                                                <div
+                                                    class="text-center text-red-500 text-sm font-semibold font-inter leading-tight tracking-tight p-1.5">
+                                                    Out of Stock</div>
                                             </div>
 
                                             <% } else { %>

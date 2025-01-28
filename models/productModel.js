@@ -111,4 +111,13 @@ productSchema.pre('save', function(next) {
   next();
 });
 
+productSchema.pre('save', function(next) {
+  this.variants.forEach(variant => {
+    if (variant.color) {
+      variant.color = variant.color.charAt(0).toUpperCase() + variant.color.slice(1).toLowerCase();
+    }
+  });
+  next();
+});
+
 module.exports = mongoose.model("Products", productSchema)

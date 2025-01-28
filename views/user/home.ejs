@@ -8,7 +8,7 @@
                 id="banner_1">
 
                 <img src="/Images/Meta_banner.png" alt="" class="w-full h-full rounded-lg ">
-                <a href="/user/product/676001ee63c2ff888273ba04"
+                <a href="/user/product/678a65ab46d59cde3b298175"
                     class="absolute lg:bottom-22 lg:right-[18%] md:bottom-[18%] md:right-[22%] md:px-4 right-[16%] bottom-[18%] py-1 px-5 text-[6px] bg-gray-900 text-main-white lg:py-2 lg:px-12 rounded-lg lg:text-xs hover:bg-gray-800">
                     Buy Now
                 </a>
@@ -20,7 +20,7 @@
             <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full" data-carousel-item id="banner_3">
                 <img src="/Images/Banner_3.jpg" alt="" class="w-full h-full bg-cover  rounded-lg ">
 
-                <a href="/user/product/67600859992f7b72174b09ef"
+                <a href="/user/product/678a6fe097c59b8dc11c6cc1"
                     class="absolute lg:bottom-22 lg:right-[28%] lg:py-3 lg:px-16 md:bottom-[16%] md:py-3 md:right-[24%] md:px-8 right-[29%] sm:right-[22%] bottom-[16%] py-1 px-5 text-[6px] bg-main-white text-black rounded-lg lg:text-xs hover:bg-gray-200">
                     Buy Now
                 </a>
@@ -119,8 +119,8 @@
                         class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
                         <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4"
                             href="/user/product/<%= product._id %>">
-                            <img class="max-h-50 w-[80%] mx-auto object-contain lazyload"
-                                src="<%= product.images[0] %>" alt="product image" />
+                            <img class="max-h-50 w-[80%] mx-auto object-contain lazyload" src="<%= product.images[0] %>"
+                                alt="product image" />
                             <span
                                 class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
                                 <%= product.discount %> % OFF
@@ -138,21 +138,17 @@
                             </a>
                             <div class="mt-2 mb-5 flex items-center justify-between">
                                 <p>
-                                    <span
-                                        class="text-sm lg:text-lg md:text-lg font-bold text-slate-900">₹
+                                    <span class="text-sm lg:text-lg md:text-lg font-bold text-slate-900">₹
                                         <%= product.discountedPrice.toLocaleString("en-IN") %>
                                     </span>
-                                    <span
-                                        class="text-xs lg:text-sm md:text-sm text-gray-600 line-through ml-2">₹
+                                    <span class="text-xs lg:text-sm md:text-sm text-gray-600 line-through ml-2">₹
                                         <%= product.price.toLocaleString("en-IN") %>
                                     </span>
                                 </p>
-                                <div
-                                    class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
+                                <div class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
                                     <span>
-                                        <svg aria-hidden="true" class="h-5 w-5 text-black"
-                                            fill="Current" viewBox="0 0 20 20"
-                                            xmlns="http://www.w3.org/2000/svg">
+                                        <svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current"
+                                            viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                                             </path>
@@ -162,60 +158,59 @@
                                 </div>
                             </div>
                             <div class="button-container">
-                                <% if(isLoggedIn) { %>
-                                    <% if(product.inCart) { %>
-                                        <a href="/user/cart"
-                                            class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                            Go to Cart
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                height="24" viewBox="0 0 24 24"
-                                                style="fill: rgba(255, 255, 255, 1)">
-                                                <path
-                                                    d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
-                                                </path>
-                                                <path
-                                                    d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
-                                                </path>
-                                            </svg>
-                                        </a>
-                                        <% } else { %>
-                                            <div>
-                                                <button data-product_id="<%= product._id %>"
-                                                    onclick="addToCart(this)"
-                                                    class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                        class="mr-2 h-6 w-6" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <path stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                    </svg>
-                                                    Add to Cart
-                                                </button>
-                                            </div>
-                                            <% } %>
-                                                <% } else { %>
-                                                    <button onclick="redirectToLogin()"
-                                                        title="⚠️ Please log in to add items"
+                                <% if(product.totalStock<1) { %>
+                                    <button disabled
+                                        class="w-full flex items-center justify-center rounded-md bg-gray-300 px-5 py-2.5 text-center text-sm font-medium text-gray-600 cursor-not-allowed">
+                                        Out of Stock
+                                    </button>
+                                    <% } else if(isLoggedIn) { %>
+                                        <% if(product.inCart) { %>
+                                            <a href="/user/cart"
+                                                class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                                Go to Cart
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1)">
+                                                    <path
+                                                        d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
+                                                    </path>
+                                                    <path
+                                                        d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
+                                                    </path>
+                                                </svg>
+                                            </a>
+                                            <% } else { %>
+                                                <div>
+                                                    <button data-product_id="<%= product._id %>"
+                                                        onclick="addToCart(this)"
                                                         class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="mr-2 h-6 w-6" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor"
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                                             stroke-width="2">
-                                                            <path stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
                                                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                                         </svg>
                                                         Add to Cart
                                                     </button>
-                                                    <% } %>
+                                                </div>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <button onclick="redirectToLogin()"
+                                                            title="⚠️ Please log in to add items"
+                                                            class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                            </svg>
+                                                            Add to Cart
+                                                        </button>
+                                                        <% } %>
                             </div>
                         </div>
                     </div>
@@ -224,7 +219,7 @@
                             <h1>No products available</h1>
                             <% } %>
         </div>
-      
+
         <div class="w-full text-center mt-10">
             <button type="button"
                 class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">Show
@@ -258,7 +253,7 @@
                 <p class="mb-6  text-main-white font-extralight">Combining advanced 3D structured light and an RGB
                     camera,
                     the S8 MaxV Ultra effortlessly Identifles floor and room types very easily.</p>
-                <a href="#"
+                <a href="/user/product/678a73a597c59b8dc11c6e0c"
                     class="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-center text-base font-medium text-blue-500 hover:bg-main-white focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
                     Order Now </a>
             </div>
@@ -269,7 +264,7 @@
     <h2 class="text-2xl font-inter font-bold  text-gray-900sm:text-2xl mt-20 pl-20 ">Exclusive Offers
     </h2>
 
-    
+
     <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 pt-10 mx-auto w-[90%] pb-14">
 
         <!-- card -->
@@ -320,60 +315,59 @@
 
                             </div>
                             <div class="button-container">
-                                <% if(isLoggedIn) { %>
-                                    <% if(product.inCart) { %>
-                                        <a href="/user/cart"
-                                            class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
-                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                            Go to Cart
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                height="24" viewBox="0 0 24 24"
-                                                style="fill: rgba(255, 255, 255, 1)">
-                                                <path
-                                                    d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
-                                                </path>
-                                                <path
-                                                    d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
-                                                </path>
-                                            </svg>
-                                        </a>
-                                        <% } else { %>
-                                            <div>
-                                                <button data-product_id="<%= product._id %>"
-                                                    onclick="addToCart(this)"
-                                                    class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                        class="mr-2 h-6 w-6" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor"
-                                                        stroke-width="2">
-                                                        <path stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                    </svg>
-                                                    Add to Cart
-                                                </button>
-                                            </div>
-                                            <% } %>
-                                                <% } else { %>
-                                                    <button onclick="redirectToLogin()"
-                                                        title="⚠️ Please log in to add items"
+                                <% if(product.totalStock<1) { %>
+                                    <button disabled
+                                        class="w-full flex items-center justify-center rounded-md bg-gray-300 px-5 py-2.5 text-center text-sm font-medium text-gray-600 cursor-not-allowed">
+                                        Out of Stock
+                                    </button>
+                                    <% } else if(isLoggedIn) { %>
+                                        <% if(product.inCart) { %>
+                                            <a href="/user/cart"
+                                                class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                                Go to Cart
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1)">
+                                                    <path
+                                                        d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
+                                                    </path>
+                                                    <path
+                                                        d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
+                                                    </path>
+                                                </svg>
+                                            </a>
+                                            <% } else { %>
+                                                <div>
+                                                    <button data-product_id="<%= product._id %>"
+                                                        onclick="addToCart(this)"
                                                         class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="mr-2 h-6 w-6" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor"
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                                             stroke-width="2">
-                                                            <path stroke-linecap="round"
-                                                                stroke-linejoin="round"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
                                                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                                         </svg>
                                                         Add to Cart
                                                     </button>
-                                                    <% } %>
+                                                </div>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <button onclick="redirectToLogin()"
+                                                            title="⚠️ Please log in to add items"
+                                                            class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                            </svg>
+                                                            Add to Cart
+                                                        </button>
+                                                        <% } %>
                             </div>
                         </div>
                     </div>

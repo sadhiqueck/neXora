@@ -212,7 +212,7 @@ const editProduct = async (req, res) => {
             const publicId = deletedImage.name.split('/').pop().split('.')[0];
             console.log(publicId)
             try {
-                await cloudinary.uploader.destroy(publicId);
+                 await cloudinary.uploader.destroy(`nexora_images/${publicId}`);
                 updatedImages[deletedImage.index] = null;
             } catch (error) {
                 console.error(`Failed to delete image ${publicId}:`, error);
@@ -224,7 +224,7 @@ const editProduct = async (req, res) => {
         // Handle new image uploads 
 
         if (req.files && req.files.length > 0) {
-            console.log(req.files)
+
             for (const file of req.files) {
                 const filename = file.originalname;
                 console.log(filename)
@@ -236,9 +236,8 @@ const editProduct = async (req, res) => {
                 // delete  from clouidnary
                 if (updatedImages[index] && !deletedImagesArray.find(img => img.index === index)) {
                     const oldPublicId = updatedImages[index].split('/').pop().split('.')[0];
-                    await cloudinary.uploader.destroy(oldPublicId);
+                    await cloudinary.uploader.destroy(`nexora_images/${oldPublicId}`);
                 }
-
                 updatedImages[index] = uploadResult.secure_url;
             }
         }
@@ -252,7 +251,7 @@ const editProduct = async (req, res) => {
             });
         }
 
- 
+
         const updatedProduct = await productDB.findByIdAndUpdate(
             productId,
             {
@@ -327,12 +326,12 @@ const updateProductStock = async (req, res) => {
 
                 // calculate lowstock
                 if (variant.stock <= 0) {
-                    variant.stockStatus = 'out'; 
-                  } else if (variant.stock < variant.lowStockThreshold) {
-                    variant.stockStatus = 'low'; 
-                  } else {
-                    variant.stockStatus = 'normal'; 
-                  }
+                    variant.stockStatus = 'out';
+                } else if (variant.stock < variant.lowStockThreshold) {
+                    variant.stockStatus = 'low';
+                } else {
+                    variant.stockStatus = 'normal';
+                }
             }
         });
 
@@ -349,5 +348,5 @@ const updateProductStock = async (req, res) => {
 module.exports = {
     addProduct, loadProducts,
     editProduct, loadAddProductpage, loadEditProductpage,
-     loadProductViewpage, deleteProduct,updateProductStock
+    loadProductViewpage, deleteProduct, updateProductStock
 }

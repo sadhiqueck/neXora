@@ -1,5 +1,4 @@
 
-
 document.addEventListener('DOMContentLoaded', function () {
 
     let activeInput = null;
@@ -117,10 +116,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Cancel button click handler
     document.getElementById('cancelCrop').addEventListener('click', function () {
-        hideCropperModal();
+        
         if (activeInput) {
-            activeInput.value = ''; // Clear the input
+            activeInput.value = ''; 
         }
+        hideCropperModal();
     });
 
     // Initialize the image previews

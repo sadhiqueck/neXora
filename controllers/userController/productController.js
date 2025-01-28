@@ -4,14 +4,23 @@ const Cart = require('../../models/cartModel');
 
 const loadProductsPage = async (req, res) => {
     try {
-        const category = req.params.category;
-        let products;
 
-        if (category === "all") {
-            products = await productsDB.find({ isDeleted: false });
-        } else {
-            products = await productsDB.find({ isDeleted: false, category: category });
-        }
+        const category = req.params.category;
+        let products = await productsDB.find({
+            isDeleted: false,
+            ...(category !== 'all' && { category })
+        });
+
+        const productsWithVariants = products.map(product => {
+            const productObj = product.toObject();
+
+            // Active variants with stock
+            productObj.activeVariants = productObj.variants.filter(variant =>
+                variant.status === 'active' && variant.stock > 0
+            );
+
+            return productObj;
+        });
 
         if (req.session.user) {
             const userId = req.session.user._id;
@@ -20,7 +29,6 @@ const loadProductsPage = async (req, res) => {
                 isOrdered: false
             });
 
-
             const cartProductIds = new Set();
             if (userCart) {
                 userCart.products.forEach(item => {
@@ -28,9 +36,8 @@ const loadProductsPage = async (req, res) => {
                 });
             }
 
-
-            const productsWithCartStatus = products.map(product => {
-                const productObj = product.toObject();
+            const productsWithCartStatus = productsWithVariants.map(product => {
+                const productObj = { ...product };
                 productObj.inCart = cartProductIds.has(product._id.toString());
                 return productObj;
             });
@@ -44,7 +51,7 @@ const loadProductsPage = async (req, res) => {
 
         res.render("user/products", {
             title: 'Products',
-            products,
+            products: productsWithVariants,
             category,
         });
 
@@ -53,7 +60,6 @@ const loadProductsPage = async (req, res) => {
         res.status(500).send("An error occurred while loading the products page. Please try again later.");
     }
 };
-
 const getProductsDetails = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -65,12 +71,11 @@ const getProductsDetails = async (req, res) => {
 
         const activeVariants = product.variants.filter(variant => variant.status === 'active');
 
-        //  unique colors
+        // Unique colors
         const colors = [...new Map(activeVariants
             .filter(variant =>
                 variant.color &&
                 variant.color.trim() !== '' &&
-                // check stock in this color
                 activeVariants.some(v =>
                     v.color.toLowerCase() === variant.color.toLowerCase() &&
                     v.stock > 0
@@ -82,10 +87,9 @@ const getProductsDetails = async (req, res) => {
                 }]
             )).values()];
 
-        // unique storage combinations
+        // Unique storage combinations
         const storages = [...new Map(activeVariants
             .filter(variant =>
-                // Only include variants have valid storage and storage unit
                 variant.storage &&
                 variant.storage.trim() !== '' &&
                 variant.storageUnit &&
@@ -100,8 +104,7 @@ const getProductsDetails = async (req, res) => {
                 }]
             )).values()];
 
-
-        //  related products
+        // Related products
         let relatedProducts = await productsDB.find({
             category: product.category,
             _id: { $ne: productId },
@@ -111,27 +114,46 @@ const getProductsDetails = async (req, res) => {
             const userId = req.session.user._id;
             const userCart = await Cart.findOne({
                 userId,
-                isOrdered: false
             });
-
-            //  Set of cart product ids
-            const cartProductIds = new Set();
-            if (userCart) {
-                userCart.products.forEach(item => {
-                    cartProductIds.add(item.productId.toString());
-                });
-            }
-
-
+    
             const productWithCart = product.toObject();
-            productWithCart.inCart = cartProductIds.has(product._id.toString());
+            // Check if any variant is in cart
+            productWithCart.variantsInCart = activeVariants
+                .filter(variant =>
+                    userCart.products.some(cartItem =>
+                        cartItem.productId.equals(product._id) &&
+                        cartItem.variantDetails.color === variant.color 
+                        &&
+                        (variant.storage ? cartItem.variantDetails.storage === `${variant.storage}${variant.storageUnit}` : true)
+                    )
+                )
+                .map(variant => ({
+                    color: variant.color,
+                    storage: variant.storage,
+                    storageUnit: variant.storageUnit
+                }));
 
+            productWithCart.inCart = productWithCart.variantsInCart.length > 0;
+
+            // Check if any related product is in cart
             relatedProducts = relatedProducts.map(relProduct => {
                 const relProductObj = relProduct.toObject();
-                relProductObj.inCart = cartProductIds.has(relProduct._id.toString());
+                relProductObj.variantsInCart = relProduct.variants
+                    .filter(variant =>
+                        userCart.products.some(cartItem =>
+                            cartItem.productId.equals(relProduct._id) &&
+                            cartItem.variantDetails.color === variant.color &&
+                            (variant.storage ? cartItem.variantDetails.storage === variant.storage : true)
+                        )
+                    )
+                    .map(variant => ({
+                        color: variant.color,
+                        storage: variant.storage,
+                        storageUnit: variant.storageUnit
+                    }));
+                relProductObj.inCart = relProductObj.variantsInCart.length > 0;
                 return relProductObj;
             });
-
 
             return res.render('user/product_details', {
                 title: 'Product_details',
@@ -141,6 +163,8 @@ const getProductsDetails = async (req, res) => {
                 storages,
             });
         }
+
+        // If not logged in
         res.render('user/product_details', {
             title: 'Product_details',
             product,
@@ -148,7 +172,6 @@ const getProductsDetails = async (req, res) => {
             colors,
             storages,
         });
-
     } catch (error) {
         console.error("Error fetching product details:", error);
         res.status(500).render('error', { message: 'Something went wrong!' });

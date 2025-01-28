@@ -208,8 +208,7 @@
                         <div class="flex justify-between ">
                             <p class="text-gray-700 font-medium">Subtotal (<%=cartItemCount%> items)</p>
                             <p class="text-gray-600 font-small">
-                                <%= new Intl.NumberFormat('en-IN', { style: 'currency' , currency: 'INR'
-                                    }).format(Math.round((subTotal*0.82))) %>
+                                <%=originalTotal.toLocaleString('en-IN',{style:'currency', currency:'INR'})%>
                             </p>
                         </div>
                         <div class="flex justify-between  text-gray-700">
@@ -274,8 +273,10 @@
                 if (response.ok) {
                     window.location.href = '/user/order-success';
                 } else {
-                    notyf.error("Order failed");
-                    console.log(response.message)
+                    notyf.error("Failed to place order");
+                    setTimeout(() => {
+                        window.location.href = '/user/cart';
+                    }, 500);
                 }
             })
             .catch(err => {

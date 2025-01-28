@@ -48,6 +48,11 @@ const orderSchema = new Schema({
             returnPeriod: { type: Number, required: true, min: 0 },
             warranty: { type: Number, required: true, min: 0 },
             images: { type: String, default: false },
+            variant:{
+                color: { type: String, required: true },
+                storage: { type: String, required: false },
+                additionalPrice: { type: Number, required: true, default: 0 },
+            },
             status: {
                 type: String,
                 enum: [
@@ -105,6 +110,7 @@ const orderSchema = new Schema({
         pincode: { type: String, trim: true },
         addressType: { type: String, trim: true },
     },
+    originalTotal: { type: Number, required: true },
     subTotal: { type: Number, required: true },
     totalSavings: { type: Number, required: true },
     deliveryCharge: { type: Number, required: true },
