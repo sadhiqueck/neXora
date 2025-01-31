@@ -9,9 +9,78 @@ const { uploadToCloudinary } = require('../../config/multerConfig');
 const loadProducts = async (req, res) => {
     try {
         if (req.session.admin) {
-            const products = await productDB.find({})
+
+            const { sort = 'active', search = '' } = req.query;
+            const page = parseInt(req.query.page) || 1;
+            const limit = 5;
+            const skip = (page - 1) * limit;
+
+            let query = {};
+
+            if (search) {
+                query.$or = [
+                    { productName: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } }
+                ];
+            }
+
+           
+           switch (sort) {
+            case 'active':
+                query.isDeleted = false; 
+                break;
+            case 'deleted':
+                query.isDeleted = true; 
+                break;
+            case 'lowStock':
+                query.totalStock = { $lt: 10 }; 
+                break;
+            case 'outOfStock':
+                query.totalStock = 0; 
+                break;
+           
+        }
+        
+        switch (sort) {
+            case 'lowStock':
+                sortQuery = { totalStock: 1 }; 
+                break;
+            case 'outOfStock':
+                sortQuery = { totalStock: -1 }; 
+                break;
+            case 'newest':
+                sortQuery = { createdAt: -1 }; 
+                break;
+            case 'oldest':
+                sortQuery = { createdAt: 1 }; 
+                break;
+            default:
+                sortQuery = { totalStock: 1 };
+        }
+
+            const totalProducts = await productDB.countDocuments(query);
+            const products = await productDB.find(query).sort(sortQuery).skip(skip).limit(limit);
+            const totalPages = Math.ceil(totalProducts / limit);
+            const startIndex = (page - 1) * limit + 1;
+            const endIndex = Math.min(page * limit, totalProducts);
+
             const categories = await categoryDB.find({})
-            res.render("admin/product_manage", { products, categories, title: 'Product Management' })
+            res.render("admin/product_manage", {
+                products,
+                categories,
+                title: 'Product Management',
+                pagination: {
+                    currentPage: page,
+                    totalPages,
+                    totalProducts,
+                    startIndex,
+                    endIndex,
+                    hasNextPage: page < totalPages,
+                    hasPrevPage: page > 1
+                },
+                search,
+                sort
+            })
         }
         else {
             return res.redirect('/admin/login')
@@ -212,7 +281,7 @@ const editProduct = async (req, res) => {
             const publicId = deletedImage.name.split('/').pop().split('.')[0];
             console.log(publicId)
             try {
-                 await cloudinary.uploader.destroy(`nexora_images/${publicId}`);
+                await cloudinary.uploader.destroy(`nexora_images/${publicId}`);
                 updatedImages[deletedImage.index] = null;
             } catch (error) {
                 console.error(`Failed to delete image ${publicId}:`, error);

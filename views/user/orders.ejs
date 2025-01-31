@@ -171,5 +171,38 @@
                 </a>
                 <% } %>
       </div>
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+            <p class="text-sm text-gray-700">
+                Showing
+                <span class="font-medium"><%= pagination.startIndex %></span>
+                to
+                <span class="font-medium"><%= pagination.endIndex %></span>
+                of
+                <span class="font-medium"><%= pagination.totalcategory%></span>
+                Categories 
+            </p>
+        </div>
+        <div class="mt-2 flex justify-end">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <% if (pagination.hasPrevPage) { %>
+                    <a href="?page=<%= pagination.currentPage - 1 %>" 
+                       class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">
+                        Previous
+                    </a>
+                <% } %>
+  
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>"><%= i %></a>
+                <% }%>
+  
+                <% if (pagination.hasNextPage) { %>
+                    <a href="?page=<%= pagination.currentPage + 1 %>" 
+                        class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
+                <% } %>
+            </nav>
+        </div>
     </div>
+    </div>
+      <!-- Pagination -->
   </div>

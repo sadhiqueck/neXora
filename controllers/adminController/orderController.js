@@ -5,8 +5,60 @@ const userDb = require('../../models/userModel');
 
 const loadOrders = async (req, res) => {
     try {
+        const { 
+            status = '', 
+            search = '', 
+            sortBy = 'orderDate', 
+            sortOrder = -1, 
+            page = 1,
+            startDate,
+            endDate 
+        } = req.query;
+        
+        const limit = 10;
+        const skip = (Math.max(1, page) - 1) * limit;
 
-        const orders = await ordersDb.aggregate([
+        const matchStage = {};
+
+        // Status filter
+        if (['Processing', 'Order Placed', 'Delivered', 'Shipped', 'Out for Delivery', 'Cancelled', 'Returned'].includes(status)) {
+            matchStage.status = status;
+        }
+
+        // Date filter
+        if (startDate || endDate) {
+            matchStage.orderDate = {};
+            if (startDate) {
+                matchStage.orderDate.$gte = new Date(startDate);
+            }
+            if (endDate) {
+                // Add one day to include the end date fully
+                const endDateTime = new Date(endDate);
+                endDateTime.setDate(endDateTime.getDate() + 1);
+                matchStage.orderDate.$lt = endDateTime;
+            }
+        }
+
+        // Search filter
+        if (search) {
+            matchStage.$or = [
+                { orderNumber: { $regex: search, $options: 'i' } },
+                { 'userData.username': { $regex: search, $options: 'i' } },
+                { 'userData.email': { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const sortOptions = {
+            newest: { orderDate: -1 },
+            oldest: { orderDate: 1 },
+            totalAsc: { total: 1 },
+            totalDesc: { total: -1 }
+        };
+        
+        const sortQuery = sortOptions[sortBy] || { orderDate: -1 };
+        if (sortOrder) sortQuery[Object.keys(sortQuery)[0]] = parseInt(sortOrder);
+
+        const aggregation = [
             {
                 $lookup: {
                     from: 'users',
@@ -15,16 +67,14 @@ const loadOrders = async (req, res) => {
                     as: 'userData'
                 }
             },
-            {
-                $unwind: '$userData'
-            },
+            { $unwind: '$userData' },
             {
                 $addFields: {
-                    totalQuantity: {
-                        $sum: '$products.quantity'
-                    }
+                    totalQuantity: { $sum: '$products.quantity' },
+                    orderDate: { $toDate: '$orderDate' }
                 }
             },
+            { $match: matchStage },
             {
                 $project: {
                     orderNumber: 1,
@@ -39,23 +89,49 @@ const loadOrders = async (req, res) => {
                     paymentStatus: 1,
                     deliveryType: 1,
                     totalQuantity: 1
-
                 }
             },
+            { $sort: sortQuery },
             {
-                $sort: { orderDate: -1 }
+                $facet: {
+                    paginatedResults: [{ $skip: skip }, { $limit: limit }],
+                    totalCount: [{ $count: 'count' }]
+                }
             }
+        ];
 
-        ])
+        const [result] = await ordersDb.aggregate(aggregation);
+        const orders = result.paginatedResults;
+        const totalCount = result.totalCount[0]?.count || 0;
+        const totalPages = Math.ceil(totalCount / limit);
+        const startIndex = skip + 1;
+        const endIndex = Math.min(skip + limit, totalCount);
 
-        res.render('admin/order_management', { orders, title: 'Order Management' })
-    }
-    catch (err) {
+        res.render('admin/order_management', {
+            orders,
+            title: 'Order Management',
+            currentStatus: status,
+            currentSearch: search,
+            currentSort: sortBy,
+            currentSortOrder: sortOrder,
+            startDate: startDate || '',
+            endDate: endDate || '',
+            search,
+            pagination: {
+                currentPage: Number(page),
+                totalPages,
+                totalCount,
+                startIndex,
+                endIndex,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
+        });
+    } catch (err) {
         console.error('Error loading orders:', err);
-        res.status(500).send('Error loading orders');
+        res.status(500).render('error', { message: 'Error loading orders' });
     }
-
-}
+};
 
 
 const updateOrder = async (req, res) => {
@@ -106,6 +182,8 @@ const updateProductStatus = async (req, res) => {
         res.status(500).json({ error: error.message || 'Failed to update statuses.' });
     }
 }
+
+
 const cancelAll = async (req, res) => {
     try {
         const { orderId } = req.body;

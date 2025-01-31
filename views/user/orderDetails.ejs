@@ -224,7 +224,7 @@
                                 <%= product.discountedPrice.toLocaleString('en-IN',{style:'currency',currency:"INR"}) %>
                             </p>
                             <p class="text-xs text-gray-500">per unit</p>
-                            <p class="text-xs text-gray-500">Return Period: <%=product.returnPeriod %> days</p>
+                            <p class="text-xs text-gray-500">Return Period: <%=product.returnPeriod < 1 ? "X No return policy for this product" : `${product.returnPeriod} days` %></p>
                             <p class="text-xs text-gray-500 pb-3">Warranty: <%=product.warranty %> months</p>
                             <!-- cancel button -->
                             <div class="flex justify-end">

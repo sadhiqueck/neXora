@@ -150,7 +150,8 @@
                                         </h3>
                                         <p class="text-gray-500 text-sm ">Model: <%=product.model %>
                                         </p>
-                                        <p class="text-gray-500 text-sm mt-1">Color: Black | Size: Standard</p>
+                                        <p class="text-gray-500 text-sm mt-1">  Color: <%= product.variant.color %> 
+                                            <%= product.variant.storage ? '| Size: ' + product.variant.storage : '' %></p>
                                         <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %>
                                         </p>
                                         <div class="mt-2 flex items-center space-x-4">

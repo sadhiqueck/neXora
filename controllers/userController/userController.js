@@ -19,17 +19,18 @@ const loadHome = async (req, res) => {
                 isOrdered: false
             });
 
-            const products = await Products.find({});
+            const products = await Products.find({isDeleted:false});
+            const availableProducts = products.filter(product => product.totalStock !== 0);
 
             const cartProductIds = new Set();
             if (userCart) {
-                userCart.products.forEach(item => {
+                userCart.availableProducts.forEach(item => {
                     cartProductIds.add(item.productId.toString());
                 });
             }
 
 
-            const productsWithCartStatus = products.map(product => {
+            const productsWithCartStatus = availableProducts.map(product => {
                 const productObj = product.toObject();
                 productObj.inCart = cartProductIds.has(product._id.toString());
                 return productObj;
@@ -41,8 +42,9 @@ const loadHome = async (req, res) => {
             });
 
         } else {
-            const products = await Products.find({});
-            return res.render("user/home", { title: 'HomePage', products });
+            const products = await Products.find({isDeleted:false});
+            const availableProducts = products.filter(product => product.totalStock !== 0);
+            return res.render("user/home", { title: 'HomePage', products:availableProducts });
         }
     }
 

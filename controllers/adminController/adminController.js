@@ -63,18 +63,78 @@ const loadDashboard = async (req, res) => {
 const loadUsers = async (req, res) => {
     try {
         if (req.session.admin) {
-            const users = await Users.find({})
-            res.render("admin/user_manage", { users, title: 'User Management' })
-        }
-        else {
-            return res.redirect('/admin/login')
-        }
+            const { sort = '', search = '' } = req.query;
+            const page = parseInt(req.query.page) || 1;
+            const limit = 5;
+            const skip = (page - 1) * limit;
 
+            let query = {};
+
+
+            if (search) {
+                query.$or = [
+                    { name: { $regex: search, $options: 'i' } },
+                    { email: { $regex: search, $options: 'i' } }
+                ];
+            }
+
+
+            switch (sort) {
+                case 'active':
+                    query.isDeleted = false;
+                    query.isBlocked = false;
+                    break;
+                case 'blocked':
+                    query.isBlocked = true;
+                    break;
+                case 'deleted':
+                    query.isDeleted = true;
+                    break;
+
+            }
+
+
+            let sortQuery = {};
+            switch (sort) {
+                case 'newest':
+                    sortQuery = { createdAt: -1 };
+                    break;
+                case 'oldest':
+                    sortQuery = { createdAt: 1 };
+                    break;
+                default:
+                    sortQuery = { createdAt: -1 };
+            }
+
+            const totalUsers = await Users.countDocuments(query);
+            const users = await Users.find(query).sort(sortQuery).skip(skip).limit(limit).lean();
+            const totalPages = Math.ceil(totalUsers / limit);
+            const startIndex = (page - 1) * limit + 1;
+            const endIndex = Math.min(page * limit, totalUsers)
+            res.render("admin/user_manage", {
+                users,
+                title: 'User Management',
+                sort,
+                searchQuery: search,
+                pagination:{
+                    currentPage: page,
+                    totalUsers,
+                    totalPages,
+                    startIndex,
+                    endIndex,
+                    hasNextPage: page < totalPages,
+                    hasPrevPage: page > 1
+                }
+            });
+        } else {
+            return res.redirect('/admin/login');
+        }
     } catch (error) {
-        console.log(error);
-
+        console.error('Error in loadUsers:', error);
+        res.status(500).render('error', { message: 'Server Error' });
     }
-}
+};
+
 
 const deleteUser = async (req, res) => {
     try {

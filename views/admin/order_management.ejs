@@ -35,24 +35,46 @@
                         </li>
                     </ol>
                 </nav>
+
                 <!-- searvh and date filter -->
+                <form action="/admin/orders" method="get" id="filter-form">
                 <div class="flex space-x-4 ">
-                    <input type="date"
-                        class="border border-gray-300 p-2 rounded text-gray-700 focus:ring-0 focus:border-button-color">
-
-                    <!-- search -->
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                fill="none" viewBox="0 0 20 20">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                            </svg>
-                        </div>
-                        <input type="text" placeholder="Search orders..."
-                            class="pl-10 pr-4 py-2 border border-gray-300 rounded w-64 focus:ring-0 focus:border-button-color">
+                    <div class="flex space-x-2">
+                        <input 
+                            type="date" 
+                            name="startDate" 
+                            value="<%= startDate %>"
+                            class="border border-gray-300 p-2 rounded text-gray-700 focus:ring-0 focus:border-button-color"
+                        >
+                        <span class="self-center">to</span>
+                        <input 
+                            type="date" 
+                            name="endDate" 
+                            value="<%= endDate %>"
+                            class="border border-gray-300 p-2 rounded text-gray-700 focus:ring-0 focus:border-button-color"
+                        >
                     </div>
-
+                    <!-- search -->
+           
+                    <div>
+              
+                          <label for="table-search-category" class="sr-only">Search</label>
+                          <div class="relative">
+                            <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                              </svg>
+                            </div>
+                            <input type="text" id="table-search" name="search" value="<%=currentSearch%>"
+                              class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              placeholder="Search Orders">
+                              <p id="error-message"></p>
+                          </div>
+                          </form>
+              
+                      </div>
                 </div>
             </div>
 
@@ -61,22 +83,20 @@
 
             <!-- status filter -->
             <div class="mb-6 flex gap-3">
-                <button
-                    class="px-4 py-2 rounded-full text-sm font-medium bg-white shadow-sm border border-gray-200 text-gray-600">
-                    All
-                </button>
-                <button class="px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    Pending
-                </button>
-                <button class="px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    Processing
-                </button>
-                <button class="px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    Shipped
-                </button>
-                <button class="px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    Delivered
-                </button>
+                <a href="/admin/orders" class="<%= !currentStatus ? 'filter-active' : '' %>">
+                    <button class="px-4 py-2 rounded-full text-sm font-medium <%= !currentStatus ? 'bg-button-color text-white' : 'bg-gray-200 text-gray-500' %> hover:bg-gray-50">
+                        All
+                    </button>
+                </a>
+                <% const statuses = ['Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Returned']; %>
+                <% statuses.forEach(status => { %>
+                    <a href="/admin/orders?status=<%= status %><%= startDate ? `&startDate=${startDate}` : '' %><%= endDate ? `&endDate=${endDate}` : '' %><%= search ? `&search=${search}` : '' %>"
+                       class="<%= currentStatus === status ? 'filter-active' : '' %>">
+                        <button class="px-4 py-2 rounded-full text-sm font-medium <%= currentStatus === status ? 'bg-button-color text-white' : 'bg-gray-200 text-gray-500' %> hover:bg-gray-50">
+                            <%= status %>
+                        </button>
+                    </a>
+                <% }); %>
             </div>
 
             <!-- table -->
@@ -184,42 +204,64 @@
             </div>
 
 
-            <!-- Pagination -->
+        <!-- Pagination -->
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+            <p class="text-sm text-gray-700">
+                Showing
+                <span class="font-medium"><%= pagination.startIndex %></span>
+                to
+                <span class="font-medium"><%= pagination.endIndex %></span>
+                of
+                <span class="font-medium"><%= pagination.totalcategory%></span>
+                Categories 
+            </p>
+        </div>
+        <div class="mt-2 flex justify-end">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <% if (pagination.hasPrevPage) { %>
+                    <a href="?page=<%= pagination.currentPage - 1 %>" 
+                       class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">
+                        Previous
+                    </a>
+                <% } %>
 
-            <div class="flex items-center justify-between border-t border-gray-200  px-4 py-3 sm:px-6">
-                <div class="flex flex-1 justify-between sm:hidden">
-                    <a href="#"
-                        class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-                    <a href="#"
-                        class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
-                </div>
-                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                        <p class="text-sm text-gray-700">
-                            Showing
-                            <span class="font-medium">1</span>
-                            to
-                            <span class="font-medium">10</span>
-                            of
-                            <span class="font-medium">97</span>
-                            details
-                        </p>
-                    </div>
-                    <div class="mt-2 flex justify-end">
-                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                            <a href="#"
-                                class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">Previous</a>
-                            <a href="#" class="px-3 py-2 border bg-indigo-50 text-button-color">1</a>
-                            <a href="#" class="px-3 py-2 border bg-white text-gray-500 hover:bg-gray-50">2</a>
-                            <a href="#" class="px-3 py-2 border bg-white text-gray-500 hover:bg-gray-50">3</a>
-                            <a href="#"
-                                class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>"><%= i %></a>
+                <% }%>
+
+                <% if (pagination.hasNextPage) { %>
+                    <a href="?page=<%= pagination.currentPage + 1 %>" 
+                        class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
+                <% } %>
+            </nav>
+        </div>
+    </div>
         </div>
     </section>
     <script src="/js/admin_script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('filter-form');
+            const dateInputs = form.querySelectorAll('input[type="date"]');
+            
+            dateInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    const currentUrl = new URL(window.location.href);
+                    const searchParams = new URLSearchParams(currentUrl.search);
+                    
+                    dateInputs.forEach(dateInput => {
+                        if (dateInput.value) {
+                            searchParams.set(dateInput.name, dateInput.value);
+                        } else {
+                            searchParams.delete(dateInput.name);
+                        }
+                    });
+                    
+                    window.location.href = `${currentUrl.pathname}?${searchParams.toString()}`;
+                });
+            });
+        });
+        </script>
 
 </body>

@@ -85,9 +85,9 @@ const orderSchema = new Schema({
     paymentMethod: {
         type: String,
         enum: [
-            "cod",
-            "online",
-            "wallet",
+            "COD",
+            "Razorpay",
+            "Wallet",
         ],
         required: true,
     },

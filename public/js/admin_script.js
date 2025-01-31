@@ -76,13 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.id === 'dashboard' ||
     document.body.id === 'category_manage' ||
     document.body.id === 'user_manage') {
-    const dropdownButton = document.getElementById("dropdownActionButton");
-    const dropdownMenu = document.getElementById("dropdownRadioBgHover");
-
-    dropdownButton.addEventListener("click", () => {
-      dropdownMenu.classList.toggle("hidden"); // Toggle the "hidden" class
-    });
-
+  
 
 
     function exportPDF() {

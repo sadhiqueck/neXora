@@ -51,6 +51,8 @@
         <div
             class=" px-6 py-5 flex  w-full items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4  dark:bg-gray-900">
             <div>
+                <form action="/admin/products" method="get" id="sort-form">
+
                 <label for="table-search-users" class="sr-only">Search</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -60,69 +62,33 @@
                                 d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                         </svg>
                     </div>
-                    <input type="text" id="table-search-users"
+                    <input type="text" id="table-search-users" name="search" value="<%=search%>"
                         class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Search Product">
+                        <p id="error-message"></p>
                 </div>
 
             </div>
 
             <!--  sort -->
-            <div class="relative inline-block ">
-                <button id="dropdownActionButton" data-dropdown-toggle="dropdownAction"
-                    class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                    type="button"><img src="/Icons/slider.svg" alt="" class="pr-2">
-                    Sort
-                </button>
-
-                <!-- Dropdown menu -->
-                <div id="dropdownAction"
-                    class="absolute z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 top-full mt-1">
-                    <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
-                        aria-labelledby="dropdownActionButton">
-                        <li>
-                            <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                <input checked id="last-modified" type="radio" value="" name="sort-option"
-                                    class="w-4 h-4 text-button-color bg-gray-100 border-gray-300 focus:ring-button-color dark:focus:ring-buttontext-button-color dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                <label for="last-modified"
-                                    class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Last
-                                    Modified</label>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                <input id="ascending" type="radio" value="" name="sort-option"
-                                    class="w-4 h-4 text-button-color bg-gray-100 border-gray-300 focus:ring-button-color dark:focus:ring-buttontext-button-color dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                <label for="ascending"
-                                    class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Ascending</label>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                <input id="descending" type="radio" value="" name="sort-option"
-                                    class="w-4 h-4 text-button-color bg-gray-100 border-gray-300 focus:ring-button-color dark:focus:ring-buttontext-button-color dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                <label for="descending"
-                                    class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Descending</label>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                <input id="active" type="radio" value="" name="sort-option"
-                                    class="w-4 h-4 text-button-color bg-gray-100 border-gray-300 focus:ring-button-color dark:focus:ring-buttontext-button-color dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                <label for="active"
-                                    class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Active</label>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                <input id="sort-radio" type="radio" value="" name="sort-option"
-                                    class="w-4 h-4 text-button-color bg-gray-100 border-gray-300 focus:ring-button-color dark:focus:ring-buttontext-button-color dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
-                                <label for="sort-radio"
-                                    class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Blocked</label>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+            <div class="relative inline-block">
+                <select id="productSort" name="sort" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-8 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="" disabled selected>Sort Products</option>
+                    <optgroup label="Status">
+                        <option value="active" <%= sort === 'active' ? 'selected' : '' %>>Active Products</option>
+                        <option value="deleted" <%= sort === 'deleted' ? 'selected' : '' %>>Deleted Products</option>
+                    </optgroup>
+                    <optgroup label="Stock">
+                        <option value="lowStock" <%= sort === 'lowStock' ? 'selected' : '' %>>Low Stock</option>
+                        <option value="outOfStock" <%= sort === 'outOfStock' ? 'selected' : '' %>>Out of Stock</option>
+                    </optgroup>
+                    <optgroup label="Date">
+                        <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+                        <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+                    </optgroup>
+                </select>
+            </form>
+               
             </div>
         </div>
         <div class=" bg-white rounded-lg shadow overflow-x-auto">
@@ -245,11 +211,6 @@
                                         </button>
                                     </a>
 
-                                  
-
-
-                                     
-
                                         <!-- delete button -->
 
 
@@ -285,23 +246,31 @@
                 <div>
                     <p class="text-sm text-gray-700">
                         Showing
-                        <span class="font-medium">1</span>
+                        <span class="font-medium"><%= pagination.startIndex %></span>
                         to
-                        <span class="font-medium">10</span>
+                        <span class="font-medium"><%= pagination.endIndex %></span>
                         of
-                        <span class="font-medium">97</span>
-                        details
+                        <span class="font-medium"><%= pagination.totalProducts %></span>
+                        products
                     </p>
                 </div>
                 <div class="mt-2 flex justify-end">
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                        <a href="#"
-                            class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">Previous</a>
-                        <a href="#" class="px-3 py-2 border bg-indigo-50 text-button-color">1</a>
-                        <a href="#" class="px-3 py-2 border bg-white text-gray-500 hover:bg-gray-50">2</a>
-                        <a href="#" class="px-3 py-2 border bg-white text-gray-500 hover:bg-gray-50">3</a>
-                        <a href="#"
-                            class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
+                        <% if (pagination.hasPrevPage) { %>
+                            <a href="?page=<%= pagination.currentPage - 1 %>" 
+                               class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">
+                                Previous
+                            </a>
+                        <% } %>
+
+                        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                        <a href="?page=<%= i %>" class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>"><%= i %></a>
+                        <% }%>
+
+                        <% if (pagination.hasNextPage) { %>
+                            <a href="?page=<%= pagination.currentPage + 1 %>" 
+                                class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
+                        <% } %>
                     </nav>
                 </div>
             </div>
@@ -311,22 +280,18 @@
 
 
     <script>
-         document.getElementById("table-search-users").addEventListener("input", function () {
-        const filter = this.value.toLowerCase();
-        const rows = document.querySelectorAll("#userTable tbody tr");
-
-        rows.forEach(row => {
-            const productName = row.querySelector(".product-name").textContent.toLowerCase();
-            if (productName.includes(filter)) {
-                row.style.display = ""; 
-            } else {
-                row.style.display = "none"; 
-            }
-        });
-    });
+        
 
 
+    const form = document.querySelector('#sort-form');
+    const searchInput=document.getElementById("table-search-users")
 
+    document.querySelector('#productSort').addEventListener('change',()=>{
+        form.submit();
+    })
+     searchInput.addEventListener("change", function () {
+        form.submit();
+    }); 
         function deleteProduct(productId) {
             window.location.href = `/admin/delete-product/${productId}`;
 
@@ -336,6 +301,18 @@
             window.location.href = `/admin/edit-product/${productId}`;
 
         }
+
+        searchInput.addEventListener("input", function () {
+        const regex = /^[A-Za-z0-9 ]*$/; 
+        const errorMessage = document.getElementById("error-message");
+
+        if (!regex.test(this.value)) {
+            errorMessage.classList.remove("hidden");
+            this.value = this.value.replace(/[^A-Za-z0-9 ]/g, "");
+        } else {
+            errorMessage.classList.add("hidden");
+        }
+    });
     </script>
 
     <!-- Alpine.js -->

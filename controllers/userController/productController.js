@@ -1,27 +1,100 @@
 const Users = require('../../models/userModel')
 const productsDB = require("../../models/productModel")
 const Cart = require('../../models/cartModel');
+const categoriesDB = require('../../models/categoryModel');
+
 
 const loadProductsPage = async (req, res) => {
     try {
-
         const category = req.params.category;
-        let products = await productsDB.find({
-            isDeleted: false,
-            ...(category !== 'all' && { category })
-        });
+        const page = parseInt(req.query.page) || 1;
+        const limit = 12; 
+        const skip = (page - 1) * limit;
+        const {
+            search = '',
+            minPrice,
+            maxPrice,
+            brand,
+            discount,
+            selectedcategories,
+            sort = '',
+            availability
+        } = req.query;
+
+
+        let query = { isDeleted: false };
+        
+
+        if (selectedcategories && selectedcategories.length) {
+            const categoryArray = Array.isArray(selectedcategories) ? selectedcategories : [selectedcategories];
+            query.category = { $in: categoryArray };
+        }
+
+        // Add search filter
+        if (search.trim()) {
+            query.productName = { $regex: search, $options: 'i' };
+        }
+
+        // Add price range filter
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) query.price.$gte = parseFloat(minPrice);
+            if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+        }
+
+        if (brand) {
+            query.brand = brand;
+        }
+
+
+        if (discount) {
+            query.discount = { $gte: parseInt(discount) };
+        }
+
+        let sortQuery = {};
+        switch (sort) {
+            case 'price-asc':
+                sortQuery = { price: 1 };
+                break;
+            case 'price-desc':
+                sortQuery = { price: -1 };
+                break;
+            case 'discount':
+                sortQuery = { discount: -1 };
+                break;
+            default:
+                sortQuery = { createdAt: -1 };
+        }
+    
+
+        const totalProducts = await productsDB.countDocuments(query);
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        let products = await productsDB.find(query)
+            .sort(sortQuery)
+            .skip(skip)
+            .limit(limit);
+
+        const categories = await categoriesDB.find({ isDeleted: false });
+        const brands = await productsDB.distinct('brand', { isDeleted: false });
 
         const productsWithVariants = products.map(product => {
             const productObj = product.toObject();
-
-            // Active variants with stock
             productObj.activeVariants = productObj.variants.filter(variant =>
                 variant.status === 'active' && variant.stock > 0
             );
-
             return productObj;
         });
 
+        // Filter by availability if needed
+        let filteredProducts = productsWithVariants;
+        if (availability === 'in-stock') {
+            filteredProducts = productsWithVariants.filter(product => 
+                product.activeVariants && product.activeVariants.length > 0
+            );
+        }
+
+        let finalProducts = filteredProducts;
         if (req.session.user) {
             const userId = req.session.user._id;
             const userCart = await Cart.findOne({
@@ -36,23 +109,34 @@ const loadProductsPage = async (req, res) => {
                 });
             }
 
-            const productsWithCartStatus = productsWithVariants.map(product => {
-                const productObj = { ...product };
-                productObj.inCart = cartProductIds.has(product._id.toString());
-                return productObj;
-            });
-
-            return res.render("user/products", {
-                title: 'Products',
-                products: productsWithCartStatus,
-                category,
-            });
+            finalProducts = filteredProducts.map(product => ({
+                ...product,
+                inCart: cartProductIds.has(product._id.toString())
+            }));
         }
 
         res.render("user/products", {
             title: 'Products',
-            products: productsWithVariants,
+            products: finalProducts,
             category,
+            categories,
+            brands,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            },
+            filters: {
+                search,
+                minPrice,
+                maxPrice,
+                brand,
+                discount,
+                sort,
+                selectedcategories,
+                availability
+            }
         });
 
     } catch (error) {
@@ -60,6 +144,8 @@ const loadProductsPage = async (req, res) => {
         res.status(500).send("An error occurred while loading the products page. Please try again later.");
     }
 };
+
+
 const getProductsDetails = async (req, res) => {
     try {
         const productId = req.params.id;

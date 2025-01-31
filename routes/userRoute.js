@@ -4,19 +4,22 @@ const { loadHome, loadUserProfile, updateName, loadAddressprofile,
     updateAddress, profileAddAddress, deleteAddress,LoadChangePassword,
     updatePassword } = require('../controllers/userController/userController');
     
-const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
+const { loadProductsPage, getProductsDetails} = require('../controllers/userController/productController');
 const { sendOTP, resendOtp,sendresetOtp } = require('../controllers/userController/otpController')
 const { signup, login, googleLogin,logout,forgotPassword,loadResetOtpPage,resetPassword} = require('../controllers/userController/authController');
 
 const { loadCart, addToCart,productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
 const { loadAddress, addAddress, loadShippingMethod, saveDeliveryMethod,
-    shippingMethod, loadPaymentPage, placeOrder, orderSuccess } = require('../controllers/userController/checkoutController');
+    shippingMethod } = require('../controllers/userController/checkoutController');
+const {loadPaymentPage, placeOrder, orderSuccess,verifyPayment,createRazorpayOrder} =require('../controllers/userController/paymentController')
 const { loadOrder, loadOrderDetails,cancelItem, cancelOrder } = require('../controllers/userController/orderController');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+
 // middlewares
 const { isLogin, authsession, checkoutAccess,validateResetFlow } = require("../middleware/userAuth");
+const{validateProductsFilter}=require('../middleware/validateProductFilter')
 
 
 // signup pages
@@ -54,7 +57,7 @@ router.post('/resend-otp',isLogin, resendOtp);
 router.get('/logout',authsession,logout)
 
 // product page
-router.get('/products/:category', loadProductsPage)
+router.get('/products/:category',validateProductsFilter, loadProductsPage)
 router.get('/product/:id', getProductsDetails)
 
 
@@ -80,7 +83,11 @@ router.post('/save-delivery', authsession, saveDeliveryMethod)
 // payment page
 router.get('/payment', authsession, checkoutAccess, loadPaymentPage)
 router.post('/place-order', authsession, checkoutAccess, placeOrder)
-router.get('/order-success/', authsession, checkoutAccess, orderSuccess)
+router.get('/order-success', authsession, checkoutAccess, orderSuccess)
+
+// razorpay
+router.post('/create-razorpay-order', authsession, checkoutAccess, createRazorpayOrder);
+router.post('/verify-payment', authsession, checkoutAccess, verifyPayment);
 
 // user dashboard
 router.get('/profile', authsession, loadUserProfile)
@@ -99,13 +106,12 @@ router.post('/address-delete/:id', authsession, deleteAddress)
 // Orders
 
 router.get('/orders', authsession, loadOrder)
-
 router.get('/order-details/:orderId', authsession, loadOrderDetails)
+router.post('/order/cancel-item',authsession,cancelItem);
+router.post('/order/cancel',authsession,cancelOrder)// entire order cancel
 
-router.post('/order/cancel-item',cancelItem);
-
-// entire order cancel
-router.post('/order/cancel',cancelOrder)
+// Wallet
+router.get('/wallet',loadWallet)
 
 
 module.exports = router

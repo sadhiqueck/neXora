@@ -5,9 +5,27 @@ const productsdb = require('../../models/productModel');
 const loadOrder = async (req, res) => {
     try {
         const userId = req.session.user._id;
+        const page = req.query.page || 1;
+        const limit = 6;
+        const skip = (Math.max(1, page) - 1) * limit;
+
+        const totalOrders = await orderdb.countDocuments({});
         const orders = await orderdb.find({ userId })
-            .populate('products.productId').sort({ orderDate: -1 })
-        res.render('user/orders', { title: 'Orders', orders });
+            .populate('products.productId').sort({ orderDate: -1 }).skip(skip).limit(limit).lean();
+        const totalPages = Math.ceil(totalOrders / limit);
+        const startIndex = (page - 1) * limit + 1;
+        const endIndex = Math.min(page * limit, totalPages)
+        res.render('user/orders', { title: 'Orders', orders,
+            pagination:{
+                currentPage: page,
+                totalOrders,
+                totalPages,
+                startIndex,
+                endIndex,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
+         });
     } catch (error) {
         console.error('Error loading orders:', error);
         return res.status(500).json({ error: 'Failed to load orders' });
@@ -46,7 +64,7 @@ const cancelItem = async (req, res) => {
         if (!product) return res.status(404).json({ success: false, message: "order not found" })
 
         product.status = "Cancelled";
-    
+
         order.status = computeOrderStatus(order.products);
 
         await order.save();
@@ -88,4 +106,4 @@ function computeOrderStatus(products) {
     };
 }
 
-module.exports = { loadOrder, loadOrderDetails, cancelItem,cancelOrder }
+module.exports = { loadOrder, loadOrderDetails, cancelItem, cancelOrder }

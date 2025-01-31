@@ -49,7 +49,7 @@ router.get('/product/:id/edit',authsession, loadEditProductpage)
 router.put('/product/edit/:id',authsession,validateStockUpdate, multerUpload, editProduct)
 router.get('/delete-product/:id', authsession, deleteProduct)
 // stock upation
-router.put('/product/update-stock/:id',updateProductStock)
+router.put('/product/update-stock/:id',authsession,updateProductStock)
 
 
 
