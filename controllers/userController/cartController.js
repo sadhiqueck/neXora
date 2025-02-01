@@ -1,5 +1,6 @@
 const productsDB = require('../../models/productModel');
 const cartDb = require('../../models/cartModel');
+const Wishlist = require('../../models/wishListModel');
 
 
 
@@ -22,16 +23,24 @@ const loadCart = async (req, res) => {
                 total: 0
             });
         }
-        let cartUpdated = false; //if any changes needed in cart
+
+        let cartUpdated = false;
+
+
+        const cartProductIds = cart.products.map(item => item.productId._id.toString());
+
+
+        const userWishlist = await Wishlist.findOne({ user: req.session.user._id }).lean();
+        const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
 
         const cartWithDetails = cart.products.map((item) => {
             const product = item.productId;
 
-            // Find the matching variant with flexible storage check
+     
             const variant = product.variants.find(v => {
                 const colorMatch = v.color === item.variantDetails.color;
 
-                // If cart item has storage specification
+        
                 if (item.variantDetails.storage) {
                     return colorMatch &&
                         v.storage !== null &&
@@ -42,18 +51,15 @@ const loadCart = async (req, res) => {
                 return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
             });
 
-
             const basePrice = product.price;
-
             const variantPrice = Math.round((basePrice + (variant?.additionalPrice || 0)) * (1 - product.discount / 100));
 
-            // checkk product id out of stock
+        
             const isOutOfStock = !variant || variant.stock < 1;
 
-            // adjust quantity if stock is lower than selected quantity;
+            //asdjust quantity if stock is lower than selected quantity
             const adjustedQuantity = isOutOfStock ? 0 : Math.min(item.quantity, variant.stock);
 
-            // if any changes needed in cart
             if (adjustedQuantity !== item.quantity) {
                 cartUpdated = true;
                 item.quantity = adjustedQuantity;
@@ -64,9 +70,22 @@ const loadCart = async (req, res) => {
                 variantPrice,
                 productImage: product.images[0],
                 outOfStock: isOutOfStock,
+                isWishlisted: wishlistProductIds.has(product._id.toString())
             };
         });
-        
+
+     
+        const suggestedProducts = products
+            .filter(product => 
+                product.totalStock > 0 && 
+                !cartProductIds.includes(product._id.toString())
+            )
+            .slice(0, 4)
+            .map(product => ({
+                ...product.toObject(),
+                isWishlisted: wishlistProductIds.has(product._id.toString())
+            }));
+
         if (cartUpdated) {
             await cart.save();
         }
@@ -88,12 +107,12 @@ const loadCart = async (req, res) => {
 
             return !variant || variant.stock < 1;
         });
-;
+
+
+
 
         cartWithDetails.hasOutOfStock = hasOutOfStock;
-
-
-        // Filter out out-of-stock products for summary calculation
+     
         const validProducts = cartWithDetails.filter(product => !product.outOfStock);
         const totalItems = validProducts.reduce((total, product) => total + product.quantity, 0);
         const subTotal = validProducts.reduce((total, product) => total + product.quantity * product.variantPrice, 0);
@@ -113,7 +132,8 @@ const loadCart = async (req, res) => {
             deliveryCharge,
             tax,
             total,
-            products
+            suggestedProducts,
+            // products
         });
 
     } catch (error) {
@@ -124,6 +144,7 @@ const loadCart = async (req, res) => {
 
 
 const addToCart = async (req, res) => {
+
 
     try {
         const { productId } = req.body;

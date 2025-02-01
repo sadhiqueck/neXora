@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, NIL } = require('uuid');
 
 const orderSchema = new Schema({
     userId: {
@@ -48,7 +48,7 @@ const orderSchema = new Schema({
             returnPeriod: { type: Number, required: true, min: 0 },
             warranty: { type: Number, required: true, min: 0 },
             images: { type: String, default: false },
-            variant:{
+            variant: {
                 color: { type: String, required: true },
                 storage: { type: String, required: false },
                 additionalPrice: { type: Number, required: true, default: 0 },
@@ -65,14 +65,15 @@ const orderSchema = new Schema({
                 ],
                 default: "Processing",
             },
+            cancelDescription: { type: String, required: false },
             deliveryDate: {
                 type: Date,
                 required: true,
             },
         },
     ],
-
-
+    cancelDescription: { type: String, required: false },
+    
     deliveryType: {
         type: String,
         enum: [

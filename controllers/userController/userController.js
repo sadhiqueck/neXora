@@ -4,6 +4,7 @@ const Products = require("../../models/productModel")
 const addressDb = require('../../models/addressModel')
 const Cart = require('../../models/cartModel')
 const bcrypt = require('bcrypt')
+const Wishlist= require('../../models/wishListModel')
 
 
 
@@ -11,7 +12,7 @@ const bcrypt = require('bcrypt')
 
 const loadHome = async (req, res) => {
     try {
-        let products;
+
         if (req.session.user) {
             const userId = req.session.user._id;
             const userCart = await Cart.findOne({
@@ -19,32 +20,60 @@ const loadHome = async (req, res) => {
                 isOrdered: false
             });
 
-            const products = await Products.find({isDeleted:false});
-            const availableProducts = products.filter(product => product.totalStock !== 0);
+            const products = await Products.find({ isDeleted: false });
 
-            const cartProductIds = new Set();
-            if (userCart) {
-                userCart.availableProducts.forEach(item => {
-                    cartProductIds.add(item.productId.toString());
-                });
-            }
-
-
-            const productsWithCartStatus = availableProducts.map(product => {
+            const productsWithVariants = products.map(product => {
                 const productObj = product.toObject();
-                productObj.inCart = cartProductIds.has(product._id.toString());
+                productObj.activeVariants = productObj.variants.filter(variant =>
+                    variant.status === 'active' && variant.stock > 0
+                );
                 return productObj;
             });
 
+            let filteredProducts = productsWithVariants;
+
+            filteredProducts = productsWithVariants.filter(product =>
+                product.activeVariants && product.activeVariants.length > 0);
+
+            let finalProducts = filteredProducts;
+            
+            if (req.session.user) {
+                const userId = req.session.user._id;
+                const userCart = await Cart.findOne({
+                    userId,
+                });
+
+                const cartProductIds = new Set();
+
+                if (userCart) {
+                    userCart.products.forEach(item => {
+                        cartProductIds.add(item.productId.toString());
+                    });
+                }
+
+                // get wishlist
+                const userWishlist = await Wishlist.findOne({ user: userId }).lean();
+                const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
+                
+
+
+                finalProducts = filteredProducts.map(product => ({
+                    ...product,
+                    inCart: cartProductIds.has(product._id.toString()),
+                    isWishlisted: wishlistProductIds.has(product._id.toString())
+                }));
+            }
+
             return res.render("user/home", {
                 title: 'HomePage',
-                products: productsWithCartStatus,
+                products: finalProducts,
             });
 
         } else {
-            const products = await Products.find({isDeleted:false});
+
+            const products = await Products.find({ isDeleted: false });
             const availableProducts = products.filter(product => product.totalStock !== 0);
-            return res.render("user/home", { title: 'HomePage', products:availableProducts });
+            return res.render("user/home", { title: 'HomePage', products: availableProducts });
         }
     }
 
@@ -54,6 +83,7 @@ const loadHome = async (req, res) => {
 
     }
 }
+
 const loadUserProfile = async (req, res) => {
     try {
 
@@ -204,18 +234,18 @@ const deleteAddress = async (req, res) => {
 };
 
 
-const LoadChangePassword= async(req,res)=>{
-    res.render('user/profileChangePassword',{title:"Change Password"})
+const LoadChangePassword = async (req, res) => {
+    res.render('user/profileChangePassword', { title: "Change Password" })
 }
 
-const updatePassword=async(req,res)=>{
-    const{currentPassword,newPassword,userId}= req.body;
+const updatePassword = async (req, res) => {
+    const { currentPassword, newPassword, userId } = req.body;
 
-    if (currentPassword.trim() === ''||newPassword.trim() === '') {
+    if (currentPassword.trim() === '' || newPassword.trim() === '') {
         return res.status(400).json({ error: 'Fields cannot be empty' });
     }
     try {
-        
+
         const user = await Users.findById(userId);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -226,7 +256,7 @@ const updatePassword=async(req,res)=>{
             return res.status(400).json({ error: "Current password does not match" });
         }
         const isSame = await bcrypt.compare(newPassword, user.password);
-        if(isSame){
+        if (isSame) {
             return res.status(400).json({ error: "Use different Password" });
         }
         const hashedPassword = await bcrypt.hash(newPassword, 12);
@@ -240,11 +270,13 @@ const updatePassword=async(req,res)=>{
         return res.status(500).json({ error: "An error occurred while updating the password" });
     }
 }
-    
 
 
 
-module.exports = { loadHome, loadUserProfile,
-     updateName, loadAddressprofile, updateAddress, 
-     profileAddAddress, deleteAddress,LoadChangePassword,
-     updatePassword }
+
+module.exports = {
+    loadHome, loadUserProfile,
+    updateName, loadAddressprofile, updateAddress,
+    profileAddAddress, deleteAddress, LoadChangePassword,
+    updatePassword
+}

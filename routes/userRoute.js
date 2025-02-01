@@ -1,41 +1,42 @@
 const express = require('express');
 const router = express.Router();
 const { loadHome, loadUserProfile, updateName, loadAddressprofile,
-    updateAddress, profileAddAddress, deleteAddress,LoadChangePassword,
+    updateAddress, profileAddAddress, deleteAddress, LoadChangePassword,
     updatePassword } = require('../controllers/userController/userController');
-    
-const { loadProductsPage, getProductsDetails} = require('../controllers/userController/productController');
-const { sendOTP, resendOtp,sendresetOtp } = require('../controllers/userController/otpController')
-const { signup, login, googleLogin,logout,forgotPassword,loadResetOtpPage,resetPassword} = require('../controllers/userController/authController');
 
-const { loadCart, addToCart,productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
+const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
+const { sendOTP, resendOtp, sendresetOtp } = require('../controllers/userController/otpController')
+const { signup, login, googleLogin, logout, forgotPassword, loadResetOtpPage, resetPassword } = require('../controllers/userController/authController');
+
+const { loadCart, addToCart, productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
 const { loadAddress, addAddress, loadShippingMethod, saveDeliveryMethod,
     shippingMethod } = require('../controllers/userController/checkoutController');
-const {loadPaymentPage, placeOrder, orderSuccess,verifyPayment,createRazorpayOrder} =require('../controllers/userController/paymentController')
-const { loadOrder, loadOrderDetails,cancelItem, cancelOrder } = require('../controllers/userController/orderController');
+const { loadPaymentPage, placeOrder, orderSuccess, verifyPayment, createRazorpayOrder, verifyWalletPayment } = require('../controllers/userController/paymentController')
+const { loadOrder, loadOrderDetails, cancelItem, cancelOrder } = require('../controllers/userController/orderController');
+const { addTransaction, getWallet } = require('../controllers/userController/walletController');
+const { getWishlist, addToWishlist, removeFromWishlist, moveAllToCart } = require('../controllers/userController/wishlistController')
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-
 // middlewares
-const { isLogin, authsession, checkoutAccess,validateResetFlow } = require("../middleware/userAuth");
-const{validateProductsFilter}=require('../middleware/validateProductFilter')
+const { isLogin, authsession, checkoutAccess, validateResetFlow } = require("../middleware/userAuth");
+const { validateProductsFilter } = require('../middleware/validateProductFilter')
 
 
 // signup pages
 
 router.get('/login', isLogin, (req, res) => {
-    const sccsmssg= req.query;
-    res.render('user/login', { title: 'User_login',sccsmssg })
+    const sccsmssg = req.query;
+    res.render('user/login', { title: 'User_login', sccsmssg })
 })
 router.get('/signup', isLogin, (req, res) => {
     res.render('user/signup', { title: 'User_signup' })
 })
 
-router.get('/forgot-password',forgotPassword)
-router.post('/forgot-password',sendresetOtp);
-router.get('/otp-verify',validateResetFlow,loadResetOtpPage)
-router.post('/forgot/verify-otp',validateResetFlow,resetPassword)
+router.get('/forgot-password', forgotPassword)
+router.post('/forgot-password', sendresetOtp);
+router.get('/otp-verify', validateResetFlow, loadResetOtpPage)
+router.post('/forgot/verify-otp', validateResetFlow, resetPassword)
 
 
 // google signup
@@ -53,11 +54,11 @@ router.get('/home', loadHome);
 router.post('/home', login)
 router.post('/send-otp', isLogin, sendOTP);
 router.post('/verify-otp', isLogin, signup);
-router.post('/resend-otp',isLogin, resendOtp);
-router.get('/logout',authsession,logout)
+router.post('/resend-otp', isLogin, resendOtp);
+router.get('/logout', authsession, logout)
 
 // product page
-router.get('/products/:category',validateProductsFilter, loadProductsPage)
+router.get('/products/:category', validateProductsFilter, loadProductsPage)
 router.get('/product/:id', getProductsDetails)
 
 
@@ -92,8 +93,8 @@ router.post('/verify-payment', authsession, checkoutAccess, verifyPayment);
 // user dashboard
 router.get('/profile', authsession, loadUserProfile)
 router.post('/update-name', authsession, updateName)
-router.get('/change-password',authsession,LoadChangePassword)
-router.post('/update-password',authsession,updatePassword)
+router.get('/change-password', authsession, LoadChangePassword)
+router.post('/update-password', authsession, updatePassword)
 
 
 //Profile address
@@ -107,11 +108,19 @@ router.post('/address-delete/:id', authsession, deleteAddress)
 
 router.get('/orders', authsession, loadOrder)
 router.get('/order-details/:orderId', authsession, loadOrderDetails)
-router.post('/order/cancel-item',authsession,cancelItem);
-router.post('/order/cancel',authsession,cancelOrder)// entire order cancel
+router.post('/order/cancel-item', authsession, cancelItem);
+router.post('/order/cancel', authsession, cancelOrder)// entire order cancel
 
 // Wallet
-router.get('/wallet',loadWallet)
+router.get('/wallet', authsession, getWallet)
+router.post('/wallet/create-razorpay-order', authsession, addTransaction, createRazorpayOrder);
+router.post('/wallet/verify-payment', authsession, verifyWalletPayment);
 
+
+// wishlist
+router.get('/wishlist', authsession, getWishlist)
+router.post('/wishlist/:productId', authsession, addToWishlist);
+router.delete('/wishlist/:productId', authsession, removeFromWishlist);
+router.post('/moveAlltoCart', authsession, moveAllToCart);
 
 module.exports = router

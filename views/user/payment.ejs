@@ -269,12 +269,12 @@
 
             // Razorpay options
             const options = {
-                key: '<%= razorpayKey %>',
-                amount: order.amount,
-                currency: 'INR',
-                name: 'Nexora',
-                description: 'Order Payment',
-                order_id: order.id,
+                    key: '<%= razorpayKey %>',
+                    amount: order.amount,
+                    currency: 'INR',
+                    name: 'Nexora',
+                    description: 'Order Payment',
+                    order_id: order.id,
 
                 prefill: {
                     name: '<%= user.name %>',
@@ -326,6 +326,7 @@
                         // Handle modal dismissal
                         console.log('Payment modal closed');
                         notyf.error('Payment cancelled. Please try again.');
+                        
                     },
                     escape: false
                 },

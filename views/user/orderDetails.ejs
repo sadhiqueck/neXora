@@ -95,7 +95,7 @@
         </div>
 
         <!-- Order Progress -->
-        <div class="mt-8 <%= order.status === 'Cancelled' ? 'opacity-75' : '' %>">
+        <div class="mt-8 <%=  order.status === 'Cancelled' ? 'opacity-75' : '' %>">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center">
                     <span
@@ -157,7 +157,7 @@
             <div class="relative pt-1">
                 <div class="flex mb-2 items-center justify-between">
                     <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class=" bg-secondry-button h-2 rounded-full w-1/4 <% if(order.status==='Shipped'){ %>
+                        <div class="<%= order.status==='Cancelled' ? 'bg-red-500'  : 'bg-secondry-button'   %> h-2 rounded-full w-1/4 <% if(order.status==='Shipped'){ %>
                                 w-2/4
                             <% }else if(order.status==='Out for delivery'){ %> 
                                  w-3/4
@@ -169,6 +169,9 @@
                 </div>
             </div>
         </div>
+        <!-- cancel reason -->
+         <h2 class="mt-6 text-lg italic text-red-600"><%= (order.status === 'Cancelled' && order.cancelDescription) ? `Cancelled by admin!
+         [ Reason :  ${order?.cancelDescription}]`: '' %></h2>
     </div>
     <!-- orders -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">

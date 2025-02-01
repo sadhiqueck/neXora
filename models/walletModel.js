@@ -41,4 +41,6 @@ const walletSchema = new mongoose.Schema({
   ]
 }, { timestamps: true });
 
+walletSchema.index({createdAt:1})
+
 module.exports = mongoose.model('Wallet', walletSchema);

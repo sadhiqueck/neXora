@@ -49,19 +49,57 @@
                 <%= order.orderDate.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}) %>
             </p>
             <div class="space-x-2">
-                <button
+                <!-- cancel btn -->
+                <button data-modal-target="cancelOrderModal" data-modal-toggle="cancelOrderModal"
                     class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg <%= order.status === 'Cancelled' ? 'cursor-not-allowed :' : '' %>"
-                    onclick="cancelOrder()" <%=order.status==='Cancelled' ? 'disabled' :'' %>>
+                    <%=order.status==='Cancelled' ? 'disabled' :'' %>>
                     <i class="fas fa-ban mr-2"></i>
                     <%= order.status==='Cancelled' ? 'Order Cancelled' : 'Cancel Order' %>
                 </button>
+
                 <button class="bg-gray-200 hover:bg-gray-300 text-gray-600 px-4 py-2 rounded-lg">
                     <i class="fas fa-print mr-2"></i>Print Order
                 </button>
             </div>
         </div>
 
-        <!-- Rest of the content remains exactly the same -->
+        <!-- Cancel description Modal -->
+
+        <div id="cancelOrderModal" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full ">
+            <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Cancel Order</h3>
+                    <button data-modal-hide="cancelOrderModal" class="text-gray-500 hover:text-gray-700 ">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="mb-4">
+                    <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Cancellation</label>
+                    <textarea id="reason" rows="4" required
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        placeholder="Enter the reason for cancellation..."></textarea>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="flex justify-end space-x-3">
+                    <button data-modal-hide="cancelOrderModal" type="reset" 
+                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">
+                        Cancel
+                    </button>
+                    <button onclick="cancelOrder()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                        Confirm Cancellation
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Order Status and Details Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- Status Card -->
@@ -150,8 +188,10 @@
                                         </h3>
                                         <p class="text-gray-500 text-sm ">Model: <%=product.model %>
                                         </p>
-                                        <p class="text-gray-500 text-sm mt-1">  Color: <%= product.variant.color %> 
-                                            <%= product.variant.storage ? '| Size: ' + product.variant.storage : '' %></p>
+                                        <p class="text-gray-500 text-sm mt-1"> Color: <%= product.variant.color %>
+                                                <%= product.variant.storage ? '| Size: ' + product.variant.storage : ''
+                                                    %>
+                                        </p>
                                         <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %>
                                         </p>
                                         <div class="mt-2 flex items-center space-x-4">
@@ -348,10 +388,11 @@
                         confirmButtonText: 'Yes, cancel it!'
                     });
                     if (result.isConfirmed) {
+                        const reasonData=document.getElementById('reason').value
                         const response = await fetch('/admin/orders/cancel-all', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ orderId })
+                            body: JSON.stringify({ orderId,reasonData })
                         });
 
                         const data = await response.json();

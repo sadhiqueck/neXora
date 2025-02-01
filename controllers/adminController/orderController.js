@@ -186,7 +186,7 @@ const updateProductStatus = async (req, res) => {
 
 const cancelAll = async (req, res) => {
     try {
-        const { orderId } = req.body;
+        const { orderId, reasonData } = req.body;
 
         const order = await ordersDb.findById(orderId);
         if (!order) {
@@ -198,6 +198,7 @@ const cancelAll = async (req, res) => {
         })
         // recalculte order status
         order.status = computeOrderStatus(order.products);
+        order.cancelDescription=reasonData || '';
         await order.save();
         res.status(200).json({ success: true, message: "All products cancelled succesfully" })
     } catch (error) {

@@ -1,5 +1,6 @@
-const Users= require('../models/userModel')
+const Users = require('../models/userModel')
 const Cart = require('../models/cartModel');
+const Wishlist = require('../models/wishListModel')
 
 const authsession = async (req, res, next) => {
     try {
@@ -7,8 +8,8 @@ const authsession = async (req, res, next) => {
             // Check if the user is blocked
             const user = await Users.findById(req.session.user._id);
             if (user && (user.isBlocked || user.isDeleted)) {
-                req.session.user=null;
-                req.session.isLoggedIn=false;
+                req.session.user = null;
+                req.session.isLoggedIn = false;
                 return res.redirect('/user/login');
             }
             next();
@@ -17,7 +18,7 @@ const authsession = async (req, res, next) => {
         }
     } catch (error) {
         console.error("Error in authsession middleware:", error);
-        res.redirect('/user/home'); 
+        res.redirect('/user/home');
     }
 };
 
@@ -46,7 +47,9 @@ async function loginStatus(req, res, next) {
         try {
             const userId = req.session.user._id;
             const cart = await Cart.findOne({ userId });
+            const wishlist = await Wishlist.findOne({ user:userId })
             res.locals.cartItemCount = cart ? cart.products.reduce((total, product) => total + product.quantity, 0) : 0;
+            res.locals.walletItemCount = wishlist ? wishlist.products.length : 0
         } catch (error) {
             console.error("Error in loginStatus middleware:", error);
             res.locals.cartItemCount = 0;
@@ -68,4 +71,4 @@ const validateResetFlow = (req, res, next) => {
     next();
 };
 
-module.exports = { authsession, loginStatus, isLogin, checkoutAccess,validateResetFlow }
+module.exports = { authsession, loginStatus, isLogin, checkoutAccess, validateResetFlow }

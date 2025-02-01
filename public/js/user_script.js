@@ -76,6 +76,7 @@ async function addToCart(button) {
     }
 }
 
+
 function redirectToLogin() {
     notyf.error("Login First!!");
     setTimeout(() => {
@@ -83,6 +84,58 @@ function redirectToLogin() {
     }, 1000);
 
 
+}
+
+// wish list 
+async function toggleWishlist(button) {
+    try {
+        const productId = button.getAttribute('data-product-id');
+        const isWishlisted = button.getAttribute('data-is-wishlisted') === 'true';
+        const heartIcon = button.querySelector('.fa-heart');
+
+        button.disabled = true;
+
+        const method = isWishlisted ? 'DELETE' : 'POST';
+        const endpoint = `/user/wishlist/${productId}`;
+
+        const response = await fetch(endpoint, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const newWishlistState = !isWishlisted;
+
+            const wishlistBadge = document.querySelector('.wishlistBadge');
+            let currentCount = parseInt(wishlistBadge.textContent) || 0;
+            if(newWishlistState){
+                wishlistBadge.classList.remove('hidden')
+                currentCount += 1;
+                
+            }else{
+                currentCount -= 1;
+            }
+            
+            wishlistBadge.textContent = currentCount;
+
+            button.setAttribute('data-is-wishlisted', newWishlistState);
+
+            heartIcon.classList.toggle('fa-regular', !newWishlistState);
+            heartIcon.classList.toggle('fa-solid', newWishlistState);
+
+            button.classList.toggle('text-red-500', newWishlistState);
+            button.classList.toggle('text-gray-600', !newWishlistState);
+        } else {
+            console.error('Wishlist operation failed');
+        }
+    } catch (err) {
+        console.error('Wishlist error:', err);
+    } finally {
+       
+        button.disabled = false;
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
