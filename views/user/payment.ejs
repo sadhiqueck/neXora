@@ -140,7 +140,10 @@
                                         </div>
                                         <div class="flex-1">
                                             <h3 class="font-medium">Wallet</h3>
-                                            <p class="text-sm text-gray-600">Balance: ₹676</p>
+                                            <p class="text-sm text-gray-600">Balance: <%= userWallet ?
+                                                    userWallet?.balance.toLocaleString('en-IN',{style:'currency',currency:"INR"})
+                                                    :'₹0.00' %>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -167,18 +170,132 @@
                     <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
 
                     <!-- Coupon Code -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Have a coupon?</label>
-                        <div class="flex gap-2">
-                            <input type="text" placeholder="Enter code"
-                                class="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
-                            <button aria-labelledby="Apply discount"
-                                class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-800">Apply</button>
+                    <div class="flex gap-2">
+                        <input type="text" id="couponInput" placeholder="Enter code"
+                            class="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        <button onclick="applyCoupon()"
+                            class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-800 "
+                            id="couponApply-btn">
+                            Apply
+                        </button>
+                    </div>
+                    <div class="text-red-500 mb-3" id="errorMssg"></div>
+                    <form>
+                        <div id="appliedCoupon" class=" hidden mb-4 p-4 bg-green-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span>
+                                    <span class="font-semibold">Applied:</span>
+                                    <span id="couponCodeDisplay"></span>
+                                    (<span id="couponDiscount"></span>)
+                                </span>
+                                <button onclick="removeCoupon()" class="text-red-600 hover:text-red-700 text-sm">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                        <!-- hidden input to track applied coupon -->
+                        <input type="hidden" id="appliedCouponData" name="appliedCouponData" value="">
+                    </form>
+
+                    <!-- Available Coupons -->
+                    <div class="space-y-3">
+                        <p class="text-sm font-medium text-gray-600">Available Coupons</p>
+
+                        <!-- Featured Coupons -->
+                        <div class="space-y-2">
+                            <% if (coupons && coupons.length> 0) { %>
+                                <% coupons.slice(0, 2).forEach(coupon=> { %>
+                                    <div class="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
+                                        onclick="selectCoupon('<%= coupon.code %>')">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="font-medium text-purple-600">
+                                                    <%= coupon.code %>
+                                                </p>
+                                                <p class="text-sm text-gray-600">
+                                                    <% if (coupon.discountType==='percentage' ) { %>
+                                                        <%= coupon.value %>% off up to ₹<%= coupon.maxDiscount %>
+                                                                <% } else if (coupon.discountType==='fixed' ) { %>
+                                                                    Get Instant Discount ₹<%= coupon.value %>
+                                                                        <% } %>
+                                                </p>
+
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    Valid on orders above ₹<%= coupon.minPurchase %>
+                                                </p>
+                                                <% if (coupon.applicableTo==='specific' ) { %>
+                                                    <p class="text-xs font-light pt-1 text-indigo-500">
+                                                        Special Coupon for your product Category
+                                                    </p>
+                                                    <% } %>
+                                            </div>
+                                            <button class="text-xs text-purple-600 font-medium">
+                                                APPLY
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+
+                                        <% if (coupons.length> 2) { %>
+                                            <!-- View More Button -->
+                                            <button onclick="toggleMoreCoupons()"
+                                                class="text-sm text-purple-600 font-medium hover:text-purple-800 flex items-center gap-1">
+                                                <span id="viewMoreText">View More</span>
+                                                <svg id="viewMoreIcon" class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- Hidden Coupons -->
+                                            <div id="moreCoupons" class="hidden space-y-2">
+                                                <% coupons.slice(2).forEach(coupon=> { %>
+                                                    <div class="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
+                                                        onclick="selectCoupon('<%= coupon.code %>')">
+                                                        <div class="flex justify-between items-start">
+                                                            <div>
+                                                                <p class="font-medium text-purple-600">
+                                                                    <%= coupon.code %>
+                                                                </p>
+                                                                <p class="text-sm text-gray-600">
+                                                                    <% if (coupon.discountType==='percentage' ) { %>
+                                                                        <%= coupon.value %>% off up to ₹<%=
+                                                                                coupon.maxDiscount %>
+                                                                                <% } else if
+                                                                                    (coupon.discountType==='fixed' ) {
+                                                                                    %>
+                                                                                    Get Instant Discount of ₹<%=
+                                                                                        coupon.value %>
+                                                                                        <% } %>
+                                                                </p>
+
+                                                                <p class="text-xs text-gray-500 mt-1">
+                                                                    Valid on orders above ₹<%= coupon.minPurchase %>
+                                                                </p>
+
+                                                            </div>
+                                                            <button class="text-xs text-purple-600 font-medium"
+                                                                onclick="selectCoupon('<%= coupon.code %>')">
+                                                                APPLY
+                                                            </button>
+                                                        </div>
+                                                        <div id="couponMessage" class="mt-2 text-sm"></div>
+                                                    </div>
+                                                    <% }); %>
+                                                        <!-- Display Applied Coupon -->
+
+                                            </div>
+                                            <% } %>
+                                                <% } else { %>
+                                                    <p class="text-sm text-gray-500">No coupons available at the moment
+                                                    </p>
+                                                    <% } %>
                         </div>
                     </div>
 
                     <!-- Amount Breakdown -->
-                    <div class="space-y-4">
+                    <div class="space-y-4 mt-6">
 
                         <div class="flex justify-between ">
                             <p class="text-gray-700 font-medium">Subtotal (<%=cartItemCount%> items)</p>
@@ -206,7 +323,7 @@
                         </div>
                         <div class="flex justify-between text-gray-700">
                             <p class=" font-medium">Coupon Applied</p>
-                            <p class=" font-small text-button-color">-₹0.00</p>
+                            <p class=" font-small text-button-color" id="additionalDiscount">-₹0.00</p>
                         </div>
                         <div class="flex justify-between text-gray-700">
                             <p class=" font-medium">GST (18%)</p>
@@ -214,7 +331,7 @@
                         </div>
                         <div class="flex justify-between text-lg font-bold">
                             <p>Total</p>
-                            <p>₹<%= subTotal.toLocaleString("en-IN")%>.00</p>
+                            <p id="total">₹<%= subTotal.toLocaleString("en-IN")%>.00</p>
                         </div>
                     </div>
                     <button onclick="placeOrder()"
@@ -251,9 +368,9 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ total })
             });
-            console.log(createOrderResponse)
             if (createOrderResponse.status == 404) {
                 notyf.error('Sorry, Product went Stock out')
                 setTimeout(() => {
@@ -269,12 +386,12 @@
 
             // Razorpay options
             const options = {
-                    key: '<%= razorpayKey %>',
-                    amount: order.amount,
-                    currency: 'INR',
-                    name: 'Nexora',
-                    description: 'Order Payment',
-                    order_id: order.id,
+                key: '<%= razorpayKey %>',
+                amount: order.amount,
+                currency: 'INR',
+                name: 'Nexora',
+                description: 'Order Payment',
+                order_id: order.id,
 
                 prefill: {
                     name: '<%= user.name %>',
@@ -301,6 +418,9 @@
                 image: '/images/lOGO.png',
 
                 handler: async function (response) {
+                    const appliedCouponData = document.getElementById('appliedCouponData').value;
+                    const coupon = appliedCouponData ? JSON.parse(appliedCouponData) : null;
+
                     // Verify payment on your server
                     const verificationResponse = await fetch('/user/verify-payment', {
                         method: 'POST',
@@ -310,7 +430,8 @@
                         body: JSON.stringify({
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_order_id: response.razorpay_order_id,
-                            razorpay_signature: response.razorpay_signature
+                            razorpay_signature: response.razorpay_signature,
+                            appliedCouponData: coupon
                         })
                     });
 
@@ -326,7 +447,7 @@
                         // Handle modal dismissal
                         console.log('Payment modal closed');
                         notyf.error('Payment cancelled. Please try again.');
-                        
+
                     },
                     escape: false
                 },
@@ -363,21 +484,34 @@
                 notyf.error('Please select a payment method');
                 return;
             }
+            // Get applied coupon details
+            const appliedCouponData = document.getElementById('appliedCouponData').value;
+            const coupon = appliedCouponData ? JSON.parse(appliedCouponData) : null;
+
+            const payload = {
+                paymentMethod: selectedPayment.value,
+                appliedCouponData: coupon,
+
+            };
+            const total = parseInt('<%= total %>')
 
             if (selectedPayment.value === 'Razorpay') {
-                handleRazorpayPayment('<%= total %>');
+                if (coupon) {
+                    handleRazorpayPayment(total - coupon.discount);
+                    return
+                }
+                handleRazorpayPayment(total);
+
             } else {
                 // Handle COD or other methods
-                console.log('cod')
                 fetch('/user/place-order', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ paymentMethod: selectedPayment.value })
+                    body: JSON.stringify(payload)
                 })
                     .then(response => {
-                        console.log(response)
                         if (response.ok) {
                             window.location.href = '/user/order-success';
                         } else if (response.status == 404) {
@@ -402,4 +536,108 @@
         }
 
     };
+
+
+
+    function selectCoupon(code) {
+        document.getElementById('couponInput').value = code;
+        applyCoupon();
+    }
+
+    async function applyCoupon() {
+        try {
+            const code = document.getElementById('couponInput').value.trim();
+            const cartId = '<%=cartId%>'
+            const userId = '<%= user._id%>'
+            const errorMssg = document.getElementById('errorMssg')
+            if (!code) {
+                notyf.error('Please enter a coupon code')
+                errorMssg.textContent = "Please enter a coupon code";
+                return
+            }
+
+
+            const response = await fetch('/user/coupon-validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code, cartId, userId })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                updateOrderSummary(data.discount, data.coupon);
+                showCouponApplied(data.coupon, data.discount);
+                notyf.success('Coupon applied successfully!');
+                errorMssg.textContent = ''
+            } else {
+                notyf.error(data.message || 'Failed to apply coupon');
+                errorMssg.textContent = data.message || 'Failed to apply coupon'
+            }
+        } catch (error) {
+            console.error('Error applying coupon:', error);
+            notyf.error('Failed to apply coupon');
+        }
+    }
+
+
+    function removeCoupon() {
+        appliedCoupon = null;
+        document.getElementById('appliedCoupon').classList.add('hidden');
+        document.getElementById('couponInput').value = '';
+        document.getElementById('appliedCouponData').value = '';
+        updateOrderSummary(0);
+        showMessage('Coupon removed', 'gray');
+    }
+
+    function showCouponApplied(coupon, discount) {
+        document.getElementById('appliedCoupon').classList.remove('hidden');
+        const couponButton = document.getElementById('couponApply-btn');
+        couponButton.textContent = 'Applied';
+        couponButton.setAttribute('disabled', 'true');
+        document.getElementById('couponCodeDisplay').textContent = coupon.code;
+        document.getElementById('couponDiscount').textContent =
+            coupon.discountType === 'percentage' ?
+                `${coupon.value}% off` :
+                `₹${discount} off`;
+    }
+
+    function updateOrderSummary(discount, couponData) {
+        const subtotal = document.getElementById('total').textContent;
+        const total = parseFloat('<%-subTotal%>') - discount;
+
+        document.getElementById('additionalDiscount').textContent = `- ₹${discount.toLocaleString("en-IN")}`;
+        document.getElementById('total').textContent = `${total.toLocaleString("en-IN", { style: "currency", currency: 'INR' })}`;
+
+        const appliedCouponData = JSON.stringify({
+            code: couponData.code,
+            discount: couponData.discount,
+            id: couponData.id
+        });
+        document.getElementById('appliedCouponData').value = appliedCouponData || '';
+    }
+
+    function showMessage(text, color) {
+        const messageDiv = document.getElementById('couponMessage');
+        messageDiv.textContent = text;
+        messageDiv.className = `mt-2 text-sm text-${color}-600`;
+        setTimeout(() => messageDiv.textContent = '', 3000);
+    }
+    function toggleMoreCoupons() {
+        const moreCoupons = document.getElementById('moreCoupons');
+        const viewMoreText = document.getElementById('viewMoreText');
+        const viewMoreIcon = document.getElementById('viewMoreIcon');
+
+        moreCoupons.classList.toggle('hidden');
+
+        if (moreCoupons.classList.contains('hidden')) {
+            viewMoreText.textContent = 'View More';
+            viewMoreIcon.style.transform = 'rotate(0deg)';
+        } else {
+            viewMoreText.textContent = 'View Less';
+            viewMoreIcon.style.transform = 'rotate(180deg)';
+        }
+    }
+
 </script>

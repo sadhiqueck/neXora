@@ -15,6 +15,7 @@ const { loadPaymentPage, placeOrder, orderSuccess, verifyPayment, createRazorpay
 const { loadOrder, loadOrderDetails, cancelItem, cancelOrder } = require('../controllers/userController/orderController');
 const { addTransaction, getWallet } = require('../controllers/userController/walletController');
 const { getWishlist, addToWishlist, removeFromWishlist, moveAllToCart } = require('../controllers/userController/wishlistController')
+const { validateCoupon } = require('../controllers/adminController/couponController')
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
@@ -85,6 +86,9 @@ router.post('/save-delivery', authsession, saveDeliveryMethod)
 router.get('/payment', authsession, checkoutAccess, loadPaymentPage)
 router.post('/place-order', authsession, checkoutAccess, placeOrder)
 router.get('/order-success', authsession, checkoutAccess, orderSuccess)
+
+// validate coupon
+router.post('/coupon-validate', authsession, checkoutAccess, validateCoupon)
 
 // razorpay
 router.post('/create-razorpay-order', authsession, checkoutAccess, createRazorpayOrder);

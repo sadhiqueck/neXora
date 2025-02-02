@@ -117,6 +117,11 @@ const orderSchema = new Schema({
     deliveryCharge: { type: Number, required: true },
     tax: { type: Number, required: true },
     total: { type: Number, required: true },
+    couponApplied:{
+        discount:{ type: Number, required: false },
+        code:{type:String}
+    },
+    
     orderDate: { type: Date, default: Date.now },
     deliveryDate: { type: Date, required: true },
     shippedDate: { type: Date, required: false },

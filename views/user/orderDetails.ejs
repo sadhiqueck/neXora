@@ -276,7 +276,7 @@
             </div>
             <div class="flex justify-between text-green-600">
                 <span>Coupon Discount</span>
-                <span>-00.00</span>
+                <span>-<%= order.couponApplied?.discount.toLocaleString('en-IN',{style:'currency', currency:'INR'}) %></span>
             </div>
             <div class="border-t pt-3 mt-3">
                 <div class="flex justify-between font-semibold text-lg">
@@ -287,9 +287,11 @@
                 </div>
             </div>
             <div class="mt-4 text-sm">
-                <p class="text-green-600">
-                    <i class="fas fa-tag mr-2"></i>Coupon Code: HAPPY20
+                <% if(order.couponApplied.code){ %>
+                <p class="text-green-600 ">
+                    <i class="fas fa-tag mr-2"></i>Coupon Code:<span class="font-medium"> <%= order.couponApplied?.code %></span>
                 </p>
+                <% } %>
             </div>
         </div>
     </div>

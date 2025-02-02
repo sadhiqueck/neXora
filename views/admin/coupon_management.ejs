@@ -1,0 +1,55 @@
+
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Coupon Management</h1>
+   <a href="/admin/coupons/add" class="bg-button-color text-white px-4 py-2 rounded hover:bg-purple-800">
+      Create New Coupon
+    </a>
+  </div>
+
+  <% if (coupons.length > 0) { %>
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Value</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiry</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% coupons.forEach(coupon => { %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap"><%= coupon.code %></td>
+              <td class="px-6 py-4 whitespace-nowrap"><%= coupon.discountType %></td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <%= coupon.discountType === 'percentage' ? `${coupon.value}%` : `₹${coupon.value}` %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap"><%= coupon.expiryDate.toDateString() %></td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= coupon.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                  <%= coupon.isActive ? 'Active' : 'Expired' %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <a href="/admin/coupons/<%= coupon._id %>/edit" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</a>
+                <form action="/admin/coupons/<%= coupon._id %>/delete" method="POST" class="inline">
+                  <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="bg-blue-50 border-l-4 border-indigo-400 p-4">
+      <p class="text-sm text-button-color">No coupons found. Create your first coupon!</p>
+    </div>
+  <% } %>
+</div>
+
+

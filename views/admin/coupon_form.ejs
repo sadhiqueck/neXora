@@ -1,0 +1,239 @@
+
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">
+      <%= coupon ? 'Edit Coupon' : 'Create New Coupon' %>
+    </h1>
+
+    <form 
+    id="couponForm"
+      method="POST" 
+      action="<%= coupon ? `/admin/coupons/${coupon._id}?_method=PUT` : '/admin/coupons' %>"
+      class="space-y-6"
+    >
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <!-- Coupon Code -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Coupon Code</label>
+          <input
+            type="text"
+            name="code"
+            id="code"
+            value="<%= coupon ? coupon.code : '' %>"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <!-- Discount Type -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Discount Type</label>
+          <select
+            name="discountType",
+            id="discountType"
+            
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="percentage" <%= coupon?.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+            <option value="fixed" <%= coupon?.discountType === 'fixed' ? 'selected' : '' %>>Fixed Amount</option>
+          </select>
+        </div>
+
+        <!-- Discount Value -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Discount Value</label>
+          <input
+            type="number"
+            name="value"
+            id="value"
+            value="<%= coupon ? coupon.value : '' %>"
+            
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <!-- Max Discount -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Max Discount</label>
+          <input
+            type="number"
+            name="maxDiscount"
+            id="maxDiscount"
+            value="<%= coupon?.maxDiscount || '' %>"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <!-- Min Purchase -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Min Purchase</label>
+          <input
+            type="number"
+            name="minPurchase"
+            id="minPurchase"
+            value="<%= coupon?.minPurchase || '' %>"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <!-- Expiry Date -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Expiry Date</label>
+          <input
+            type="date"
+            name="expiryDate"
+            id="expiryDate"
+            value="<%= coupon ? coupon.expiryDate.toISOString().split('T')[0] : '' %>"
+            
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <!-- Usage Limit -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Usage Limit</label>
+          <input
+            type="number"
+            name="usageLimit"
+            id="usageLimit"
+            value="<%= coupon ? coupon.usageLimit : 1 %>"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <!-- Applicable To -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Applicable To</label>
+          <select
+            name="applicableTo"
+            id="applicableTo"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all" <%= coupon?.applicableTo === 'all' ? 'selected' : '' %>>All Categories</option>
+            <option value="specific" <%= coupon?.applicableTo === 'specific' ? 'selected' : '' %>>Specific Categories</option>
+          </select>
+        </div>
+
+        <!-- Categories (Conditional Display) -->
+        <div id="categoriesField" class="<%= coupon?.applicableTo === 'specific' ? '' : 'hidden' %>">
+          <label class="block text-sm font-medium text-gray-700">Categories</label>
+          <select
+            name="categories"
+            id="categories"
+            multiple
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            <% categories.forEach(category => { %>
+              <option 
+                value="<%= category.categoryName %>"
+                <%= coupon?.categories?.includes(category.categoryName) ? 'selected' : '' %>
+              >
+                <%= category.categoryName %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Active Status -->
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            name="isActive"
+            id="isActive"
+            <%= (coupon?.isActive ||!coupon) ? 'checked' : '' %>
+            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label class="ml-2 text-sm text-gray-900">Active Coupon</label>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <button
+          type="submit"
+          class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        >
+          <%= coupon ? 'Update Coupon' : 'Create Coupon' %>
+        </button>
+        <a 
+          href="/admin/coupons"
+          class="ml-3 px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-50"
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+    
+const applicableTo = document.getElementById('applicableTo');
+  const categoryField = document.getElementById('categoriesField');
+
+  applicableTo.addEventListener('change', () => {
+    if (applicableTo.value === 'specific') {
+      categoryField.classList.remove('hidden');
+    } else {
+      categoryField.classList.add('hidden');
+    }
+  });
+
+
+  // Function to validate the coupon form
+  function validateCouponForm(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Get form fields
+    const code = document.getElementById('code').value.trim();
+    const discountType = document.getElementById('discountType').value;
+    const value = parseFloat(document.getElementById('value').value);
+    const maxDiscount = parseFloat(document.getElementById('maxDiscount').value);
+    const minPurchase = parseFloat(document.getElementById('minPurchase').value);
+    const expiryDate = new Date(document.getElementById('expiryDate').value);
+    const usageLimit = parseInt(document.getElementById('usageLimit').value);
+    const applicableTo = document.getElementById('applicableTo').value;
+    const categories = document.getElementById('categories').selectedOptions;
+    const isActive = document.getElementById('isActive').checked;
+
+
+    let errors = [];
+
+    
+    if (!code) {
+      errors.push('Coupon code is required.');  
+    }
+
+    if (isNaN(value) || value <= 0) {
+      errors.push('Discount value must be a positive number.');
+    }
+
+    if (maxDiscount && (isNaN(maxDiscount) || maxDiscount <= 0)) {
+      errors.push('Max discount must be a positive number.');
+    }
+
+    if (minPurchase && (isNaN(minPurchase) || minPurchase < 0)) {
+      errors.push('Minimum purchase amount must be a non-negative number.');
+    }
+
+    if (!expiryDate || expiryDate <= new Date()) {
+      errors.push('Expiry date must be in the future.');
+    }
+
+    if (isNaN(usageLimit) || usageLimit < 1) {
+      errors.push('Usage limit must be at least 1.');
+    }
+
+    if (applicableTo==='specific'&& categories.length === 0) {
+      errors.push('At least one category must be selected.');
+    }
+
+    if (errors.length > 0) {
+      notyf.error(errors.join('\n')); 
+    } else {
+      document.getElementById('couponForm').submit();
+    }
+  }
+
+  const form=  document.getElementById('couponForm')
+  form.addEventListener('submit', validateCouponForm);
+
+</script>

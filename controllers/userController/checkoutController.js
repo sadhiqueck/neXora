@@ -2,6 +2,7 @@ const productsDB = require('../../models/productModel');
 const cartDb = require('../../models/cartModel');
 const addressDb = require('../../models/addressModel');
 const ordersDb = require('../../models/ordersModel');
+const Wallet= require('../../models/walletModel')
 
 const loadAddress = async (req, res) => {
     try {
