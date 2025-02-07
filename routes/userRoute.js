@@ -12,7 +12,7 @@ const { loadCart, addToCart, productDetailsaddToCart, removeFromCart, updateCart
 const { loadAddress, addAddress, loadShippingMethod, saveDeliveryMethod,
     shippingMethod } = require('../controllers/userController/checkoutController');
 const { loadPaymentPage, placeOrder, orderSuccess, verifyPayment, createRazorpayOrder, verifyWalletPayment } = require('../controllers/userController/paymentController')
-const { loadOrder, loadOrderDetails, cancelItem, cancelOrder } = require('../controllers/userController/orderController');
+const { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder,returnItem } = require('../controllers/userController/orderController');
 const { addTransaction, getWallet } = require('../controllers/userController/walletController');
 const { getWishlist, addToWishlist, removeFromWishlist, moveAllToCart } = require('../controllers/userController/wishlistController')
 const { validateCoupon } = require('../controllers/adminController/couponController')
@@ -114,6 +114,8 @@ router.get('/orders', authsession, loadOrder)
 router.get('/order-details/:orderId', authsession, loadOrderDetails)
 router.post('/order/cancel-item', authsession, cancelItem);
 router.post('/order/cancel', authsession, cancelOrder)// entire order cancel
+router.post('/order/return',authsession, returnOrder)
+router.post('/order/return-item',authsession, returnItem)
 
 // Wallet
 router.get('/wallet', authsession, getWallet)

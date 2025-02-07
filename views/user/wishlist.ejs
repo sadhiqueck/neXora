@@ -59,7 +59,7 @@
                                 <!-- cart remove button -->
                                 <button
                                     class="absolute top-4 right-4 bg-red-500 text-white px-3.5 rounded-full p-2 shadow-md"
-                                    data-product-id="<%= item.product._id %>" onclick="removeFromList(this)">
+                                    data-product_id="<%= item.product._id %>" onclick="removeFromList(this)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 <div class="mt-4 px-5 pb-5">
@@ -113,7 +113,7 @@
                                                 <% } else { %>
                                                     <div>
                                                         <button data-product_id="<%=item. product._id %>"
-                                                            onclick="addToCart(this)"
+                                                            onclick="moveToCart(this)"
                                                             class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
                                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -121,7 +121,7 @@
                                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                                             </svg>
-                                                            Add to Cart
+                                                            Move to Cart
                                                         </button>
                                                     </div>
                                                     <% } %>
@@ -153,7 +153,7 @@
         <script>
             async function removeFromList(button) {
                 try {
-                    const productId = button.getAttribute('data-product-id');
+                    const productId = button.getAttribute('data-product_id');
 
                     button.disabled = true;
                     const response = await fetch(`/user/wishlist/${productId}`, {
@@ -164,7 +164,6 @@
                     });
 
                     if (response.ok) {
-
                         window.location.reload()
                     }
                 } catch (err) {
@@ -172,6 +171,30 @@
                 } finally {
 
                     button.disabled = false;
+                }
+            }
+
+            async function moveToCart(button) {
+                const productId = button.getAttribute('data-product_id');
+                try {
+                    const response = await fetch('/user/cart/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productId })
+                    });
+
+                    if (response.ok) {
+                        notyf.success('Moved to cart!');
+                        console.log(button)
+                        removeFromList(button)
+
+                    } else {
+                        const error = await response.json();
+                        notyf.error(error.message || "Failed to add to cart");
+                    }
+                } catch (error) {
+                    console.error("Error adding to cart:", error);
+                    notyf.error('Something went wrong!');
                 }
             }
 
@@ -185,13 +208,13 @@
                     });
 
                     const result = await response.json();
-        
+
 
                     if (result.success) {
                         notyf.success('All products moved to cart successfully!');
 
                         setTimeout(() => {
-                            window.location.reload(); 
+                            window.location.reload();
                         }, 500);
 
                     } else {

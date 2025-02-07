@@ -8,7 +8,7 @@ const { login, loadLogin, loadDashboard, loadUsers, deleteUser, blockUser, viewU
 const { loadCategories, addCatgeory, deleteCategory, editCategory, } = require("../controllers/adminController/categoryController");
 const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage,
      loadEditProductpage, editProduct, deleteProduct, updateProductStock } = require('../controllers/adminController/productController')
-const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate } = require('../controllers/adminController/orderController')
+const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate,reutrnApproval } = require('../controllers/adminController/orderController')
 const { getCoupons, createCoupon, loadAddCoupons, loadEditCoupon, updateCoupon, deleteCoupon, getReferrals } = require('../controllers/adminController/couponController')
 // middlewares
 const { authsession, isLogin } = require('../middleware/adminAuth')
@@ -60,15 +60,16 @@ router.get('/order-update/:orderId', authsession, updateOrder);
 router.post('/orders/update-product-status', authsession, updateProductStatus)
 router.post('/orders/cancel-all', authsession, cancelAll)
 router.post('/orders/date-change', authsession, ChangeDeliveryDate)
+router.post('/return/approve',authsession,reutrnApproval)
 
 
 // Coupon Management
-router.get('/coupons', getCoupons);
-router.get('/coupons/add', loadAddCoupons);
-router.post('/coupons', createCoupon);
-router.get('/coupons/:id/edit', loadEditCoupon);
-router.post('/coupons/:id', updateCoupon);
-router.post('/coupons/:id/delete', deleteCoupon);
+router.get('/coupons',authsession, getCoupons);
+router.get('/coupons/add',authsession, loadAddCoupons);
+router.post('/coupons',authsession, createCoupon);
+router.get('/coupons/:id/edit',authsession, loadEditCoupon);
+router.post('/coupons/:id',authsession, updateCoupon);
+router.post('/coupons/:id/delete',authsession,deleteCoupon);
 
 // Referral Management
 router.get('/referrals', getReferrals);

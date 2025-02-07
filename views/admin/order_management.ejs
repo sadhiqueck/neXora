@@ -165,7 +165,7 @@
                                 </td>
 
                                 <td class="px-4 py-4 justify-items-center">
-                                    <% if (order.paymentMethod==="cod" ) { %>
+                                    <% if (order.paymentMethod==="COD" ) { %>
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                                             COD
@@ -173,9 +173,12 @@
                                         <% } else if (order.paymentStatus==="Pending" ) { %>
                                             <span
                                                 class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800">Pending</span>
-                                            <% } else if (order.paymentStatus==="success" ) { %>
+                                            <% } else if (order.paymentStatus==="Completed" ) { %>
                                                 <span
-                                                    class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">Success</span>
+                                                    class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Completed</span>
+                                            <% } else if (order.paymentStatus==="Refunded" ) { %>
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">Refunded</span>
                                                 <% } else {%>
                                                     <span
                                                         class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Cancelled</span>

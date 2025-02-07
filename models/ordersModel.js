@@ -27,6 +27,8 @@ const orderSchema = new Schema({
             'Delivered',
             'Partially Cancelled',
             'Cancelled',
+            'Returned',
+            'Partially Returned',
         ],
         default: 'Pending',
     },
@@ -65,15 +67,32 @@ const orderSchema = new Schema({
                 ],
                 default: "Processing",
             },
+            paymentStatus: {
+                type: String,
+                enum: ["Completed", "Refunded"],
+                default: this.paymentStatus
+            },
             cancelDescription: { type: String, required: false },
+            returnDetails: {
+                returnReason: String,
+                returnDescription: String,
+                returnDate: Date
+            },
             deliveryDate: {
                 type: Date,
                 required: true,
             },
+            shippedDate: { type: Date, required: false },
+            deliveredDate: { type: Date, required: false },
+            isReturnable: { type: Boolean }
         },
     ],
     cancelDescription: { type: String, required: false },
-    
+    returnDetails: {
+        returnReason: String,
+        returnDescription: String,
+        returnDate: Date
+    },
     deliveryType: {
         type: String,
         enum: [
@@ -95,8 +114,13 @@ const orderSchema = new Schema({
 
     paymentStatus: {
         type: String,
-        enum: ["Pending", "Successful", "Refunded"],
+        enum: ["Pending", "Completed", "Refunded", "Partial Refund"],
         default: "Pending",
+    },
+
+    transactionID: {
+        type: String,
+        required: false,
     },
 
     shippingAddress: {
@@ -117,11 +141,11 @@ const orderSchema = new Schema({
     deliveryCharge: { type: Number, required: true },
     tax: { type: Number, required: true },
     total: { type: Number, required: true },
-    couponApplied:{
-        discount:{ type: Number, required: false },
-        code:{type:String}
+    couponApplied: {
+        discount: { type: Number, required: false },
+        code: { type: String }
     },
-    
+
     orderDate: { type: Date, default: Date.now },
     deliveryDate: { type: Date, required: true },
     shippedDate: { type: Date, required: false },

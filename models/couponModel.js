@@ -67,6 +67,12 @@ const couponSchema = new mongoose.Schema(
   { timestamps: true } 
 );
 
+// Middleware to update expired coupons
+couponSchema.post('init', async function () {
+  if (this.expiryDate < Date.now() && this.isActive) {
+    await this.updateOne({ isActive: false});
+  }
+});
 
 couponSchema.index({ code: 1, expiryDate: 1, active: 1 });
 

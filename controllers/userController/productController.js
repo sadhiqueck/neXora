@@ -95,17 +95,17 @@ const loadProductsPage = async (req, res) => {
             );
         }
 
-        // get wishlist
-        const userWishlist = await Wishlist.findOne({ user: req.session.user._id }).lean();
-        const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
 
         let finalProducts = filteredProducts;
+        
         if (req.session.user) {
             const userId = req.session.user._id;
             const userCart = await Cart.findOne({
                 userId,
             });
-
+            // get wishlist
+            const userWishlist = await Wishlist.findOne({user:userId}).lean();
+            const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
             const cartProductIds = new Set();
 
             if (userCart) {
@@ -232,8 +232,8 @@ const getProductsDetails = async (req, res) => {
             // get wishlist
             const userWishlist = await Wishlist.findOne({ user: req.session.user._id }).lean();
             const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
-            
-            productWithCart.isWishlisted= wishlistProductIds.has(product._id.toString())
+
+            productWithCart.isWishlisted = wishlistProductIds.has(product._id.toString())
 
             // Check if any related product is in cart
             relatedProducts = relatedProducts.map(relProduct => {
@@ -241,14 +241,14 @@ const getProductsDetails = async (req, res) => {
                 relProductObj.variantsInCart = relProduct.variants
                     .filter(variant =>
                         userCart.products.some(cartItem =>
-                            cartItem.productId.equals(relProduct._id)))             
+                            cartItem.productId.equals(relProduct._id)))
                 relProductObj.inCart = relProductObj.variantsInCart.length > 0;
 
-                relProductObj.isWishlisted= wishlistProductIds.has(relProduct._id.toString());
+                relProductObj.isWishlisted = wishlistProductIds.has(relProduct._id.toString());
                 return relProductObj;
             });
-            
-            
+
+
 
             return res.render('user/product_details', {
                 title: 'Product_details',

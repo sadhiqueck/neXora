@@ -169,7 +169,6 @@ const validateCoupon = async (req, res) => {
 
 const getReferrals = async (req, res) => {
     try {
-        const referrals = await Referral.find().populate('referrer referee');
         res.render('admin/referrals', { referrals });
     } catch (error) {
         console.error(error);

@@ -187,7 +187,7 @@ const verifyPayment = async (req, res) => {
         }
 
         // If verification successful, create order
-        await createOrderInDB(req, res, 'Razorpay', appliedCouponData);
+        await createOrderInDB(req, res, 'Razorpay', appliedCouponData, razorpay_payment_id);
 
         res.status(200).json({ success: true, message: 'Order placed successfully' });
 
@@ -271,7 +271,7 @@ const placeOrder = async (req, res) => {
         }
 
         if (paymentMethod === 'COD') {
-            await createOrderInDB(req, res, 'COD', appliedCouponData);
+            await createOrderInDB(req, res, 'COD', appliedCouponData, `COD${userId}`);
             res.status(200).json({ success: true, message: 'Order placed successfully' });
         } else if (paymentMethod === 'Razorpay') {
 
@@ -285,7 +285,7 @@ const placeOrder = async (req, res) => {
 };
 
 
-const createOrderInDB = async (req, res, paymentMethod, appliedCouponData) => {
+const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, transactionID) => {
 
     try {
         const userId = req.session.user._id;
@@ -335,42 +335,66 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData) => {
 
         const { originalTotal, subTotal, totalSavings, deliveryCharge, tax, total } = req.session.orderSummary;
 
-        const couponDiscount = appliedCouponData?.discount || 0
-        const couponName=appliedCouponData?.code || ''
+        let couponDetails=null
+        let couponName=null
+        let couponDiscount=0;
+
+        if (appliedCouponData ){
+         couponDetails = await Coupons.findById(appliedCouponData.id)
+        }
+
+            // Enhanced product details array with variant information
+            const products = cart.products.map(item => {
+                const product = item.productId;
+                const variantDetails = item.variantDetails;
+
+                // Calculate final price including variant additional price
+                const basePrice = product.price;
+                const orginalPrice = product.price + (variantDetails.additionalPrice || 0);
+                let finalPrice = variantDetails
+                    ? Math.floor((basePrice + (variantDetails.additionalPrice || 0)) * (1 - product.discount / 100))
+                    : basePrice;
 
 
-        // Enhanced product details array with variant information
-        const products = cart.products.map(item => {
-            const product = item.productId;
-            const variantDetails = item.variantDetails;
 
-            // Calculate final price including variant additional price
-            const basePrice = product.price;
-            const orginalPrice = product.price + (variantDetails.additionalPrice || 0);
-            const finalPrice = variantDetails
-                ? Math.floor((basePrice + (variantDetails.additionalPrice || 0)) * (1 - product.discount / 100))
-                : basePrice;
+                if (appliedCouponData) {
+                     couponDiscount = appliedCouponData?.discount || 0
+                      couponName = appliedCouponData?.code || ''
 
-            return {
-                productId: product._id,
-                productName: product.productName,
-                model: product.model,
-                price: orginalPrice,
-                discount: product.discount || 0,
-                discountedPrice: finalPrice, // Discounted price including variant additional price
-                category: product.category,
-                quantity: item.quantity,
-                returnPeriod: product.returnPeriod || 0,
-                warranty: product.warranty || 0,
-                images: product.images[0],
-                deliveryDate: deliveryDate,
-                variant: variantDetails ? {
-                    color: variantDetails.color,
-                    storage: variantDetails.storage,
-                    additionalPrice: variantDetails.additionalPrice || 0
-                } : null
-            };
-        });
+
+                    const couponCategory = couponDetails.categories.map(category => category);
+
+                    if (couponCategory.includes(product.category)) {
+                        // Category-specific coupon: Apply full discount to this product
+                        finalPrice = Math.floor(finalPrice - couponDiscount);
+                    } else if (couponCategory.length === 0) {
+                        // General coupon: Divide discount proportionally
+                        const productShare = (finalPrice * item.quantity) / subTotal;
+                        const productDiscount = couponDiscount * productShare;
+                        finalPrice = Math.floor(finalPrice - productDiscount / item.quantity);
+                    }
+                }
+
+                return {
+                    productId: product._id,
+                    productName: product.productName,
+                    model: product.model,
+                    price: orginalPrice,
+                    discount: product.discount || 0,
+                    discountedPrice: finalPrice, // Discounted price including variant additional price
+                    category: product.category,
+                    quantity: item.quantity,
+                    returnPeriod: product.returnPeriod || 0,
+                    warranty: product.warranty || 0,
+                    images: product.images[0],
+                    deliveryDate: deliveryDate,
+                    variant: variantDetails ? {
+                        color: variantDetails.color,
+                        storage: variantDetails.storage,
+                        additionalPrice: variantDetails.additionalPrice || 0
+                    } : null
+                };
+            });
 
         const newOrder = new ordersDb({
             userId,
@@ -379,7 +403,8 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData) => {
             deliveryType,
             status: 'Processing',
             paymentMethod,
-            paymentStatus: 'Pending',
+            paymentStatus: paymentMethod === 'COD' ? 'Pending' : 'Completed',
+            transactionID,
             shippingAddress: {
                 addressId: selectedAddress._id,
                 fullName: selectedAddress.fullName,
@@ -391,8 +416,7 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData) => {
                 state: selectedAddress.state,
                 pincode: selectedAddress.pincode,
                 addressType: selectedAddress.addressType,
-                paymentMethod,
-                paymentStatus: paymentMethod === 'COD' ? 'Pending' : 'Paid'
+
             },
             originalTotal,
             subTotal,
@@ -400,15 +424,15 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData) => {
             deliveryCharge,
             tax,
             total: Math.round(total - couponDiscount),// include coupoun discounts,
-            couponApplied:{
-                discount:couponDiscount,
-                code:couponName
+            couponApplied: {
+                discount: couponDiscount,
+                code: couponName
             }
         });
 
         const savedOrder = await newOrder.save();
 
-            // Update coupon usage
+        // Update coupon usage
         if (appliedCouponData) {
             const coupon = await Coupons.findById(appliedCouponData.id)
             coupon.usedCount += 1;
@@ -418,49 +442,49 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData) => {
             }
             await coupon.save();
         }
-    
+
 
         // Update stock quantities for products and variants
         for (const item of cart.products) {
 
-        const product = item.productId;
-        // const variantDetails = item.variantDetails;
+            const product = item.productId;
+            // const variantDetails = item.variantDetails;
 
-        if (fetchedVariant) {
-            // Update variant stock
+            if (fetchedVariant) {
+                // Update variant stock
 
-            await productsDB.updateOne(
-                {
-                    _id: product._id,
-                    'variants': {
-                        $elemMatch: {
-                            color: fetchedVariant.color,
-                            storage: fetchedVariant.storage,
-                            storageUnit: fetchedVariant.storageUnit,
+                await productsDB.updateOne(
+                    {
+                        _id: product._id,
+                        'variants': {
+                            $elemMatch: {
+                                color: fetchedVariant.color,
+                                storage: fetchedVariant.storage,
+                                storageUnit: fetchedVariant.storageUnit,
+                            }
+                        }
+                    },
+                    {
+                        $inc: {
+                            'variants.$.stock': -item.quantity,
+                            totalStock: -item.quantity
                         }
                     }
-                },
-                {
-                    $inc: {
-                        'variants.$.stock': -item.quantity,
-                        totalStock: -item.quantity
-                    }
-                }
-            );
+                );
+            }
         }
+
+        await cartDb.findOneAndUpdate({ userId }, { products: [], isOrdered: true });
+
+        // Reset session data
+        req.session.selectedAddressId = null;
+        req.session.selectedDeliveryMethod = null;
+        req.session.orderSummary = null;
+
+    } catch (error) {
+        console.error('Error placing order:', error);
+        res.status(500).json({ error: 'An error occurred while placing the order' });
     }
-
-    await cartDb.findOneAndUpdate({ userId }, { products: [], isOrdered: true });
-
-    // Reset session data
-    req.session.selectedAddressId = null;
-    req.session.selectedDeliveryMethod = null;
-    req.session.orderSummary = null;
-
-} catch (error) {
-    console.error('Error placing order:', error);
-    res.status(500).json({ error: 'An error occurred while placing the order' });
-}
 };
 
 

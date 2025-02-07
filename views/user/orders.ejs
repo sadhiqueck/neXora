@@ -65,7 +65,7 @@
                     </div>
 
                     <!-- Main content -->
-                    <div class="flex items-center justify-between 
+                    <div class="flex items-start justify-between 
                         <%= order.status === 'Cancelled' ? 'opacity-75' : '' %>">
                       <!-- Left side with products and details -->
                       <div class="w-3/4 flex flex-col gap-6">
@@ -107,7 +107,7 @@
                       </div>
 
                       <!-- Right side with payment info -->
-                      <div class="flex w-1/4 flex-col items-end align-top gap-3">
+                      <div class="flex w-1/4 flex-col items-end align-top  gap-3">
                         <div>
                           <div class="text-sm text-gray-600 text-right">Total Amount</div>
                           <div class="<%= order.status === 'Cancelled' ? 'text-red-700 line-through' : 
@@ -156,9 +156,21 @@
                                       <span class="text-xs font-semibold tracking-wide">Out for Delivery</span>
                                     </span>
                                   </div>
-                                  <% } else { %>
-                                    <div class="text-indigo-600">Processing</div>
-                                    <% } %>
+                                  <% }else if (order.status==='Returned' ) { %>
+                                    <div class="relative inline-flex items-center">
+                                        <span
+                                            class="absolute rounded-full bg-purple-200-200 opacity-75"></span>
+                                        <span
+                                            class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200 shadow-sm">
+                                            <span
+                                                class="h-1.5 w-1.5 rounded-full bg-purple-500"></span>
+                                            <span
+                                                class="text-xs font-semibold tracking-wide">Item Returned</span>
+                                        </span>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="text-indigo-600">Processing</div>
+                                        <% } %>
                         </div>
                       </div>
                     </div>

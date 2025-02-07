@@ -29,50 +29,52 @@ const loadCart = async (req, res) => {
 
         const cartProductIds = cart.products.map(item => item.productId._id.toString());
 
-
         const userWishlist = await Wishlist.findOne({ user: req.session.user._id }).lean();
         const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
 
         const cartWithDetails = cart.products.map((item) => {
             const product = item.productId;
 
-     
+            //skip products that are marked as deleted
+            if (product.isDeleted) {
+            cartUpdated = true;
+            return null;
+            }
+
             const variant = product.variants.find(v => {
-                const colorMatch = v.color === item.variantDetails.color;
+            const colorMatch = v.color === item.variantDetails.color;
 
-        
-                if (item.variantDetails.storage) {
-                    return colorMatch &&
-                        v.storage !== null &&
-                        v.storageUnit !== 'NIL' &&
-                        `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
-                }
+            if (item.variantDetails.storage) {
+                return colorMatch &&
+                v.storage !== null &&
+                v.storageUnit !== 'NIL' &&
+                `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
+            }
 
-                return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
+            return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
             });
 
             const basePrice = product.price;
             const variantPrice = Math.round((basePrice + (variant?.additionalPrice || 0)) * (1 - product.discount / 100));
 
-        
             const isOutOfStock = !variant || variant.stock < 1;
 
-            //asdjust quantity if stock is lower than selected quantity
+            // Adjust quantity if stock is lower than selected quantity
             const adjustedQuantity = isOutOfStock ? 0 : Math.min(item.quantity, variant.stock);
 
             if (adjustedQuantity !== item.quantity) {
-                cartUpdated = true;
-                item.quantity = adjustedQuantity;
+            cartUpdated = true;
+            item.quantity = adjustedQuantity;
             }
 
             return {
-                ...item.toObject(),
-                variantPrice,
-                productImage: product.images[0],
-                outOfStock: isOutOfStock,
-                isWishlisted: wishlistProductIds.has(product._id.toString())
+            ...item.toObject(),
+            variantPrice,
+            productImage: product.images[0],
+            outOfStock: isOutOfStock,
+            isWishlisted: wishlistProductIds.has(product._id.toString())
             };
-        });
+        }).filter(item => item !== null); // Filter out null items (deleted products)
 
      
         const suggestedProducts = products

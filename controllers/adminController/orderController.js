@@ -1,20 +1,22 @@
 const ordersDb = require('../../models/ordersModel');
 const userDb = require('../../models/userModel');
+const productsdb = require('../../models/productModel')
+const Wallet = require('../../models/walletModel')
 
 
 
 const loadOrders = async (req, res) => {
     try {
-        const { 
-            status = '', 
-            search = '', 
-            sortBy = 'orderDate', 
-            sortOrder = -1, 
+        const {
+            status = '',
+            search = '',
+            sortBy = 'orderDate',
+            sortOrder = -1,
             page = 1,
             startDate,
-            endDate 
+            endDate
         } = req.query;
-        
+
         const limit = 10;
         const skip = (Math.max(1, page) - 1) * limit;
 
@@ -54,7 +56,7 @@ const loadOrders = async (req, res) => {
             totalAsc: { total: 1 },
             totalDesc: { total: -1 }
         };
-        
+
         const sortQuery = sortOptions[sortBy] || { orderDate: -1 };
         if (sortOrder) sortQuery[Object.keys(sortQuery)[0]] = parseInt(sortOrder);
 
@@ -163,6 +165,13 @@ const updateProductStatus = async (req, res) => {
 
         product.status = status;
 
+        if (status === 'Shipped') {
+            product.shippedDate = new Date();
+        } else if (status === "Delivered") {
+            product.deliveredDate = new Date();
+        }
+
+
         // Compute overall order status
         const newOrderStatus = computeOrderStatus(order.products);
 
@@ -170,7 +179,7 @@ const updateProductStatus = async (req, res) => {
         // stopre update date;
         if (newOrderStatus === 'Shipped') {
             order.shippedDate = new Date();
-        } else if (newOrderStatus === "Out for delivery") {
+        } else if (newOrderStatus === 'Out for delivery') {
             order.deliveredDate = new Date();
         }
 
@@ -187,18 +196,76 @@ const updateProductStatus = async (req, res) => {
 const cancelAll = async (req, res) => {
     try {
         const { orderId, reasonData } = req.body;
-
         const order = await ordersDb.findById(orderId);
         if (!order) {
             return res.status(404).json({ success: false, error: "Order not found" })
         }
+        const userId = order.userId
 
-        order.products.forEach(product => {
-            product.status = 'Cancelled';
-        })
+        let totalRefund = 0;
+        for (const product of order.products) {
+
+            if (['Processing', 'Pending'].includes(product.status)) {
+                product.status = 'Cancelled';
+                const productDetails = await productsdb.findById(product.productId);
+                const variantDetails = product.variant;
+
+                const fetchedVariant = productDetails.variants.find(v => {
+                    const colorMatch = v.color === variantDetails.color;
+                    if (variantDetails.storage) {
+                        const storageMatch = `${v.storage}${v.storageUnit}` === variantDetails.storage;
+                        return colorMatch && storageMatch;
+                    }
+                    return colorMatch;
+                });
+
+                if (fetchedVariant) {
+                    // Update variant stock
+                    await productsdb.updateOne(
+                        {
+                            _id: product.productId,
+                            'variants': {
+                                $elemMatch: {
+                                    color: fetchedVariant.color,
+                                    storage: fetchedVariant.storage,
+                                    storageUnit: fetchedVariant.storageUnit,
+                                }
+                            }
+                        },
+                        {
+                            $inc: {
+                                'variants.$.stock': +product.quantity,
+                                totalStock: +product.quantity
+                            }
+                        }
+                    );
+                }
+
+                totalRefund += product.discountedPrice;
+            }
+        }
+
+        // Update order status
+        order.status = computeOrderStatus(order.products);
+
+        // Process refund
+        if (totalRefund > 0 && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
+            const wallet = await Wallet.findOne({ user: userId });
+            wallet.balance += totalRefund;
+            wallet.transactions.push({
+                amount: totalRefund,
+                type: 'credit',
+                description: `Full order refund: ${order.orderNumber}`,
+                status: 'completed'
+            });
+            await wallet.save();
+            order.paymentStatus = 'Refunded';
+        }
         // recalculte order status
         order.status = computeOrderStatus(order.products);
-        order.cancelDescription=reasonData || '';
+        order.cancelDescription = reasonData || '';
+        console.log(order)
+
         await order.save();
         res.status(200).json({ success: true, message: "All products cancelled succesfully" })
     } catch (error) {
@@ -231,34 +298,71 @@ const ChangeDeliveryDate = async (req, res) => {
     }
 }
 
-function computeOrderStatus(products) {
-    const statuses = products.map((product) => product.status);
+const reutrnApproval = async (req, res) => {
+    const { productId, orderId } = req.body;
 
-    console.log(statuses)
-    if (statuses.every((status) => status === 'Cancelled')) {
-        return 'Cancelled';
+    const order = await ordersDb.findById(orderId);
+
+    if (!order) return res.status(404).json({ error: "No order Found" })
+    const userId = order.userId
+
+    const product = order.products.id(productId);
+    if (!product) {
+        return res.status(404).json({ success: false, error: "Products not found" })
     }
-    if (statuses.every((status) => status === 'Delivered')) {
-        return 'Delivered';
+    product.paymentStatus = "Refunded";
+
+    order.status = computeOrderStatus(order.products);
+
+    // Process refund if payment was completed
+    if (order.paymentStatus === 'Completed' && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
+        const refundAmount = product.discountedPrice;
+
+        // Update wallet
+        const wallet = await Wallet.findOne({ user: userId });
+        wallet.balance += refundAmount;
+        wallet.transactions.push({
+            amount: refundAmount,
+            type: 'credit',
+            description: `Refund for cancelled item: ${product.productName}`,
+            status: 'completed'
+        });
+
+        await wallet.save();
+
+        // Update payment status
+        order.paymentStatus = order.products.some(p => p.status !== 'Cancelled')
+            ? 'Partial Refund'
+            : 'Refunded';
     }
-    if (statuses.every((status) => status === 'Shipped')) {
-        return 'Shipped';
-    }
-    if (statuses.includes('Cancelled') && statuses.some((status) => status !== 'Cancelled')) {
-        return 'Partially Cancelled';
-    }
-    if (statuses.some((status) => status === 'Out for delivery')) {
-        return 'Out for delivery';
-    }
-    if (statuses.some((status) => status === 'Shipped')) {
-        return 'Shipped';
-    }
-    if (statuses.some((status) => status === 'Processing')) {
-        return 'Processing';
-    }
-    return 'Pending';
+    await order.save();
+    res.status(200).json({ success: true, message: "Approved refund successfully" });
+
+
+}
+
+function computeOrderStatus(products) {
+    const statusCounts = {
+        Cancelled: 0,
+        Returned: 0,
+        Delivered: 0,
+        Shipped: 0,
+        Processing: 0
+    };
+
+    products.forEach(product => {
+        statusCounts[product.status] = (statusCounts[product.status] || 0) + 1;
+    });
+
+    if (statusCounts.Cancelled === products.length) return 'Cancelled';
+    if (statusCounts.Returned === products.length) return 'Returned';
+    if (statusCounts.Delivered === products.length) return 'Delivered';
+    if (statusCounts.Delivered > 0 && statusCounts.Cancelled + statusCounts.Returned + statusCounts.Delivered === products.length) return 'Delivered';
+    if (statusCounts.Shipped > 0) return 'Shipped';
+    if (statusCounts.Processing > 0) return 'Processing';
+    return 'Partially Cancelled';
 }
 
 
 
-module.exports = { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate }
+module.exports = { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval }

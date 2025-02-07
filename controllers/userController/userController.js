@@ -161,7 +161,9 @@ const profileAddAddress = async (req, res) => {
             addressType,
             isDefault: isDefaultConverted
         });
+
         const addresses = await addressDb.find({ userId });
+        
         const sortedAdresses = addresses.sort((a, b) => b.isDefault - a.isDefault);
         if (addresses.length < 1) {
             newAddress.isDefault = true;

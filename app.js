@@ -32,15 +32,14 @@ app.use('/admin',(req,res,next)=>{
 
 configurePassport();
 
-    // key_id: 'rzp_test_fzeoRvzWj6vhjg',
-    // key_secret: '77AtvZPLzvnZQz1lP7idAxF5'
+
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
   });
 
 app.use(session({
-    secret:"Mysecret",
+    secret:process.env.SESSION_SECRET_KEY,
     resave:false,
     saveUninitialized:true,
     cookie:{

@@ -1,6 +1,8 @@
 const orderdb = require('../../models/ordersModel');
 const addressdb = require('../../models/addressModel');
 const productsdb = require('../../models/productModel');
+const Wallet = require('../../models/walletModel')
+const userdb = require('../../models/userModel')
 
 const loadOrder = async (req, res) => {
     try {
@@ -15,8 +17,9 @@ const loadOrder = async (req, res) => {
         const totalPages = Math.ceil(totalOrders / limit);
         const startIndex = (page - 1) * limit + 1;
         const endIndex = Math.min(page * limit, totalPages)
-        res.render('user/orders', { title: 'Orders', orders,
-            pagination:{
+        res.render('user/orders', {
+            title: 'Orders', orders,
+            pagination: {
                 currentPage: page,
                 totalOrders,
                 totalPages,
@@ -25,7 +28,7 @@ const loadOrder = async (req, res) => {
                 hasNextPage: page < totalPages,
                 hasPrevPage: page > 1
             }
-         });
+        });
     } catch (error) {
         console.error('Error loading orders:', error);
         return res.status(500).json({ error: 'Failed to load orders' });
@@ -46,7 +49,33 @@ const loadOrderDetails = async (req, res) => {
             console.log("Order not found");
             return res.redirect('/user/orders');
         }
-        res.render('user/orderDetails', { title: 'Orders', order });
+        // Check if all products are cancelled except one which is delivered or shipped
+        const nonCancelledProducts = order.products.filter(product => product.status !== 'Cancelled');
+
+        if (nonCancelledProducts.length === 1 && ['Delivered', 'Shipped'].includes(nonCancelledProducts[0].status)) {
+            order.status = nonCancelledProducts[0].status;
+            await order.save();
+        }
+
+
+        //check if any product is delivered or out for delivery
+        const isCancelable = order.products.every(product => !['Out for delivery', 'Delivered', 'Cancelled','Returned'].includes(product.status));
+
+        order.products.forEach(product => {
+            product.isReturnable = isWithinReturnPeriod(product.deliveredDate, product.returnPeriod) && product.status !=='Returned' ;
+        });
+        await order.save();
+
+        //check if the order is returnable
+        const isOrderReturnable = order.products.every(product => product.isReturnable);
+
+        res.render('user/orderDetails', {
+            title: 'Orders',
+            order,
+            isCancelable,
+            isOrderReturnable,
+        });
+
     } catch (error) {
         console.error('Error loading orders:', error);
         return res.status(500).json({ error: 'Failed to load orders' });
@@ -56,41 +85,167 @@ const loadOrderDetails = async (req, res) => {
 const cancelItem = async (req, res) => {
     try {
         const { orderId, productId } = req.body;
+        const userId = req.session.user._id;
 
-        const order = await orderdb.findById(orderId);
+        const order = await orderdb.findOne({
+            _id: orderId,
+            userId,
+            'products._id': productId
+        });
+
         if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
         const product = order.products.id(productId);
-        if (!product) return res.status(404).json({ success: false, message: "order not found" })
+        if (['Shipped', 'Out for delivery', 'Delivered'].includes(product.status)) {
+            return res.status(400).json({
+                success: false,
+                message: `Cannot cancel item in ${product.status} status`
+            });
+        }
 
+        
         product.status = "Cancelled";
+
+        // Add stock back to the specific variant
+        const productDetails = await productsdb.findById(product.productId);
+        const variantDetails = product.variant
+        
+        fetchedVariant = productDetails.variants.find(v => {
+            const colorMatch = v.color === variantDetails.color;
+            if (variantDetails.storage) {
+                const storageMatch = `${v.storage}${v.storageUnit}` === variantDetails.storage;
+                return colorMatch && storageMatch;
+            }
+            return colorMatch;
+        });
+           if (fetchedVariant) {
+                    // Update variant stock
+        
+                    await productsdb.updateOne(
+                        {
+                            _id: product.productId,
+                            'variants': {
+                                $elemMatch: {
+                                    color: fetchedVariant.color,
+                                    storage: fetchedVariant.storage,
+                                    storageUnit: fetchedVariant.storageUnit,
+                                }
+                            }
+                        },
+                        {
+                            $inc: {
+                                
+                                'variants.$.stock': +product.quantity,
+                                totalStock: +product.quantity
+                            }
+                        }
+                    );
+                }
 
         order.status = computeOrderStatus(order.products);
 
+        // Process refund if payment was completed
+        if (order.paymentStatus === 'Completed' && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
+            const refundAmount = product.discountedPrice;
+
+            // Update wallet
+            const wallet = await Wallet.findOne({ user: userId });
+            wallet.balance += refundAmount;
+            wallet.transactions.push({
+                amount: refundAmount,
+                type: 'credit',
+                description: `Refund for cancelled item: ${product.productName}`,
+                status: 'completed'
+            });
+
+            await wallet.save();
+
+            // Update payment status
+            order.paymentStatus = order.products.some(p => p.status !== 'Cancelled')
+                ? 'Partial Refund'
+                : 'Refunded';
+        }
+
         await order.save();
 
-        res.status(200).json({ success: true, message: "Product cancelled succesfully" });
+        res.status(200).json({ success: true, message: "Product cancelled successfully" });
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: error.message })
+        res.status(500).json({ error: error.message });
     }
-}
+};
 // cancel full order
 const cancelOrder = async (req, res) => {
     try {
         const { orderId } = req.body;
+        const userId = req.session.user._id;
 
         const order = await orderdb.findById(orderId);
         if (!order) {
             return res.status(404).json({ success: false, error: "Order not found" })
         }
 
-        order.products.forEach(product => {
-            product.status = 'Cancelled';
-        })
-        // recalculte order status
+        let totalRefund = 0;
+        for (const product of order.products) {
+
+            if (['Processing', 'Pending'].includes(product.status)) {
+                product.status = 'Cancelled';
+                const productDetails = await productsdb.findById(product.productId);
+                const variantDetails = product.variant;
+        
+                const fetchedVariant = productDetails.variants.find(v => {
+                    const colorMatch = v.color === variantDetails.color;
+                    if (variantDetails.storage) {
+                        const storageMatch = `${v.storage}${v.storageUnit}` === variantDetails.storage;
+                        return colorMatch && storageMatch;
+                    }
+                    return colorMatch;
+                });
+                
+                if (fetchedVariant) {
+                    // Update variant stock
+                    await productsdb.updateOne(
+                        {
+                            _id: product.productId,
+                            'variants': {
+                                $elemMatch: {
+                                    color: fetchedVariant.color,
+                                    storage: fetchedVariant.storage,
+                                    storageUnit: fetchedVariant.storageUnit,
+                                }
+                            }
+                        },
+                        {
+                            $inc: {
+                                'variants.$.stock': +product.quantity,
+                                totalStock: +product.quantity
+                            }
+                        }
+                    );
+                }
+                
+                totalRefund += product.discountedPrice;
+            }
+        }
+
+        // Update order status
         order.status = computeOrderStatus(order.products);
+
+        // Process refund
+        if (totalRefund > 0 && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
+            const wallet = await Wallet.findOne({ user: userId });
+            wallet.balance += totalRefund;
+            wallet.transactions.push({
+                amount: totalRefund,
+                type: 'credit',
+                description: `Full order refund: ${order.orderNumber}`,
+                status: 'completed'
+            });
+            await wallet.save();
+            order.paymentStatus = 'Refunded';
+        }
+
         await order.save();
         res.status(200).json({ success: true, message: "All products cancelled succesfully" })
     } catch (error) {
@@ -99,11 +254,100 @@ const cancelOrder = async (req, res) => {
     }
 }
 
-function computeOrderStatus(products) {
-    const statuses = products.map((product) => product.status);
-    if (statuses.every((status) => status === 'Cancelled')) {
-        return 'Cancelled';
-    };
+const returnOrder = async (req, res) => {
+    const { orderId, reason, description } = req.body;
+
+    try {
+        const order = await orderdb.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ success: false, error: 'Order not found' });
+        }
+
+        order.status ="Returned"
+
+        order.products.forEach(product=>{
+            product.status ="Returned",
+            product.returnDetails={
+                returnReason:reason,
+                returnDescription:description,
+                returnDate:new Date()
+            }
+        })
+        order.returnDetails={
+            returnReason:reason,
+            returnDescription:description,
+            returnDate:new Date()
+        }
+
+       const updatedOrder= await order.save();
+
+        res.json({ success: true, message: 'Order return request submitted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Failed to process return request' });
+    }
+};
+
+const returnItem =async (req, res) => {
+    const { orderId, productId, reason, description } = req.body;
+
+    try {
+        const order = await orderdb.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ success: false, error: 'Order not found' });
+        }
+
+        const product = order.products.id(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, error: 'Product not found in order' });
+        }
+
+        product.status = 'Returned';
+        product.returnDetails={
+            returnReason:reason,
+            returnDescription:description,
+            returnDate:new Date()
+        }
+
+        await order.save();
+
+        res.json({ success: true, message: 'Product return request submitted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Failed to process return request' });
+    }
 }
 
-module.exports = { loadOrder, loadOrderDetails, cancelItem, cancelOrder }
+// Enhanced status computation
+const computeOrderStatus = (products) => {
+    const statusCounts = {
+        Cancelled: 0,
+        Returned: 0,
+        Delivered: 0,
+        Shipped: 0,
+        Processing: 0
+    };
+
+    products.forEach(product => {
+        statusCounts[product.status] = (statusCounts[product.status] || 0) + 1;
+    });
+
+    if (statusCounts.Cancelled === products.length) return 'Cancelled';
+    if (statusCounts.Returned === products.length) return 'Returned';
+    if (statusCounts.Delivered === products.length) return 'Delivered';
+    if (statusCounts.Returned + statusCounts.Cancelled === products.length) return 'Cancelled';
+    if (statusCounts.Shipped > 0) return 'Shipped';
+    if (statusCounts.Processing > 0) return 'Processing';
+    return 'Partially Cancelled';
+};
+
+// Helper to check if return period is valid
+const isWithinReturnPeriod = (deliveryDate, returnPeriodDays) => {
+    const returnDeadline = new Date(deliveryDate);
+    returnDeadline.setDate(returnDeadline.getDate() + returnPeriodDays);
+    return new Date() < returnDeadline;
+};
+
+
+module.exports = { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder,returnItem }
