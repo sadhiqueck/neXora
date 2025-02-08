@@ -1,5 +1,6 @@
 const Wallet = require('../../models/walletModel');
 const Users = require('../../models/userModel');
+const ReferralHistory= require('../../models/referralHIstoryModel')
 
 const getWallet = async (req, res) => {
 
@@ -27,10 +28,23 @@ const getWallet = async (req, res) => {
                 razorpayKey:process.env.RAZORPAY_KEY_ID
             });
         }
+
+         const referralHistory = await ReferralHistory.find({ referrer: user })
+                    .populate('referee', 'username email')
+                    .sort({ createdAt: -1 });
+        
+                const totalReferralEarnings = referralHistory?.reduce((total, val) => {
+                    return total + val.referralBonus;
+                }, 0)
+          
+                const totalReferal=referralHistory?.length
+
         res.render('user/wallet', {
             title: "Wallet",
             wallet: walletData,
-            razorpayKey:process.env.RAZORPAY_KEY_ID
+            razorpayKey:process.env.RAZORPAY_KEY_ID,
+            totalReferal,
+            totalReferralEarnings
         });
 
     } catch (error) {

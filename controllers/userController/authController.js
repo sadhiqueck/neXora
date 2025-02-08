@@ -3,6 +3,8 @@ const User = require('../../models/userModel');
 const OTP = require('../../models/otpModel');
 const productsDB = require("../../models/productModel");
 const Users = require('../../models/userModel');
+const ReferralHistory = require('../../models/referralHIstoryModel')
+const Wallet= require('../../models/walletModel')
 const { json } = require('express');
 
 
@@ -10,7 +12,7 @@ const signup = async (req, res) => {
   try {
 
     const otp = req.body.otp?.[1];
-    const { username, email, password } = req.session.userData;
+    const { username, email, password,referralCode } = req.session.userData;
 
 
     if (!otp || !username || !email || !password) {
@@ -49,15 +51,76 @@ const signup = async (req, res) => {
         mssg: "Invalid OTP. Please try again."
       });
     } else {
+
+      let referrer = null;
+      if (referralCode) {
+          referrer = await User.findOne({ referralCode });
+          if (!referrer) {
+              return res.status(400).json({ error: 'Invalid referral code' });
+          }
+      }
+
       // Secure the user's password
       const hashedPassword = await bcrypt.hash(password, 10);
+
 
       // Create a new user
       const newUser = await User.create({
         username,
         email,
         password: hashedPassword,
+        referredBy:referrer?._id
       });
+
+      const newWallet= new Wallet({user:newUser._id,balance:0});
+      await newWallet.save();
+
+      // add refferal bonus to each user
+
+      const referralBonus=220;
+      const refereeBonus=100;
+
+      if(referrer){
+        let referrerWallet = await  Wallet.findOne({user: referrer._id});
+        if (!referrerWallet) {
+          referrerWallet = new Wallet({ user: referrer._id, balance: 0 });
+          await referrerWallet.save();
+        }
+  
+        referrerWallet.balance +=referralBonus;
+        await referrerWallet.save();
+
+        newWallet.balance +=refereeBonus;
+        await newWallet.save();
+
+        const referralHistory = new ReferralHistory({
+          referrer: referrer._id,
+          referee: newUser._id,
+          referralBonus,
+          refereeBonus
+      });
+      await referralHistory.save();
+      
+      const referrerTransaction = {
+        wallet: referrerWallet._id,
+        amount: referralBonus,
+        type: 'bonus',
+        description: 'Referral bonus'
+      };
+      referrerWallet.transactions.push(referrerTransaction);
+      await referrerWallet.save();
+
+      const refereeTransaction = {
+        wallet: newWallet._id,
+        amount: refereeBonus,
+        type: 'bonus',
+        description: 'Referral bonus for signing up with referral code'
+      };
+
+      newWallet.transactions.push(refereeTransaction);
+      await newWallet.save();
+
+      }
 
       req.session.user = newUser;
       req.session.isLoggedIn = true;
@@ -151,7 +214,6 @@ const resetPassword = async (req, res) => {
   try {
 
     const { otp, newPassword } = req.body;
-    console.log(req.query.params)
     const{ email} = req.session.userData;
 
     if (!otp || !newPassword) {
@@ -196,7 +258,7 @@ const resetPassword = async (req, res) => {
       user.password = hashedPassword;
       await user.save();
 
-      return res.redirect('/user/login?mssg="password Updated Succesfully"')
+      return res.redirect('/user/login?mssg="Password Updated Succesfully"')
     }
   } catch (error) {
     console.error(error);

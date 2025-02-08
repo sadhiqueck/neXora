@@ -169,8 +169,10 @@ const updateProductStatus = async (req, res) => {
             product.shippedDate = new Date();
         } else if (status === "Delivered") {
             product.deliveredDate = new Date();
+            order.deliveredDate=new Date();
         }
 
+    
 
         // Compute overall order status
         const newOrderStatus = computeOrderStatus(order.products);
@@ -191,7 +193,6 @@ const updateProductStatus = async (req, res) => {
         res.status(500).json({ error: error.message || 'Failed to update statuses.' });
     }
 }
-
 
 const cancelAll = async (req, res) => {
     try {

@@ -1,21 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const { loadHome, loadUserProfile, updateName, loadAddressprofile,
-    updateAddress, profileAddAddress, deleteAddress, LoadChangePassword,
-    updatePassword } = require('../controllers/userController/userController');
-
+        updateAddress, profileAddAddress, deleteAddress, LoadChangePassword,
+         updatePassword } = require('../controllers/userController/userController');
 const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
 const { sendOTP, resendOtp, sendresetOtp } = require('../controllers/userController/otpController')
 const { signup, login, googleLogin, logout, forgotPassword, loadResetOtpPage, resetPassword } = require('../controllers/userController/authController');
-
 const { loadCart, addToCart, productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
-const { loadAddress, addAddress, loadShippingMethod, saveDeliveryMethod,
-    shippingMethod } = require('../controllers/userController/checkoutController');
+const { loadAddress, addAddress, loadShippingMethod,
+        saveDeliveryMethod, shippingMethod } = require('../controllers/userController/checkoutController');
 const { loadPaymentPage, placeOrder, orderSuccess, verifyPayment, createRazorpayOrder, verifyWalletPayment } = require('../controllers/userController/paymentController')
-const { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder,returnItem } = require('../controllers/userController/orderController');
+const { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder, returnItem } = require('../controllers/userController/orderController');
 const { addTransaction, getWallet } = require('../controllers/userController/walletController');
 const { getWishlist, addToWishlist, removeFromWishlist, moveAllToCart } = require('../controllers/userController/wishlistController')
 const { validateCoupon } = require('../controllers/adminController/couponController')
+const { getRefferalPage ,verifyReferralCode} = require('../controllers/userController/offerController')
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
@@ -114,8 +113,8 @@ router.get('/orders', authsession, loadOrder)
 router.get('/order-details/:orderId', authsession, loadOrderDetails)
 router.post('/order/cancel-item', authsession, cancelItem);
 router.post('/order/cancel', authsession, cancelOrder)// entire order cancel
-router.post('/order/return',authsession, returnOrder)
-router.post('/order/return-item',authsession, returnItem)
+router.post('/order/return', authsession, returnOrder)
+router.post('/order/return-item', authsession, returnItem)
 
 // Wallet
 router.get('/wallet', authsession, getWallet)
@@ -128,5 +127,9 @@ router.get('/wishlist', authsession, getWishlist)
 router.post('/wishlist/:productId', authsession, addToWishlist);
 router.delete('/wishlist/:productId', authsession, removeFromWishlist);
 router.post('/moveAlltoCart', authsession, moveAllToCart);
+
+// wallet
+router.get('/referral',authsession, getRefferalPage)
+router.post('/verify-referral',verifyReferralCode)
 
 module.exports = router

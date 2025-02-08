@@ -54,6 +54,21 @@
                                             class="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-button-color focus:bg-white caret-button-color" />
                                     </div>
                                 </div>
+                                <div>
+                                    <label for="referral" class="text-base font-medium text-gray-900">Referral Code
+                                        <span class="text-sm text-gray-500">(Optional)</span></label>
+                                    <div class="mt-2.5 relative">
+                                        <input type="text" name="referralCode" id="referralCode"
+                                            placeholder="Enter referral code"
+                                            class="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-button-color focus:bg-white caret-button-color uppercase" />
+                                        <button type="button" onclick="verifyReferralCode()"
+                                            class="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 text-sm font-medium text-button-color hover:text-secondry-button focus:outline-none">
+                                            Verify
+                                        </button>
+                                    </div>
+                                    <p id="referralStatus" class="mt-1 text-sm  hidden"></p>
+                                </div>
+
 
                                 <div class="flex items-center">
                                     <input type="checkbox" name="agree" id="agree"
@@ -145,6 +160,44 @@
             nameInput.value = titleCasedName;
         });
 
+        async function verifyReferralCode() {
+            const referralCode = document.getElementById('referralCode').value;
+            const statusElement = document.getElementById('referralStatus');
+
+            if (!referralCode) {
+                statusElement.textContent = 'Please enter a referral code';
+                statusElement.classList.remove('hidden', 'text-green-500', 'text-red-500');
+                statusElement.classList.add('text-gray-500');
+                return;
+            }
+
+            try {
+                const response = await fetch('/user/verify-referral', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ referralCode }),
+                });
+
+                const data = await response.json();
+
+                statusElement.classList.remove('hidden');
+                if (data.valid) {
+                    statusElement.textContent = 'Valid referral code';
+                    statusElement.classList.remove('text-red-500', 'text-gray-500');
+                    statusElement.classList.add('text-green-500');
+                } else {
+                    statusElement.textContent = 'Invalid referral code';
+                    statusElement.classList.remove('text-green-500', 'text-gray-500');
+                    statusElement.classList.add('text-red-500');
+                }
+            } catch (error) {
+                statusElement.textContent = 'Error verifying referral code';
+                statusElement.classList.remove('hidden', 'text-green-500', 'text-gray-500');
+                statusElement.classList.add('text-red-500');
+            }
+        }
     </script>
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>

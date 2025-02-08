@@ -135,12 +135,11 @@ const sendVerificationEmail = async function (email, otp) {
     }
 }
 const sendOTP = async function (req, res) {
+
+    const { username, email, password, referralCode  } = req.body;
     try {
-
-
-        const { username, email, password } = req.body;
-
-        req.session.userData = { username, email, password };
+     
+        req.session.userData = { username, email, password, referralCode };
 
         // Check if user is already registerd
         const checkUserPresent = await User.findOne({ email });
@@ -189,8 +188,7 @@ const resendOtp = async (req, res) => {
         console.log(req.session.userData)
 
         if(!email){
-            console.log("daskjda")
-            return res.status(404).json({error:"User not Found"})
+            return res.status(404).json({error:"No user found in this email!"})
            
         }
 
