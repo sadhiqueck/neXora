@@ -5,6 +5,7 @@ const productsDB = require("../../models/productModel");
 const Users = require('../../models/userModel');
 const ReferralHistory = require('../../models/referralHIstoryModel')
 const Wallet= require('../../models/walletModel')
+const ReferralOffer= require('../../models/referralOfferModel')
 const { json } = require('express');
 
 
@@ -76,9 +77,13 @@ const signup = async (req, res) => {
       await newWallet.save();
 
       // add refferal bonus to each user
-
-      const referralBonus=220;
-      const refereeBonus=100;
+      const referralOffers = await ReferralOffer.findOne({})
+       if (!referralOffers) {
+              const newReferralOffer = new ReferralOffer({});
+              await newReferralOffer.save();
+              }
+      const referralBonus=referralOffers.referralBonus;
+      const refereeBonus=referralOffers.refereeBonus;
 
       if(referrer){
         let referrerWallet = await  Wallet.findOne({user: referrer._id});

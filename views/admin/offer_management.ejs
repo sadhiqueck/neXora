@@ -1,0 +1,396 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold">Offer Management</h1>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex flex-col gap-8 max-w-3xl mx-auto">
+    <!-- Referral Program Settings -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold mb-4">Referral Program Settings</h2>
+      <form id="referralForm">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Referral Bonus Amount (Referrer)
+            </label>
+            <div class="relative">
+              <input type="number" name="referralBonus"
+                class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                placeholder="Enter referrer bonus amount" required />
+            </div>
+            <p class="text-sm text-gray-500 mt-1">Current referrer bonus: <%=
+                referralOffers.referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%>
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Referee Bonus Amount
+            </label>
+            <div class="relative">
+              <input type="number" name="refereeBonus"
+                class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                placeholder="Enter referee bonus amount" required />
+            </div>
+            <p class="text-sm text-gray-500 mt-1">Current referee bonus: <%=
+                referralOffers.refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%>
+            </p>
+          </div>
+
+          <button type="submit"
+            class="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors">
+            Save Referral Settings
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Category Offers Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Category Offers</h2>
+        <button onclick="toggleCategoryOfferForm()"
+          class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors">
+          Add New Offer
+        </button>
+      </div>
+
+      <!--Category Offer Form -->
+      <form id="categoryOfferForm" class="hidden space-y-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Select Category
+          </label>
+          <% if(categories){ %>
+            <select name="category"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              required>
+              <option value="" disabled selected>Choose a category</option>
+              <% categories?.forEach(category=> { %>
+                <% if (!categoryOffers?.some(offer=> offer?.categoryId._id.toString() === category._id.toString())) { %>
+                  <option value="<%= category._id %>">
+                    <%= category.categoryName %>
+                  </option>
+                  <% } %>
+                    <% }) %>
+            </select>
+            <% } %>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Discount Type
+            </label>
+            <select name="discountType"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              required>
+              <option value="percentage">Percentage</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Discount Value
+            </label>
+            <input type="number" name="discountPercentage"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Enter value" required min="1" />
+          </div>
+        </div>
+
+
+          <div >
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Expiry Date
+            </label>
+            <input type="date" name="expiryDate"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              required />
+          </div>
+
+
+        <div>
+          <button type="submit"
+            class="flex-1 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors">
+            Save Offer
+          </button>
+          <button type="button" onclick="toggleCategoryOfferForm()"
+            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+        </div>
+      </form>
+
+      <!-- Category Offers Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiry</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% categoryOffers?.forEach(offer=> { %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= offer.categoryId?.categoryName %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%=`${offer.discountPercentage}%`%>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <%= new Date(offer.expiryDate).toLocaleDateString() %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      <%= new Date(offer.expiryDate) > new Date() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                    <%= new Date(offer.expiryDate)> new Date() ? 'Active' : 'Expired' %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <button class="text-purple-600 hover:text-purple-900 mr-2"
+                  onclick="openEditCategoryOfferModal('<%= JSON.stringify(offer) %>')" >Edit</button>
+                  <button class="text-red-600 hover:text-red-900"
+                    onclick="deleteOffer('<%= offer._id %>')">Delete</button>
+                </td>
+              </tr>
+              <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Category Offer Modal -->
+<div id="editCategoryOfferModal" class="fixed inset-0 hidden z-50 overflow-y-auto">
+  <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+    <!-- Modal Overlay -->
+    <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50" onclick="closeEditCategoryOfferModal()"></div>
+
+    <!-- Modal Content -->
+    <div class="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle">
+      <h3 class="text-lg font-medium leading-6 text-gray-900">Edit Category Offer</h3>
+      <div class="mt-2">
+        <form id="editCategoryOfferForm" class="space-y-4">
+          <!-- Hidden Field for Offer ID -->
+          <input type="hidden" name="offerId" id="editOfferId" />
+
+          <!-- Category (Disabled) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <input
+              type="text"
+              id="editCategoryName"
+              class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
+              disabled
+            />
+          </div>
+
+          <!-- Discount Type -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Discount Type</label>
+            <select
+              name="discountType"
+              id="editDiscountType"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              required
+            >
+              <option value="percentage">Percentage</option>
+            </select>
+          </div>
+
+          <!-- Discount Value -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Discount Value</label>
+            <input
+              type="number"
+              name="discountPercentage"
+              id="editDiscountPercentage"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              placeholder="Enter value"
+              required
+              min="1"
+            />
+          </div>
+
+          <!-- Expiry Date -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+            <input
+              type="date"
+              name="expiryDate"
+              id="editExpiryDate"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              required
+            />
+          </div>
+
+          <!-- Form Actions -->
+          <div class="mt-6">
+            <button
+              type="submit"
+              class="flex-1 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors"
+            >
+              Update Offer
+            </button>
+            <button
+              type="button"
+              onclick="closeEditCategoryOfferModal()"
+              class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle Category Offer Form
+  function toggleCategoryOfferForm() {
+    const form = document.getElementById('categoryOfferForm');
+    form.classList.toggle('hidden');
+  }
+
+  document.getElementById('referralForm').addEventListener('submit', handleReferralSubmit);
+  document.getElementById('categoryOfferForm').addEventListener('submit', handleCategoryOfferSubmit);
+
+  async function handleReferralSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const referralBonus = formData.get('referralBonus');
+    const refereeBonus = formData.get('refereeBonus');
+
+    try {
+      const response = await fetch('/admin/referral-bonus-change', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referralBonus, refereeBonus })
+      })
+      if (response.ok) {
+        notyf.success(`Referral Settings Updated:\nReferrer Bonus: ₹${referralBonus}\nReferee Bonus: ₹${refereeBonus}`);
+        setTimeout(() => {
+          window.location.reload()
+        }, 500);
+      } else {
+        notyf.error('Failed to update')
+      }
+    } catch (error) {
+      notyf.error('something wrong')
+      console.log(error)
+    }
+
+  }
+
+  async function handleCategoryOfferSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const offerData = {
+      categoryId: formData.get('category'),
+      discountPercentage: formData.get('discountPercentage'),
+      expiryDate: new Date(formData.get('expiryDate'))
+    };
+
+    try {
+      const response = await fetch('/admin/category-offer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ offerData })
+      })
+      if (response.ok) {
+        notyf.success(`Category Offer Created`);
+        setTimeout(() => {
+          window.location.reload()
+        }, 500);
+      } else {
+        const data= await response.json()
+        notyf.error(data.error||'Failed to Add')
+      }
+    } catch (error) {
+      notyf.error('something wrong')
+      console.log(error)
+    }
+
+  }
+
+
+function openEditCategoryOfferModal(offerData) {
+ const offer= JSON.parse(offerData)
+  document.getElementById('editOfferId').value = offer._id;
+  document.getElementById('editCategoryName').value = offer.categoryId?.categoryName;
+  document.getElementById('editDiscountType').value = 'percentage'; 
+  document.getElementById('editDiscountPercentage').value = offer.discountPercentage;
+  document.getElementById('editExpiryDate').value =  new Date(offer.expiryDate).toISOString().split('T')[0];
+
+
+  document.getElementById('editCategoryOfferModal').classList.remove('hidden');
+}
+
+
+function closeEditCategoryOfferModal() {
+  document.getElementById('editCategoryOfferModal').classList.add('hidden');
+}
+
+
+document.getElementById('editCategoryOfferForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+  const offerId = formData.get('offerId');
+  const updatedData = {
+    discountPercentage: formData.get('discountPercentage'),
+    expiryDate: new Date(formData.get('expiryDate'))
+  };
+
+  try {
+    const response = await fetch(`/admin/category-offer/${offerId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData)
+    });
+
+    if (response.ok) {
+      notyf.success('Offer updated successfully');
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } else {
+      notyf.error('Failed to update offer');
+    }
+  } catch (error) {
+    notyf.error('Something went wrong');
+    console.log(error);
+  }
+});
+
+  async function deleteOffer(offerId) {
+    try {
+      const response = await fetch(`/admin/category-offer/${offerId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        notyf.success('Offer deleted successfully');
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        notyf.error('Failed to delete offer');
+      }
+    } catch (error) {
+      notyf.error('Something went wrong');
+      console.log(error);
+    }
+  }
+
+</script>

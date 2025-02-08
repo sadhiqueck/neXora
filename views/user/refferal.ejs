@@ -15,7 +15,8 @@
             <div class="container mx-auto px-4 py-8">
                 <div class="text-center mb-12">
                     <h1 class="text-4xl font-bold text-gray-900 mb-4">Invite Friends & Earn Rewards</h1>
-                    <p class="text-xl text-gray-600 mb-2 font-medium">You will get <span class="font-bold text-indigo-600"> ₹220</span> and friend will get <span class="font-bold text-indigo-600"> ₹100</span>.</p>
+                    <p class="text-xl text-gray-600 mb-2 font-medium">You will get <span class="font-bold text-indigo-600"><%=referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span> 
+                        and friend will get <span class="font-bold text-indigo-600"><%=refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>.</p>
                     <p class="text-xl text-purple-600">Share your love for Nexora and get rewarded!</p>
                 </div>
                 <!-- Referral Section -->
@@ -69,7 +70,8 @@
                         <h2 class="text-lg font-semibold text-gray-800 mb-2">How it works</h2>
                         <p class="text-gray-600">
                             Share your referral code with friends. When they Signup using your code,
-                            both you and your friend will receive rewards!,You will get<span class="font-bold"> ₹220</span> and freind will get <span class="font-bold"> ₹100</span>.                        </p>
+                            both you and your friend will receive rewards!,You will get<span class="font-bold"> <%=referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span> 
+                            and freind will get <span class="font-bold"> <%=refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>.                        </p>
                     </div>
 
                     <% if(referralHistory) {%>

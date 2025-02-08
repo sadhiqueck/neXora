@@ -1,10 +1,17 @@
 
 const User = require('../../models/userModel')
 const ReferralHistory = require('../../models/referralHIstoryModel')
+const ReferralOffer = require('../../models/referralOfferModel');
+const categoryOfferModel = require('../../models/categoryOfferModel');
 
 const getRefferalPage = async (req, res) => {
     const userId = req.session.user._id
     try {
+        const referralOffers = await ReferralOffer.findOne({})
+
+        const referralBonus = referralOffers.referralBonus;
+        const refereeBonus = referralOffers.refereeBonus;
+
         const referralHistory = await ReferralHistory.find({ referrer: userId })
             .populate('referee', 'username email')
             .sort({ createdAt: -1 });
@@ -12,10 +19,11 @@ const getRefferalPage = async (req, res) => {
         const totalEarnings = referralHistory.reduce((total, val) => {
             return total + val.referralBonus;
         }, 0)
-  
-        const totalReferal=referralHistory.length
 
-        res.render('user/refferal', { title: "Refferal Page", referralHistory,totalEarnings, totalReferal});
+        const totalReferal = referralHistory.length
+
+
+        res.render('user/refferal', { title: "Refferal Page", referralBonus, refereeBonus, referralHistory, totalEarnings, totalReferal });
 
     } catch (error) {
         console.error(error);

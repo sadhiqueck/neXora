@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const Users = require("../../models/userModel");
 const productDB = require('../../models/productModel')
 const categoryDB = require('../../models/categoryModel')
+const CategoryOffer= require('../../models/categoryOfferModel')
 const cloudinary = require('../../config/cloudinaryConfig');
 const { uploadToCloudinary } = require('../../config/multerConfig');
 
@@ -24,39 +25,39 @@ const loadProducts = async (req, res) => {
                 ];
             }
 
-           
-           switch (sort) {
-            case 'active':
-                query.isDeleted = false; 
-                break;
-            case 'deleted':
-                query.isDeleted = true; 
-                break;
-            case 'lowStock':
-                query.totalStock = { $lt: 10 }; 
-                break;
-            case 'outOfStock':
-                query.totalStock = 0; 
-                break;
-           
-        }
-        
-        switch (sort) {
-            case 'lowStock':
-                sortQuery = { totalStock: 1 }; 
-                break;
-            case 'outOfStock':
-                sortQuery = { totalStock: -1 }; 
-                break;
-            case 'newest':
-                sortQuery = { createdAt: -1 }; 
-                break;
-            case 'oldest':
-                sortQuery = { createdAt: 1 }; 
-                break;
-            default:
-                sortQuery = { totalStock: 1 };
-        }
+
+            switch (sort) {
+                case 'active':
+                    query.isDeleted = false;
+                    break;
+                case 'deleted':
+                    query.isDeleted = true;
+                    break;
+                case 'lowStock':
+                    query.totalStock = { $lt: 10 };
+                    break;
+                case 'outOfStock':
+                    query.totalStock = 0;
+                    break;
+
+            }
+
+            switch (sort) {
+                case 'lowStock':
+                    sortQuery = { totalStock: 1 };
+                    break;
+                case 'outOfStock':
+                    sortQuery = { totalStock: -1 };
+                    break;
+                case 'newest':
+                    sortQuery = { createdAt: -1 };
+                    break;
+                case 'oldest':
+                    sortQuery = { createdAt: 1 };
+                    break;
+                default:
+                    sortQuery = { totalStock: 1 };
+            }
 
             const totalProducts = await productDB.countDocuments(query);
             const products = await productDB.find(query).sort(sortQuery).skip(skip).limit(limit);
@@ -203,6 +204,26 @@ const addProduct = async (req, res) => {
         });
 
         await newProduct.save();
+
+        //Check for active category offer
+        const categoryOffer = await CategoryOffer.findOne({
+            category: newProduct.category,
+            expiryDate: { $gt: Date.now() }
+        });
+
+        // Calculate final discounted price
+        const effectiveDiscount = Math.max(
+            numericDiscount,
+            categoryOffer?.discountPercentage || 0
+        );
+
+        newProduct.discountedPrice = Math.round(
+            numericPrice * (1 - effectiveDiscount / 100)
+        );
+
+
+        await newProduct.save();
+
         return res.status(200).json({ success: true, message: "Product added successfully" });
 
 

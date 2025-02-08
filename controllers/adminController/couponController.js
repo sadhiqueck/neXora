@@ -167,14 +167,6 @@ const validateCoupon = async (req, res) => {
 }
 
 
-const getReferrals = async (req, res) => {
-    try {
-        res.render('admin/referrals', { referrals });
-    } catch (error) {
-        console.error(error);
-        res.redirect('/admin/dashboard');
-    }
-};
 
 module.exports = { getCoupons, createCoupon, loadAddCoupons,
-     updateCoupon, loadEditCoupon, deleteCoupon,validateCoupon, getReferrals }
+     updateCoupon, loadEditCoupon, deleteCoupon,validateCoupon,  }

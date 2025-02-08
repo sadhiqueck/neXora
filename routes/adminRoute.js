@@ -8,8 +8,9 @@ const { login, loadLogin, loadDashboard, loadUsers, deleteUser, blockUser, viewU
 const { loadCategories, addCatgeory, deleteCategory, editCategory, } = require("../controllers/adminController/categoryController");
 const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage,
      loadEditProductpage, editProduct, deleteProduct, updateProductStock } = require('../controllers/adminController/productController')
-const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate,reutrnApproval } = require('../controllers/adminController/orderController')
-const { getCoupons, createCoupon, loadAddCoupons, loadEditCoupon, updateCoupon, deleteCoupon, getReferrals } = require('../controllers/adminController/couponController')
+const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval } = require('../controllers/adminController/orderController')
+const { getCoupons, createCoupon, loadAddCoupons, loadEditCoupon, updateCoupon, deleteCoupon } = require('../controllers/adminController/couponController')
+const { getOfferPage, referralUpdation, addCategoryOffer, editCategoryOffer, deleteCategoryOffer } = require('../controllers/adminController/offerController')
 // middlewares
 const { authsession, isLogin } = require('../middleware/adminAuth')
 const { validateStockUpdate } = require('../middleware/stockValidation')
@@ -60,18 +61,23 @@ router.get('/order-update/:orderId', authsession, updateOrder);
 router.post('/orders/update-product-status', authsession, updateProductStatus)
 router.post('/orders/cancel-all', authsession, cancelAll)
 router.post('/orders/date-change', authsession, ChangeDeliveryDate)
-router.post('/return/approve',authsession,reutrnApproval)
+router.post('/return/approve', authsession, reutrnApproval)
 
 
 // Coupon Management
-router.get('/coupons',authsession, getCoupons);
-router.get('/coupons/add',authsession, loadAddCoupons);
-router.post('/coupons',authsession, createCoupon);
-router.get('/coupons/:id/edit',authsession, loadEditCoupon);
-router.post('/coupons/:id',authsession, updateCoupon);
-router.post('/coupons/:id/delete',authsession,deleteCoupon);
+router.get('/coupons', authsession, getCoupons);
+router.get('/coupons/add', authsession, loadAddCoupons);
+router.post('/coupons', authsession, createCoupon);
+router.get('/coupons/:id/edit', authsession, loadEditCoupon);
+router.post('/coupons/:id', authsession, updateCoupon);
+router.post('/coupons/:id/delete', authsession, deleteCoupon);
 
-// Referral Management
-router.get('/referrals', getReferrals);
+// offer Management
+router.get('/offers', getOfferPage);
+router.post('/referral-bonus-change', referralUpdation)
+router.post('/category-offer', addCategoryOffer)
+router.delete('/category-offer/:id', deleteCategoryOffer)
+router.put('/category-offer/:id', editCategoryOffer)
+
 
 module.exports = router
