@@ -1,7 +1,7 @@
 const Category = require('../../models/categoryModel');
 const ReferralOffer = require('../../models/referralOfferModel')
 const CategoryOffer = require('../../models/categoryOfferModel')
-const updateCategoryProductDiscounts= require('../../utils/productDiscountUpdater')
+// const updateCategoryProductDiscounts= require('../../utils/productDiscountUpdater')
 const getOfferPage = async (req, res) => {
     try {
 
@@ -54,9 +54,9 @@ const addCategoryOffer = async (req, res) => {
     try {
         const categoryOffer = new CategoryOffer(offerData);
         await categoryOffer.save();
-        console.log(offerData)
+
         // update products discount in this categry
-        await updateCategoryProductDiscounts(offerData.categoryId);
+        // await updateCategoryProductDiscounts(offerData.categoryId);
 
         res.status(201).json({ message: "Category offer added successfully" });
     } catch (error) {
@@ -69,8 +69,7 @@ const editCategoryOffer = async (req, res) => {
     try {
       const { id } = req.params;
       const { discountPercentage, expiryDate } = req.body;
-      console.log(req.body)
-  
+
       const updatedOffer = await CategoryOffer.findByIdAndUpdate(
         id,
         { discountPercentage, expiryDate },
@@ -80,7 +79,7 @@ const editCategoryOffer = async (req, res) => {
       if (!updatedOffer) {
         return res.status(404).json({ message: 'Offer not found' });
       }
-      await updateCategoryProductDiscounts(updatedOffer.categoryId);
+    //   await updateCategoryProductDiscounts(updatedOffer.categoryId);
   
       res.json({ message: 'Offer updated successfully', updatedOffer });
     } catch (error) {
@@ -98,7 +97,7 @@ const deleteCategoryOffer = async(req,res)=>{
             return res.status(404).json({ error: "Category offer not found" });
         }
         
-        await updateCategoryProductDiscounts(categoryOffer.categoryId);
+        // await updateCategoryProductDiscounts(categoryOffer.categoryId);
         res.status(200).json({ message: "Category offer deleted successfully" });
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });

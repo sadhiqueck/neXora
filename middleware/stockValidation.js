@@ -1,3 +1,6 @@
+const cartDb = require('../models/cartModel')
+
+
 
 const validateStockUpdate = async (req, res, next) => {
     try {
@@ -30,4 +33,35 @@ const validateStockUpdate = async (req, res, next) => {
     }
 }
 
-module.exports = { validateStockUpdate };
+const stockStatusValidation = async(req,res,next)=>{
+
+    const userId = req.session.user._id;
+    const cart = await cartDb.findOne({ userId }).populate('products.productId')
+
+    const hasOutOfStock = cart.products.some(item => {
+        const product = item.productId;
+
+        const variant = product.variants.find(v => {
+            const colorMatch = v.color === item.variantDetails.color;
+
+            if (item.variantDetails.storage) {
+                return colorMatch &&
+                    v.storage !== null &&
+                    v.storageUnit !== 'NIL' &&
+                    `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
+            }
+
+            return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
+        });
+
+        return !variant || variant.stock < 1;
+    });
+
+    if (hasOutOfStock) {
+        return res.status(404).json({ outOfStock: true, message: "No stock found" })
+    }
+    next();
+
+}
+
+module.exports = { validateStockUpdate,stockStatusValidation };

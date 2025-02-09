@@ -380,8 +380,7 @@
             </div>
             <div class="flex justify-between text-green-600">
                 <span>Coupon Discount</span>
-                <span>-<%= order.couponApplied ? order.couponApplied?.discount.toLocaleString('en-IN',{style:'currency',
-                        currency:'INR'}): 0 %></span>
+                <span>-<%= order.couponApplied ?  order.couponApplied?.discount.toLocaleString('en-IN',{style:'currency',currency:'INR'}) : 0 %></span>
             </div>
             <div class="border-t pt-3 mt-3">
                 <div class="flex justify-between font-semibold text-lg">

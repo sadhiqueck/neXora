@@ -3,6 +3,8 @@ const productsDB = require("../../models/productModel")
 const Cart = require('../../models/cartModel');
 const categoriesDB = require('../../models/categoryModel');
 const Wishlist = require('../../models/wishListModel');
+const calculateEffectivePrice = require('../../utils/EffectivePriceCalculator')
+const CategoryOffer = require('../../models/categoryOfferModel')
 
 
 const loadProductsPage = async (req, res) => {
@@ -79,14 +81,25 @@ const loadProductsPage = async (req, res) => {
         const categories = await categoriesDB.find({ isDeleted: false });
         const brands = await productsDB.distinct('brand', { isDeleted: false });
 
+        const categoryOffers = await CategoryOffer.find({
+            expiryDate: { $gt: Date.now() }
+        }).populate('categoryId', 'categoryName');
+
         const productsWithVariants = products.map(product => {
             const productObj = product.toObject();
-            productObj.activeVariants = productObj.variants.filter(variant =>
+            const variant=productObj.variants.filter(variant =>
                 variant.status === 'active' && variant.stock > 0
-            );
-            return productObj;
-        });
+            )
+            const priceInfo = calculateEffectivePrice(product, categoryOffers,variant);
 
+            return {
+                ...productObj,
+                discountedPrice: priceInfo.discountedPrice,
+                effectiveDiscount: priceInfo.effectiveDiscountPercentage,
+                hasCategoryOffer: priceInfo.isCategoryOffer,
+                activeVariants:variant
+            }
+        });
 
         let filteredProducts = productsWithVariants;
         if (availability === 'in-stock') {
@@ -97,14 +110,14 @@ const loadProductsPage = async (req, res) => {
 
 
         let finalProducts = filteredProducts;
-        
+
         if (req.session.user) {
             const userId = req.session.user._id;
             const userCart = await Cart.findOne({
                 userId,
             });
             // get wishlist
-            const userWishlist = await Wishlist.findOne({user:userId}).lean();
+            const userWishlist = await Wishlist.findOne({ user: userId }).lean();
             const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
             const cartProductIds = new Set();
 
@@ -159,9 +172,30 @@ const getProductsDetails = async (req, res) => {
         const productId = req.params.id;
         const product = await productsDB.findById(productId);
 
+
         if (!product) {
             return res.status(404).json({ message: "product not found!" });
         }
+
+        const categoryOffers = await CategoryOffer.find({
+            expiryDate: { $gt: Date.now() },
+            isActive: true
+        }).populate('categoryId', 'categoryName');
+
+
+        const categoryOffer = categoryOffers.find(offer =>
+            offer.categoryId.categoryName === product.category &&
+            new Date(offer.expiryDate) > new Date()
+        );
+        let hasAdditionalDiscount=null
+
+        if(categoryOffer){
+            const categoryDiscount = categoryOffer?.discountPercentage || 0;
+            const effectiveDiscount = Math.max(product.discount, categoryDiscount);
+            hasAdditionalDiscount=categoryDiscount > product.discount
+            product.discount=effectiveDiscount;
+        }
+
 
         const activeVariants = product.variants.filter(variant => variant.status === 'active');
 
@@ -203,6 +237,21 @@ const getProductsDetails = async (req, res) => {
             category: product.category,
             _id: { $ne: productId },
         }).limit(4);
+
+        const updatedRelatedProducts = relatedProducts.map(relProduct => {
+            const relProductObj = relProduct.toObject();
+            const variant=relProductObj.variants.filter(variant =>
+                variant.status === 'active' && variant.stock > 0)
+            const priceInfo = calculateEffectivePrice(relProduct, categoryOffers,variant);
+            return {
+            ...relProductObj,
+            discountedPrice: priceInfo.discountedPrice,
+            effectiveDiscount: priceInfo.effectiveDiscountPercentage,
+            hasCategoryOffer: priceInfo.isCategoryOffer,
+            activeVariants: variant
+            };
+        });
+        
 
         if (req.session.user) {
             const userId = req.session.user._id;
@@ -249,13 +298,13 @@ const getProductsDetails = async (req, res) => {
             });
 
 
-
             return res.render('user/product_details', {
                 title: 'Product_details',
                 product: productWithCart,
-                relatedProducts,
+                relatedProducts:updatedRelatedProducts,
                 colors,
                 storages,
+                hasAdditionalDiscount
             });
         }
 
@@ -263,9 +312,10 @@ const getProductsDetails = async (req, res) => {
         res.render('user/product_details', {
             title: 'Product_details',
             product,
-            relatedProducts,
+            relatedProducts:updatedRelatedProducts,
             colors,
             storages,
+            hasAdditionalDiscount
         });
     } catch (error) {
         console.error("Error fetching product details:", error);

@@ -12,7 +12,7 @@ cron.schedule('0 0 * * *', async () => { // Runs daily at midnight
     // Update products for each expired offer
     for (const offer of expiredOffers) {
       await updateCategoryProductDiscounts(offer.categoryId);
-      await CategoryOffer.deleteOne({ _id: offer._id });
+      await CategoryOffer.updateOne({ _id: offer._id }, { isActive: false });
     }
     
     console.log(`Processed ${expiredOffers.length} expired offers`);

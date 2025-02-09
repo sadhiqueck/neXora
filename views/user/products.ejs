@@ -261,11 +261,19 @@
                                                 href="/user/product/<%= product._id %>">
                                                 <img class="max-h-50 w-[80%] mx-auto object-contain lazyload"
                                                     src="<%= product.images[0] %>" alt="product image" />
-                                                <span
-                                                    class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
+                                                    
+                                                  <!-- Regular Discount Label -->
+                                                <span class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
                                                     <%= product.discount %> % OFF
                                                 </span>
-                                            </a>
+                                                   <!-- Special Discount Label  -->
+                                                   <% if (product.hasCategoryOffer) { %>
+                                                    <div class="absolute bottom-0 left-0 right-0 bg-red-500 text-white py-1 px-3 text-center transform rotate-0">
+                                                        <span class="text-sm font-semibold ">Special offer for <%=product.category%></span>
+                                                            <span class="block text-xs font-medium">Extra <%= product.effectiveDiscount-product.discount%>% OFF</span>  
+                                                    </div>
+                                                <% } %>
+                                                                        </a>
                                             <% if(isLoggedIn) { %>
                                                 <button
                                                     class="wishlist-btn absolute top-4 right-4 rounded-full p-3 shadow-md bg-white flex mx-auto transition-colors duration-200 <%- product.isWishlisted ? 'text-red-500' : 'text-gray-600' %>"

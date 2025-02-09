@@ -1,6 +1,8 @@
 const productsDB = require('../../models/productModel');
 const cartDb = require('../../models/cartModel');
 const Wishlist = require('../../models/wishListModel');
+const CategoryOffer = require('../../models/categoryOfferModel');
+const calculateEffectivePrice = require('../../utils/EffectivePriceCalculator')
 
 
 
@@ -9,7 +11,6 @@ const loadCart = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const cart = await cartDb.findOne({ userId }).populate('products.productId');
-        const products = await productsDB.find({ isDeleted: false });
 
         if (!cart || cart.products.length === 0) {
             return res.render('user/cart', {
@@ -26,6 +27,11 @@ const loadCart = async (req, res) => {
 
         let cartUpdated = false;
 
+        const categoryOffers = await CategoryOffer.find({
+            expiryDate: { $gt: Date.now() },
+            isActive: true
+        }).populate('categoryId', 'categoryName');
+
 
         const cartProductIds = cart.products.map(item => item.productId._id.toString());
 
@@ -34,52 +40,57 @@ const loadCart = async (req, res) => {
 
         const cartWithDetails = cart.products.map((item) => {
             const product = item.productId;
-
-            //skip products that are marked as deleted
+        
+            
             if (product.isDeleted) {
-            cartUpdated = true;
-            return null;
+                cartUpdated = true;
+                return null;
             }
-
-            const variant = product.variants.find(v => {
-            const colorMatch = v.color === item.variantDetails.color;
-
-            if (item.variantDetails.storage) {
-                return colorMatch &&
-                v.storage !== null &&
-                v.storageUnit !== 'NIL' &&
-                `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
-            }
-
-            return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
+    
+            const matchingVariants = product.variants.filter(v => {
+                const colorMatch = v.color === item.variantDetails.color;
+        
+                if (item.variantDetails.storage) {
+                    return colorMatch &&
+                        v.storage !== null &&
+                        v.storageUnit !== 'NIL' &&
+                        `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
+                }
+        
+                return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
             });
-
-            const basePrice = product.price;
-            const variantPrice = Math.round((basePrice + (variant?.additionalPrice || 0)) * (1 - product.discount / 100));
-
-            const isOutOfStock = !variant || variant.stock < 1;
-
-            // Adjust quantity if stock is lower than selected quantity
-            const adjustedQuantity = isOutOfStock ? 0 : Math.min(item.quantity, variant.stock);
-
+        
+  
+            const selectedVariant = matchingVariants[0];
+        
+            const priceInfo = calculateEffectivePrice(product, categoryOffers, matchingVariants);
+        
+            const isOutOfStock = !selectedVariant || selectedVariant.stock < 1;
+        
+            const adjustedQuantity = isOutOfStock ? 0 : Math.min(item.quantity, selectedVariant.stock);
+        
             if (adjustedQuantity !== item.quantity) {
-            cartUpdated = true;
-            item.quantity = adjustedQuantity;
+                cartUpdated = true;
+                item.quantity = adjustedQuantity;
             }
-
+        
             return {
-            ...item.toObject(),
-            variantPrice,
-            productImage: product.images[0],
-            outOfStock: isOutOfStock,
-            isWishlisted: wishlistProductIds.has(product._id.toString())
+                ...item.toObject(),
+                variantPrice: priceInfo.discountedPrice,
+                effectiveDiscount: priceInfo.effectiveDiscountPercentage,
+                hasCategoryOffer: priceInfo.isCategoryOffer,
+                productImage: product.images[0],
+                outOfStock: isOutOfStock,
+                isWishlisted: wishlistProductIds.has(product._id.toString())
             };
-        }).filter(item => item !== null); // Filter out null items (deleted products)
+        }).filter(item => item !== null);
 
-     
+
+        const products = await productsDB.find({ isDeleted: false });
+
         const suggestedProducts = products
-            .filter(product => 
-                product.totalStock > 0 && 
+            .filter(product =>
+                product.totalStock > 0 &&
                 !cartProductIds.includes(product._id.toString())
             )
             .slice(0, 4)
@@ -88,10 +99,28 @@ const loadCart = async (req, res) => {
                 isWishlisted: wishlistProductIds.has(product._id.toString())
             }));
 
+
+
+        const updatedSuggestedProducts = suggestedProducts.map(product => {
+            const productObj = product;
+            const variant=productObj.variants.filter(variant =>
+                variant.status === 'active' && variant.stock > 0)
+            const priceInfo = calculateEffectivePrice(product, categoryOffers,variant);
+
+            return {
+                ...productObj,
+                discountedPrice: priceInfo.discountedPrice,
+                effectiveDiscount: priceInfo.effectiveDiscountPercentage,
+                hasCategoryOffer: priceInfo.isCategoryOffer,
+                activeVariants: variant
+            };
+        });
+
+
+
         if (cartUpdated) {
             await cart.save();
         }
-
         const hasOutOfStock = cart.products.some(item => {
             const product = item.productId;
             const variant = product.variants.find(v => {
@@ -110,16 +139,13 @@ const loadCart = async (req, res) => {
             return !variant || variant.stock < 1;
         });
 
-
-
-
         cartWithDetails.hasOutOfStock = hasOutOfStock;
-     
+
         const validProducts = cartWithDetails.filter(product => !product.outOfStock);
         const totalItems = validProducts.reduce((total, product) => total + product.quantity, 0);
         const subTotal = validProducts.reduce((total, product) => total + product.quantity * product.variantPrice, 0);
         const originalTotal = validProducts.reduce((total, product) => total + product.quantity * (product.productId.price + (product.variantDetails.additionalPrice || 0)), 0);
-        const totalSavings = originalTotal - subTotal;
+        const totalSavings = subTotal-originalTotal ;
         const deliveryCharge = subTotal > 498 ? 0 : 99;
         const tax = Math.round(subTotal * 0.18);
         const total = subTotal + deliveryCharge;
@@ -134,7 +160,7 @@ const loadCart = async (req, res) => {
             deliveryCharge,
             tax,
             total,
-            suggestedProducts,
+            suggestedProducts:updatedSuggestedProducts,
             // products
         });
 
@@ -147,7 +173,6 @@ const loadCart = async (req, res) => {
 
 const addToCart = async (req, res) => {
 
-
     try {
         const { productId } = req.body;
         const userId = req.session.user._id;
@@ -155,6 +180,7 @@ const addToCart = async (req, res) => {
         if (!product) {
             return res.status(404).json({ message: "Product not found!" });
         }
+
 
         // Find first available variant with stock
         const variant = product.variants.find(variant =>

@@ -28,7 +28,7 @@
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2" d="m9 5 7 7-7 7" />
                                 </svg>
-                                <a href="/user/products/<%=product.category%>"
+                                <a href="/user/products/<%= encodeURIComponent(product.category) %>?selectedcategories%5B%5D=<%= encodeURIComponent(product.category) %>"
                                     class="ms-1 text-sm font-medium text-gray-700 dark:text-gray-400 md:ms-2">
                                     <%=product.category %>
                                 </a>
@@ -147,16 +147,15 @@
                                             </svg>
                                             <span class="ml-2 text-gray-600">4.5 (120 reviews)</span>
                                         </div>
-                                        <% // Find first available variant const
-                                            firstAvailableVariant=product.variants.find(variant=>
+                                         <!-- Find first available variant const  -->
+                                        <%   firstAvailableVariant=product.variants.find(variant=>
                                             variant.status === 'active' && variant.stock > 0
                                             ) || product.variants.find(variant => variant.status === 'active') || null;
 
                                             // Determine if product is completely out of stock
                                             const isProductOutOfStock = !firstAvailableVariant ||
                                             product.variants.every(variant => variant.status !== 'active' ||
-                                            variant.stock === 0);
-                                            %>
+                                            variant.stock === 0); %>
                                             <!-- stock -->
                                             <div class="ml-4 font-inter text-md font-medium" id="stock">
                                                 <% if (firstAvailableVariant.stock < 5 && firstAvailableVariant.stock>
@@ -174,15 +173,31 @@
                                             </div>
                                     </div>
                                     <span class="text-2xl font-bold mr-2" id="finalPrice">
-                                        <%= Math.round((product.price+firstAvailableVariant.additionalPrice) * (1 -
+                                        <%= Math.floor((product.price+firstAvailableVariant.additionalPrice) * (1 -
                                             product.discount/100)).toLocaleString('en-IN', {style:'currency',
                                             currency:'INR'}) %>
                                     </span>
                                     <span class="text-gray-500 line-through" id="variantPrice">₹<%=(product.price +
                                             firstAvailableVariant.additionalPrice).toLocaleString("en-IN") %></span>
-                                    <span class="ml-3 font-semibold text-lg text-indigo-600">
-                                        <%=product.discount %>% off
-                                    </span>
+
+                                <div class="flex items-center mt-2">
+                                        <!-- Existing discount -->
+                                        <span class=" font-semibold text-lg <%=hasAdditionalDiscount ? 'text-red-500' : 'text-indigo-600' %> ">
+                                            <%= product.discount %>% off
+                                        </span>
+                                        
+                                        <!-- Special offer badge -->
+                                        <% if (hasAdditionalDiscount) { %>
+                                            <div class="ml-4 inline-flex items-center">
+                                                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                    </svg>
+                                                    Special Deal for <%= product.category %>
+                                                </span>
+                                            </div>
+                                        <% } %>
+                                    </div>
                                 </div>
 
                                 <p class="text-gray-700 description-clamp">
@@ -240,7 +255,7 @@
                                                                                 <%= storage.storage %>
                                                                                     <%= storage.storageUnit %>
                                                                                         <span class="block text-sm">
-                                                                                            <%=Math.round(((product.price
+                                                                                            <%=Math.floor(((product.price
                                                                                                 +
                                                                                                 storage.additionalPrice)
                                                                                                 * (1 - product.discount
@@ -530,10 +545,18 @@
                                                 href="/user/product/<%= product._id %>">
                                                 <img class="max-h-50 w-[80%] mx-auto object-contain lazyload"
                                                     src="<%= product.images[0] %>" alt="product image" />
-                                                <span
-                                                    class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
+
+                                                    <!-- Regular Discount Label -->
+                                                <span class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
                                                     <%= product.discount %> % OFF
                                                 </span>
+                                                   <!-- Special Discount Label - Show if special discount exists -->
+                                                   <% if (product.hasCategoryOffer) { %>
+                                                    <div class="absolute bottom-0 left-0 right-0 bg-red-500 text-white py-1 px-3 text-center transform rotate-0">
+                                                        <span class="text-sm font-semibold ">Special offer for <%=product.category%></span>
+                                                            <span class="block text-xs font-medium">Extra <%= product.effectiveDiscount-product.discount%>% OFF</span>  
+                                                    </div>
+                                                <% } %>
                                             </a>
                                             <% if(isLoggedIn) { %>
                                                 <button

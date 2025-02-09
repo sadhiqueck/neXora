@@ -6,7 +6,8 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Wallet = require('../../models/walletModel');
 const Coupons = require('../../models/couponModel');
-
+const CategoryOffer = require('../../models/categoryOfferModel')
+const calculateEffectivePrice = require('../../utils/EffectivePriceCalculator')
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -27,14 +28,17 @@ const loadPaymentPage = async (req, res) => {
             return res.redirect('/user/selectAddress');
         } else {
 
+            const categoryOffers = await CategoryOffer.find({
+                expiryDate: { $gt: Date.now() },
+                isActive: true
+            }).populate('categoryId', 'categoryName');
+
             const cartWithDetails = cart.products.map((item) => {
                 const product = item.productId;
 
-                // Find the matching variant with flexible storage check
-                const variant = product.variants.find(v => {
+                const matchingVariants = product.variants.filter(v => {
                     const colorMatch = v.color === item.variantDetails.color;
 
-                    // If cart item has storage specification
                     if (item.variantDetails.storage) {
                         return colorMatch &&
                             v.storage !== null &&
@@ -46,20 +50,22 @@ const loadPaymentPage = async (req, res) => {
                 });
 
 
-                const basePrice = product.price;
+                const selectedVariant = matchingVariants[0];
 
-                const variantPrice = Math.round((basePrice + (variant?.additionalPrice || 0)) * (1 - product.discount / 100));
+                const priceInfo = calculateEffectivePrice(product, categoryOffers, matchingVariants);
 
                 // checkk product id out of stock
-                const isOutOfStock = !variant || variant.stock < 1;
+                const isOutOfStock = !selectedVariant || selectedVariant.stock < 1;
 
                 return {
                     ...item.toObject(),
-                    variantPrice,
+                    variantPrice: priceInfo.discountedPrice,
+                    effectiveDiscount: priceInfo.effectiveDiscountPercentage,
                     productImage: product.images[0],
                     outOfStock: isOutOfStock,
                 };
             });
+
             const hasOutOfStock = cart.products.some(item => {
                 const product = item.productId;
                 const variant = product.variants.find(v => {
@@ -128,20 +134,7 @@ const loadPaymentPage = async (req, res) => {
 
 const createRazorpayOrder = async (req, res) => {
     try {
-        let { total, isWallet } = req.body;
-
-        // if (isWallet) {
-        //     // Wallet Transaction: Get total from request body
-        //     if (!total || total <= 0) {
-        //         return res.status(400).json({ error: "Invalid amount for wallet transaction" });
-        //     }
-        // } else {
-
-        //     // if (!req.session.orderSummary || !req.session.orderSummary.total) {
-        //     //     return res.status(400).json({ error: "No order summary found in session" });
-        //     // }
-        //     total = req.session.orderSummary.total;
-        // }
+        let { total } = req.body;
 
         if (!total || total <= 0) {
             return res.status(400).json({ error: "Invalid amount for wallet transaction" });
@@ -162,7 +155,6 @@ const createRazorpayOrder = async (req, res) => {
         return res.json({
             success: true,
             order: order,
-            isWallet: isWallet || false,
         });
 
     } catch (error) {
@@ -300,32 +292,94 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, trans
         if (!cart || cart.products.length === 0) {
             return res.status(400).json({ error: 'Cart is empty. Cannot place order.' });
         }
+        const categoryOffers = await CategoryOffer.find({
+            expiryDate: { $gt: Date.now() },
+            isActive: true
+        }).populate('categoryId', 'categoryName');
 
-        let fetchedVariant = null;
 
-
-        // check if any product is out of stock
-        const hasOutOfStock = cart.products.some(item => {
+        const productsWithCategoryDiscount = cart.products.map(item => {
             const product = item.productId;
             const variantDetails = item.variantDetails;
 
-            if (variantDetails) {
+            const basePrice = product.price + (variantDetails?.additionalPrice || 0);
 
-                fetchedVariant = product.variants.find(v => {
-                    const colorMatch = v.color === variantDetails.color;
-                    if (variantDetails.storage) {
-                        const storageMatch = `${v.storage}${v.storageUnit}` === variantDetails.storage;
-                        return colorMatch && storageMatch;
-                    }
-                    return colorMatch;
-                });
-                return !fetchedVariant || fetchedVariant.stock < item.quantity;
-            }
-            return product.stockQuantity < item.quantity;
+
+            const categoryOffer = categoryOffers.find(offer =>
+                offer.categoryId.categoryName === product.category
+            );
+
+            const effectiveDiscount = Math.max(
+                product.discount,
+                categoryOffer?.discountPercentage || 0
+            );
+
+
+            const categoryAdjustedPrice = Math.floor(basePrice * (1 - effectiveDiscount / 100));
+
+            return {
+                ...item.toObject(),
+                categoryAdjustedPrice,
+                effectiveDiscount,
+                // priceContribution
+            };
         });
-        if (hasOutOfStock) {
-            return res.status(400).json({ error: 'No stock available' });
+
+       
+
+        //Apply coupon discounts
+        let couponDetails = null;
+        let couponDiscount = 0;
+        let couponName = '';
+
+       
+        if (appliedCouponData) {
+            couponDetails = await Coupons.findById(appliedCouponData.id)
         }
+
+        const finalProducts = productsWithCategoryDiscount.map(item => {
+            const product = item.productId;
+            let finalPrice = item.categoryAdjustedPrice;
+
+
+            if (appliedCouponData) {
+                const {subTotal} = req.session.orderSummary;
+                couponDiscount = appliedCouponData?.discount || 0
+                couponName = appliedCouponData?.code || ''
+                const couponCategory = couponDetails.categories.map(category => category);
+    
+                if (couponCategory.includes(product.category)) {
+                    // Category-specific coupon: Apply full discount to this product
+                    finalPrice = Math.floor(finalPrice - couponDiscount);
+                } else if (couponCategory.length === 0) {
+                    // General coupon: Divide discount proportionally
+                    const productShare = (finalPrice * item.quantity) / subTotal;
+                    const productDiscount = couponDiscount * productShare;
+                    finalPrice = Math.floor(finalPrice - productDiscount / item.quantity);
+                }
+            }
+
+            return {
+                productId: product._id,
+                productName: product.productName,
+                model: product.model,
+                price: product.price + (item.variantDetails?.additionalPrice || 0),
+                discount: item.effectiveDiscount,
+                discountedPrice: Math.floor(finalPrice),
+                category: product.category,
+                quantity: item.quantity,
+                returnPeriod: product.returnPeriod || 0,
+                warranty: product.warranty || 0,
+                images: product.images[0],
+                deliveryDate: deliveryDate,
+                variant: item.variantDetails ? {
+                    color: item.variantDetails.color,
+                    storage: item.variantDetails.storage,
+                    additionalPrice: item.variantDetails.additionalPrice || 0
+                } : null
+            };
+        });
+
 
 
         const selectedAddress = await addressDb.findById(req.session.selectedAddressId);
@@ -335,70 +389,9 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, trans
 
         const { originalTotal, subTotal, totalSavings, deliveryCharge, tax, total } = req.session.orderSummary;
 
-        let couponDetails=null
-        let couponName=null
-        let couponDiscount=0;
-
-        if (appliedCouponData ){
-         couponDetails = await Coupons.findById(appliedCouponData.id)
-        }
-
-            // Enhanced product details array with variant information
-            const products = cart.products.map(item => {
-                const product = item.productId;
-                const variantDetails = item.variantDetails;
-
-                // Calculate final price including variant additional price
-                const basePrice = product.price;
-                const orginalPrice = product.price + (variantDetails.additionalPrice || 0);
-                let finalPrice = variantDetails
-                    ? Math.floor((basePrice + (variantDetails.additionalPrice || 0)) * (1 - product.discount / 100))
-                    : basePrice;
-
-
-
-                if (appliedCouponData) {
-                     couponDiscount = appliedCouponData?.discount || 0
-                      couponName = appliedCouponData?.code || ''
-
-
-                    const couponCategory = couponDetails.categories.map(category => category);
-
-                    if (couponCategory.includes(product.category)) {
-                        // Category-specific coupon: Apply full discount to this product
-                        finalPrice = Math.floor(finalPrice - couponDiscount);
-                    } else if (couponCategory.length === 0) {
-                        // General coupon: Divide discount proportionally
-                        const productShare = (finalPrice * item.quantity) / subTotal;
-                        const productDiscount = couponDiscount * productShare;
-                        finalPrice = Math.floor(finalPrice - productDiscount / item.quantity);
-                    }
-                }
-
-                return {
-                    productId: product._id,
-                    productName: product.productName,
-                    model: product.model,
-                    price: orginalPrice,
-                    discount: product.discount || 0,
-                    discountedPrice: finalPrice, // Discounted price including variant additional price
-                    category: product.category,
-                    quantity: item.quantity,
-                    returnPeriod: product.returnPeriod || 0,
-                    warranty: product.warranty || 0,
-                    images: product.images[0],
-                    deliveryDate: deliveryDate,
-                    variant: variantDetails ? {
-                        color: variantDetails.color,
-                        storage: variantDetails.storage,
-                        additionalPrice: variantDetails.additionalPrice || 0
-                    } : null
-                };
-            });
-
         const newOrder = new ordersDb({
             userId,
-            products,
+            products: finalProducts,
             deliveryDate,
             deliveryType,
             status: 'Processing',
@@ -434,42 +427,25 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, trans
 
         // Update coupon usage
         if (appliedCouponData) {
-            const coupon = await Coupons.findById(appliedCouponData.id)
-            coupon.usedCount += 1;
-
-            if (coupon.usedCount >= coupon.usageLimit) {
-                coupon.isActive = false;
-            }
-            await coupon.save();
+            await Coupons.findByIdAndUpdate(appliedCouponData.id, {
+                $inc: { usedCount: 1 },
+                ...(couponDetails.usedCount + 1 >= couponDetails.usageLimit && { isActive: false })
+            });
         }
 
 
-        // Update stock quantities for products and variants
+        // Update product stock
         for (const item of cart.products) {
-
             const product = item.productId;
-            // const variantDetails = item.variantDetails;
+            const variant = product.variants.find(v =>
+                v.color === item.variantDetails?.color &&
+                `${v.storage}${v.storageUnit}` === item.variantDetails?.storage
+            );
 
-            if (fetchedVariant) {
-                // Update variant stock
-
+            if (variant) {
                 await productsDB.updateOne(
-                    {
-                        _id: product._id,
-                        'variants': {
-                            $elemMatch: {
-                                color: fetchedVariant.color,
-                                storage: fetchedVariant.storage,
-                                storageUnit: fetchedVariant.storageUnit,
-                            }
-                        }
-                    },
-                    {
-                        $inc: {
-                            'variants.$.stock': -item.quantity,
-                            totalStock: -item.quantity
-                        }
-                    }
+                    { _id: product._id, 'variants._id': variant._id },
+                    { $inc: { 'variants.$.stock': -item.quantity, totalStock: -item.quantity } }
                 );
             }
         }

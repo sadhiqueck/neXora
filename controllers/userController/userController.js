@@ -4,76 +4,90 @@ const Products = require("../../models/productModel")
 const addressDb = require('../../models/addressModel')
 const Cart = require('../../models/cartModel')
 const bcrypt = require('bcrypt')
-const Wishlist= require('../../models/wishListModel')
-
-
+const Wishlist = require('../../models/wishListModel')
+const CategoryOffer = require('../../models/categoryOfferModel');
+const calculateEffectivePrice = require('../../utils/EffectivePriceCalculator')
 
 
 
 const loadHome = async (req, res) => {
     try {
 
+
+        const products = await Products.find({ isDeleted: false });
+
+        const categoryOffers = await CategoryOffer.find({
+            expiryDate: { $gt: Date.now() }
+        }).populate('categoryId', 'categoryName');
+
+        const productsWithVariants = products.map(product => {
+            const productObj = product.toObject();
+            const variant=productObj.variants.filter(variant =>
+                variant.status === 'active' && variant.stock > 0
+            )
+            const priceInfo = calculateEffectivePrice(product, categoryOffers,variant);
+
+            return {
+                ...productObj,
+                discountedPrice: priceInfo.discountedPrice,
+                effectiveDiscount: priceInfo.effectiveDiscountPercentage,
+                hasCategoryOffer: priceInfo.isCategoryOffer,
+                activeVariants:variant
+            }
+        });
+        const offeredCategories = {};
+        const hasCategoryOffer = productsWithVariants.some(product => product.hasCategoryOffer);
+
+        if (hasCategoryOffer) {
+            categoryOffers.forEach(category => {
+                offeredCategories[category.categoryId.categoryName] = category.discountPercentage;
+            });
+        }
+
+        
+
+        let filteredProducts = productsWithVariants;
+
+        filteredProducts = productsWithVariants.filter(product =>
+            product.activeVariants && product.activeVariants.length > 0);
+
+        let finalProducts = filteredProducts;
+
         if (req.session.user) {
             const userId = req.session.user._id;
             const userCart = await Cart.findOne({
                 userId,
-                isOrdered: false
             });
 
-            const products = await Products.find({ isDeleted: false });
+            const cartProductIds = new Set();
 
-            const productsWithVariants = products.map(product => {
-                const productObj = product.toObject();
-                productObj.activeVariants = productObj.variants.filter(variant =>
-                    variant.status === 'active' && variant.stock > 0
-                );
-                return productObj;
-            });
-
-            let filteredProducts = productsWithVariants;
-
-            filteredProducts = productsWithVariants.filter(product =>
-                product.activeVariants && product.activeVariants.length > 0);
-
-            let finalProducts = filteredProducts;
-            
-            if (req.session.user) {
-                const userId = req.session.user._id;
-                const userCart = await Cart.findOne({
-                    userId,
+            if (userCart) {
+                userCart.products.forEach(item => {
+                    cartProductIds.add(item.productId.toString());
                 });
-
-                const cartProductIds = new Set();
-
-                if (userCart) {
-                    userCart.products.forEach(item => {
-                        cartProductIds.add(item.productId.toString());
-                    });
-                }
-
-                // get wishlist
-                const userWishlist = await Wishlist.findOne({ user: userId }).lean();
-                const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
-                
-
-
-                finalProducts = filteredProducts.map(product => ({
-                    ...product,
-                    inCart: cartProductIds.has(product._id.toString()),
-                    isWishlisted: wishlistProductIds.has(product._id.toString())
-                }));
             }
+
+            // get wishlist
+            const userWishlist = await Wishlist.findOne({ user: userId }).lean();
+            const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
+
+
+
+            finalProducts = filteredProducts.map(product => ({
+                ...product,
+                inCart: cartProductIds.has(product._id.toString()),
+                isWishlisted: wishlistProductIds.has(product._id.toString())
+            }));
+
 
             return res.render("user/home", {
                 title: 'HomePage',
                 products: finalProducts,
+                offeredCategories
             });
 
         } else {
-
-            const products = await Products.find({ isDeleted: false });
-            const availableProducts = products.filter(product => product.totalStock !== 0);
-            return res.render("user/home", { title: 'HomePage', products: availableProducts });
+            return res.render("user/home", { title: 'HomePage', products: filteredProducts,offeredCategories});
         }
     }
 
@@ -163,7 +177,7 @@ const profileAddAddress = async (req, res) => {
         });
 
         const addresses = await addressDb.find({ userId });
-        
+
         const sortedAdresses = addresses.sort((a, b) => b.isDefault - a.isDefault);
         if (addresses.length < 1) {
             newAddress.isDefault = true;

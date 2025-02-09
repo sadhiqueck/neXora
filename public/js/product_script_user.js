@@ -68,7 +68,7 @@ function selectColor(button, color) {
 // Price update handler
 function updatePrice(additionalPrice, discount, ogPrice) {
     console.log(productState.basePrice)
-    productState.currentPrice = Math.round((parseInt(ogPrice) + additionalPrice) * (1 - discount / 100));
+    productState.currentPrice = Math.floor((parseInt(ogPrice) + additionalPrice) * (1 - discount / 100));
     document.getElementById('finalPrice').textContent =
         productState.currentPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
     document.getElementById('variantPrice').textContent =
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         basePrice: parseFloat(document.querySelector('#finalPrice').textContent.replace(/[^0-9.-]+/g, "")),
         initialColor: document.querySelector('.variant-colors').dataset.color,
         initialStorage: document.querySelector('input[name="storage"]:checked')?.value || '',
-        productId: document.querySelector('.addToCart').dataset.product_id
+        productId: document.querySelector('.addToCart')?.dataset.product_id
     };
 
     initializeProductDetails(
