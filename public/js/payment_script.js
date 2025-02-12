@@ -117,7 +117,7 @@ async function handleRazorpayPayment(total) {
                         appliedCouponData: coupon
                     })
                 });
-                notyf.error('Payment failed. Order saved for retry.');
+                window.location.href='/user/orders'
             } catch (error) {
                 console.error('Error handling payment failure:', error);
                 notyf.error('Failed to process payment failure');

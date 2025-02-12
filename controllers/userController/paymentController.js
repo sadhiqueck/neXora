@@ -7,7 +7,8 @@ const crypto = require('crypto');
 const Wallet = require('../../models/walletModel');
 const Coupons = require('../../models/couponModel');
 const CategoryOffer = require('../../models/categoryOfferModel')
-const calculateEffectivePrice = require('../../utils/EffectivePriceCalculator')
+const calculateEffectivePrice = require('../../utils/EffectivePriceCalculator');
+
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -174,7 +175,7 @@ const createRazorpayOrder = async (req, res) => {
 
 const verifyPayment = async (req, res) => {
     try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, appliedCouponData } = req.body;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, appliedCouponData  } = req.body;
 
         // Create signature
         const generatedSignature = crypto
@@ -240,6 +241,39 @@ const verifyWalletPayment = async (req, res) => {
     }
 };
 
+const verifyRetryPayment = async (req, res) => {
+    try {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
+  
+      // Verify the payment signature
+      const generatedSignature = crypto
+        .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+        .update(razorpay_order_id + '|' + razorpay_payment_id)
+        .digest('hex');
+  
+      if (generatedSignature !== razorpay_signature) {
+        return res.status(400).json({ error: 'Invalid payment signature' });
+      }
+  
+      // Find the failed order
+      const order = await ordersDb.findById(orderId);
+  
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+      // Update the order status and payment status
+      order.paymentStatus = 'Completed';
+      order.status = 'Processing'; 
+      order.transactionID = razorpay_payment_id; 
+      await order.save();
+  
+      res.status(200).json({ success: true, message: 'Payment retry successful' });
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      res.status(500).json({ error: 'Payment verification failed' });
+    }
+  };
 
 const placeOrder = async (req, res) => {
     try {
@@ -281,6 +315,19 @@ const placeOrder = async (req, res) => {
     } catch (error) {
         console.error('Error placing order:', error);
         res.status(500).json({ error: 'An error occurred while placing the order' });
+    }
+};
+
+const handlePaymentFailure = async (req, res) => {
+    try {
+        const { razorpayOrderId, appliedCouponData } = req.body;
+
+        await createOrderInDB(req, res, 'Razorpay', appliedCouponData, razorpayOrderId, 'Failed');
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('Payment failure error:', error);
+        res.status(500).json({ error: 'Failed to save failed order' });
     }
 };
 
@@ -425,24 +472,26 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, trans
                 ...(couponDetails.usedCount + 1 >= couponDetails.usageLimit && { isActive: false })
             });
         }
-
-        // Update product stock only if payment is successful
-        if (paymentStatus === 'Completed') {
+       
             for (const item of cart.products) {
                 const product = item.productId;
-                const variant = product.variants.find(v =>
-                    v.color === item.variantDetails?.color &&
-                    `${v.storage}${v.storageUnit}` === item.variantDetails?.storage
-                );
+                const variant = product.variants.find(v => {
+                    const colorMatch = v.color === item.variantDetails?.color;
+                    if (item.variantDetails?.storage) {
+                        return colorMatch && `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
+                    }
+                    return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
+                });
 
                 if (variant) {
+                    console.log(variant)
                     await productsDB.updateOne(
                         { _id: product._id, 'variants._id': variant._id },
                         { $inc: { 'variants.$.stock': -item.quantity, totalStock: -item.quantity } }
                     );
                 }
             }
-        }
+        
 
         await cartDb.findOneAndUpdate({ userId }, { products: [], isOrdered: true });
 
@@ -457,70 +506,62 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, trans
     }
 };
 
-const handlePaymentFailure = async (req, res) => {
-    try {
-        const { razorpayOrderId, appliedCouponData } = req.body;
 
-
-        await createOrderInDB(req, res, 'Razorpay', appliedCouponData, razorpayOrderId, 'Failed');
-
-
-        setTimeout(async () => {
-            const order = await ordersDb.findOne({ transactionID: razorpayOrderId });
-            if (order && order.paymentStatus === 'Failed') {
-                await revertStockAndCoupon(order);
-            }
-        }, 15 * 60 * 1000); // 15 minutes
-
-        res.status(200).json({ success: true });
-    } catch (error) {
-        console.error('Payment failure error:', error);
-        res.status(500).json({ error: 'Failed to save failed order' });
-    }
-};
-
-
-
-const revertStockAndCoupon = async (order) => {
-    try {
-        // Revert stock
-        for (const item of order.products) {
-            const product = await productsDB.findById(item.productId);
-            if (product) {
-                const variant = product.variants.find(v =>
-                    v.color === item.variant?.color &&
-                    `${v.storage}${v.storageUnit}` === item.variant?.storage
-                );
-
-                if (variant) {
-                    await productsDB.updateOne(
-                        { _id: product._id, 'variants._id': variant._id },
-                        { $inc: { 'variants.$.stock': item.quantity, totalStock: item.quantity } }
-                    );
-                }
-            }
-        }
-
-        // Revert coupon usage
-        if (order.couponApplied) {
-            await Coupons.findByIdAndUpdate(order.couponApplied.id, {
-                $inc: { usedCount: -1 },
-                isActive: true // Reactivate coupon if it was deactivated
-            });
-        }
-
-        console.log('Stock and coupon reverted for order:', order._id);
-    } catch (error) {
-        console.error('Error reverting stock and coupon:', error);
-    }
-};
 
 const orderSuccess = (req, res) => {
     req.session.checkoutAccess = false;
     return res.render('user/orderSuccessPage', { title: "Order Success Page" })
 }
 
+const retryPayment = async (req, res) => {
+    try {
+      const { orderId } = req.body; 
+      const userId = req.session.user._id;
+
+    // give temprory checkout access
+    req.session.checkoutAccess=true;
+  
+      // Find the failed order
+      const failedOrder = await ordersDb.findOne({
+        _id: orderId,
+        userId,
+        paymentStatus: 'Failed',
+      });
+
+  
+      if (!failedOrder) {
+        return res.status(404).json({ error: 'Failed order not found' });
+      }
+
+  
+      // Create a new Razorpay order
+      const amountInPaisa = failedOrder.total * 100; // Convert to paisa
+      const options = {
+        amount: amountInPaisa,
+        currency: 'INR',
+        receipt: `receipt_${Date.now()}`, // Unique receipt ID
+      };
+  
+      const razorpayOrder = await razorpay.orders.create(options);
+      console.log(razorpayOrder)
+  
+      // Update the failed order with the new Razorpay order ID
+      await ordersDb.findByIdAndUpdate(failedOrder._id, {
+        transactionID: razorpayOrder.id, // Store the new Razorpay order ID
+      });
+  
+      res.status(200).json({
+        success: true,
+        razorpayOrder,
+      });
+    } catch (error) {
+      console.error('Retry payment error:', error);
+      res.status(500).json({ error: 'Failed to retry payment' });
+    }
+  };
+
 module.exports = {
     loadPaymentPage, placeOrder, orderSuccess,
-    createRazorpayOrder, verifyPayment, verifyWalletPayment, handlePaymentFailure
+    createRazorpayOrder, verifyPayment, verifyWalletPayment, 
+    handlePaymentFailure,retryPayment,verifyRetryPayment
 }

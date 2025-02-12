@@ -153,6 +153,7 @@ const orderSchema = new Schema({
     deliveryDate: { type: Date, required: true },
     shippedDate: { type: Date, required: false },
     deliveredDate: { type: Date, required: false },
+    isOrderable:{type:Boolean, default:true}
 },
     { timestamps: true });
 

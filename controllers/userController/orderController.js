@@ -3,6 +3,7 @@ const addressdb = require('../../models/addressModel');
 const productsdb = require('../../models/productModel');
 const Wallet = require('../../models/walletModel')
 const userdb = require('../../models/userModel')
+const Coupons= require('../../models/couponModel')
 
 const loadOrder = async (req, res) => {
     try {
@@ -11,14 +12,38 @@ const loadOrder = async (req, res) => {
         const limit = 6;
         const skip = (Math.max(1, page) - 1) * limit;
 
+       
+        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+        
+        const failedOrders = await orderdb.find({
+            userId,
+            paymentStatus:'Failed',
+            isOrderable: true,
+            orderDate: { $lt: thirtyMinutesAgo }  
+        });
+   
+
+        // each failed order, revert stock and coupon
+        for (const order of failedOrders) {
+            await revertStockAndCoupon(order);
+        }
+
         const totalOrders = await orderdb.countDocuments({});
         const orders = await orderdb.find({ userId })
-            .populate('products.productId').sort({ orderDate: -1 }).skip(skip).limit(limit).lean();
+            .populate('products.productId')
+            .sort({ orderDate: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+        
         const totalPages = Math.ceil(totalOrders / limit);
         const startIndex = (page - 1) * limit + 1;
-        const endIndex = Math.min(page * limit, totalPages)
+        const endIndex = Math.min(page * limit, totalPages);
+        
         res.render('user/orders', {
-            title: 'Orders', orders,
+            title: 'Orders', 
+            orders,
             pagination: {
                 currentPage: page,
                 totalOrders,
@@ -27,14 +52,14 @@ const loadOrder = async (req, res) => {
                 endIndex,
                 hasNextPage: page < totalPages,
                 hasPrevPage: page > 1
-            }
+            },
+            razorpayKey:process.env.RAZORPAY_KEY_ID
         });
     } catch (error) {
         console.error('Error loading orders:', error);
         return res.status(500).json({ error: 'Failed to load orders' });
     }
 }
-
 const loadOrderDetails = async (req, res) => {
     try {
         const { orderId } = req.params
@@ -379,6 +404,47 @@ const isWithinReturnPeriod = (deliveryDate, returnPeriodDays) => {
     const returnDeadline = new Date(deliveryDate);
     returnDeadline.setDate(returnDeadline.getDate() + returnPeriodDays);
     return new Date() < returnDeadline;
+};
+
+const revertStockAndCoupon = async (order) => {
+    try {
+        // Revert stock for each product in the order
+        for (const item of order.products) {
+            const product = await productsdb.findById(item.productId);
+            if (product) {
+                const variant = product.variants.find(v => {
+                    const colorMatch = v.color === item.variantDetails?.color;
+                    if (item.variantDetails?.storage) {
+                        return colorMatch && `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
+                    }
+                    return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
+                });
+
+                if (variant) {
+                    await productsdb.updateOne(
+                        { _id: product._id, 'variants._id': variant._id },
+                        { $inc: { 'variants.$.stock': item.quantity, totalStock: item.quantity } }
+                    );
+                }
+            }
+        }
+
+        // Revert coupon usage
+        if (order.couponApplied) {
+            await Coupons.findByIdAndUpdate(order.couponApplied.id, {
+                $inc: { usedCount: -1 },
+                isActive: true, // Reactivate coupon if it was deactivated
+            });
+        }
+
+        // Set isOrderable to false
+        order.isOrderable = false;
+        await order.save();
+
+        console.log('Stock and coupon reverted for order:', order._id);
+    } catch (error) {
+        console.error('Error reverting stock and coupon:', error);
+    }
 };
 
 

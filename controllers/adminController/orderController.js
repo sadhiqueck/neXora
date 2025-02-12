@@ -127,7 +127,7 @@ const loadOrders = async (req, res) => {
                 endIndex,
                 hasNextPage: page < totalPages,
                 hasPrevPage: page > 1
-            }
+            },
         });
     } catch (err) {
         console.error('Error loading orders:', err);

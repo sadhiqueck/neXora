@@ -9,8 +9,10 @@ const { signup, login, googleLogin, logout, forgotPassword, loadResetOtpPage, re
 const { loadCart, addToCart, productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
 const { loadAddress, addAddress, loadShippingMethod,
     saveDeliveryMethod, shippingMethod } = require('../controllers/userController/checkoutController');
+    
 const { loadPaymentPage, placeOrder, orderSuccess, verifyPayment,
-    createRazorpayOrder, verifyWalletPayment, handlePaymentFailure } = require('../controllers/userController/paymentController')
+    createRazorpayOrder, verifyWalletPayment, handlePaymentFailure,retryPayment,verifyRetryPayment } = require('../controllers/userController/paymentController')
+
 const { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder, returnItem, getInvoice } = require('../controllers/userController/orderController');
 const { addTransaction, getWallet } = require('../controllers/userController/walletController');
 const { getWishlist, addToWishlist, removeFromWishlist, moveAllToCart } = require('../controllers/userController/wishlistController')
@@ -87,7 +89,8 @@ router.post('/save-delivery', authsession, saveDeliveryMethod)
 router.get('/payment', authsession, checkoutAccess, loadPaymentPage)
 router.post('/place-order', authsession, checkoutAccess, placeOrder)
 router.get('/order-success', authsession, checkoutAccess, orderSuccess)
-router.post('/handle-payment-failure', handlePaymentFailure);
+router.post('/handle-payment-failure',authsession, handlePaymentFailure);
+router.post('/retry-payment',authsession, retryPayment);
 
 // validate coupon
 router.post('/coupon-validate', authsession, checkoutAccess, validateCoupon)
@@ -95,6 +98,7 @@ router.post('/coupon-validate', authsession, checkoutAccess, validateCoupon)
 // razorpay
 router.post('/create-razorpay-order', authsession, checkoutAccess, stockStatusValidation, createRazorpayOrder);
 router.post('/verify-payment', authsession, checkoutAccess, verifyPayment);
+router.post('/verify-retryPayment',authsession,verifyRetryPayment)
 
 // user dashboard
 router.get('/profile', authsession, loadUserProfile)
@@ -111,7 +115,6 @@ router.post('/update-address', authsession, updateAddress)
 router.post('/address-delete/:id', authsession, deleteAddress)
 
 // Orders
-
 router.get('/orders', authsession, loadOrder)
 router.get('/order-details/:orderId', authsession, loadOrderDetails)
 router.post('/order/cancel-item', authsession, cancelItem);
@@ -119,6 +122,7 @@ router.post('/order/cancel', authsession, cancelOrder)// entire order cancel
 router.post('/order/return', authsession, returnOrder)
 router.post('/order/return-item', authsession, returnItem)
 router.get('/order/:orderId/invoice', authsession, getInvoice);
+
 
 // Wallet
 router.get('/wallet', authsession, getWallet)

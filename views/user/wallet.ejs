@@ -231,8 +231,7 @@
                         },
                         body: JSON.stringify({ total: amount, isWallet: true }),
                     });
-                    const orderData = await response.json();
-                    console.log(orderData)
+                    const orderData = await response.json();    
 
                     if (!orderData.ok) {
                         errorMssg.textContent = orderData.error;

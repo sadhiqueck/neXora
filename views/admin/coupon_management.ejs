@@ -15,6 +15,8 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Value</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Usage Limit</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Used Count</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiry</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -28,6 +30,8 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <%= coupon.discountType === 'percentage' ? `${coupon.value}%` : `₹${coupon.value}` %>
               </td>
+              <td class="px-6 py-4  text-center whitespace-nowrap"><%= coupon.usageLimit%></td>
+              <td class="px-6 py-4  text-center whitespace-nowrap"><%= coupon.usedCount%></td>
               <td class="px-6 py-4 whitespace-nowrap"><%= coupon.expiryDate.toDateString() %></td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= coupon.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">

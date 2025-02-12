@@ -7,7 +7,7 @@ const adminRoute= require('./routes/adminRoute');
 const userRoute= require('./routes/userRoute');
 const expressLayouts = require('express-ejs-layouts');
 const configurePassport=require("./middleware/passport")
-const passport=require('passport')
+const passport=require('passport');
 const {loginStatus}=require('./middleware/userAuth');
 app.use(expressLayouts);
 
