@@ -156,7 +156,10 @@
                                                                     Partially Cancelled</span>
                                                                 <% } else if (order.status==="Returned" ) { %>
                                                                     <span
-                                                                        class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Returned</span>
+                                                                        class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Returned</span>
+                                                                <% } else if (order.status==="Failed" ) { %>
+                                                                    <span
+                                                                        class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Failed </span>
                                                                     <% } %>
                                 </td>
                                 <td class="px-6 py-4 text-right ">

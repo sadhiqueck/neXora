@@ -1,26 +1,233 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--Content space -->
+<div class="flex-1  bg-main-white">
+    <!-- Heading nav -->
+    <div class="pt-6 h-12">
+        <div class="px-6 py-2 flex justify-between items-center">
+            <h1 class="text-2xl font-semibold text-gray-900 ">Dashboard</h1>
+        </div>
+    </div>
 
-
-
-        <!--Content space -->
-        <div class="flex-1  bg-main-white">
-            <!-- Heading nav -->
-            <div class="pt-6 h-12">
-                <div class="px-6 py-2 flex justify-between items-center">
-                    <h1 class="text-2xl font-semibold text-gray-900 ">Dashboard</h1>
+    <!-- page content -->
+    <div>
+        <main class="flex-1 p-8 bg-gray-100">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2 font-medium">Total Sales</h3>
+                    <p class="text-3xl font-bold">₹<%= totalSales.toLocaleString() %>
+                    </p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2 font-medium">Total Orders</h3>
+                    <p class="text-3xl font-bold">
+                        <%= totalOrders.toLocaleString() %>
+                    </p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2 font-medium">Average Order Value</h3>
+                    <p class="text-3xl font-bold">₹<%= averageOrderValue.toLocaleString(undefined,
+                            {maximumFractionDigits: 2}) %>
+                    </p>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-gray-500 text-sm mb-2 font-medium">Total Users</h3>
+                    <p class="text-3xl font-bold">
+                        <%= totalCustomers.toLocaleString() %>
+                    </p>
                 </div>
             </div>
 
-            <!-- breadcrumbs -->
+            <!-- Chart Section -->
+            <div class="bg-white rounded-lg shadow p-6 mb-8">
+                <form  id="timeFilterForm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">Sales Overview</h2>
+                        <select name="timeFilter" id="timeFilter" class="border rounded-lg px-4 py-2">
+                            <option value="yearly" <%=timeFilter==='yearly' ? 'selected' : '' %>>Yearly</option>
+                            <option value="monthly" <%=timeFilter==='monthly' ? 'selected' : '' %>>Monthly</option>
+                            <option value="weekly" <%=timeFilter==='weekly' ? 'selected' : '' %>>Weekly</option>
+                        </select>
+                    </div>
+                </form>
+                <canvas id="salesChart" height="100"></canvas>
+            </div>
 
-          
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-            <!-- page content -->
-           <div>
-            
-           </div>
-            
-        </div>
+                <!-- Category Distribution Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border-b">
+                    <h2 class="text-xl font-semibold mb-4">Category Distribution</h2>
+                    <div class="h-80">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
 
-    
+                <!-- Top Products Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-bold">Top 10 Selling Products</h2>
+                    </div>
+                    <div class="p-6">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-gray-500">
+                                    <th class="pb-4">Product</th>
+                                    <th class="pb-4">Sold</th>
+                                    <th class="pb-4">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% topProducts.forEach(product=> { %>
+                                    <tr class="border-b text-sm">
+                                        <td class="py-3">
+                                            <%= product.name %>
+                                        </td>
+                                        <td class="py-3">
+                                            <%= product.totalSold %>
+                                        </td>
+                                        <td class="py-3">₹<%= product.revenue.toLocaleString() %>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- top brands -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-bold">Top 10 Selling Brands</h2>
+                    </div>
+                    <div class="p-6">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-gray-500">
+                                    <th class="pb-4">Brand</th>
+                                    <th class="pb-4">Sold</th>
+                                    <th class="pb-4">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% topBrands.forEach(brand=> { %>
+                                    <tr class="border-b text-sm">
+                                        <td class="py-3">
+                                            <%= brand.name %>
+                                        </td>
+                                        <td class="py-3">
+                                            <%= brand.totalSold %>
+                                        </td>
+                                        <td class="py-3">₹<%= brand.revenue.toLocaleString() %>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <h2 class="text-xl font-bold">Recent Orders</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <%recentOrders.forEach(order=> { %>
+                                <div class="flex justify-between items-center border-b pb-4">
+                                    <div>
+                                        <p class="font-medium">#<%= order.orderNumber %>
+                                        </p>
+                                        <p class="text-sm text-gray-500">
+                                            <%= order.userId.email %>
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium">₹<%= order.total.toLocaleString() %>
+                                        </p>
+                                        <span
+                                            class="inline-block px-2 py-1 text-xs text-green-800 bg-green-100 rounded">
+                                            <%= order.status %>
+                                        </span>
+                                    </div>
+                                </div>
+                                <% }); %>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+</div>
+
+<script>
+    // Sample data for the chart
+    const salesChartData = JSON.parse('<%- JSON.stringify(salesChartData) %>');
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: salesChartData.map(item => item._id),
+            datasets: [{
+                label: 'Sales',
+                data: salesChartData.map(item => item.sales),
+                borderColor: '#652fe8',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            return '₹' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Category Distribution Chart
+
+    const categoryData = JSON.parse('<%- JSON.stringify(categoryData) %>');
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: categoryData.map(d => d._id),
+            datasets: [{
+                data: categoryData.map(d => d.total),
+                backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Time filter change handler
+    document.getElementById('timeFilter').addEventListener('change', async function (e) {
+        try {
+            const form = document.getElementById('timeFilterForm')
+            form.submit()
+        } catch (error) {
+            console.error('Error updating chart:', error);
+        }
+    });
+
+</script>
 
 </body>

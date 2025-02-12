@@ -13,7 +13,7 @@ const loadOrder = async (req, res) => {
         const skip = (Math.max(1, page) - 1) * limit;
 
        
-        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+        const thirtyMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 
         
         const failedOrders = await orderdb.find({
@@ -437,8 +437,9 @@ const revertStockAndCoupon = async (order) => {
             });
         }
 
-        // Set isOrderable to false
+        // Set isOrderable to false and order as failed
         order.isOrderable = false;
+        order.status='Failed';
         await order.save();
 
         console.log('Stock and coupon reverted for order:', order._id);

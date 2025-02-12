@@ -4,14 +4,15 @@ const cloudinary = require('../config/cloudinaryConfig');
 const { multerUpload } = require('../config/multerConfig');
 
 // controllers
-const { login, loadLogin, loadDashboard, loadUsers, deleteUser, blockUser, viewUser, logout } = require("../controllers/adminController/adminController");
+const { login, loadLogin, loadUsers, deleteUser, blockUser, viewUser, logout } = require("../controllers/adminController/adminController");
 const { loadCategories, addCatgeory, deleteCategory, editCategory, } = require("../controllers/adminController/categoryController");
 const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage,
      loadEditProductpage, editProduct, deleteProduct, updateProductStock } = require('../controllers/adminController/productController')
 const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval } = require('../controllers/adminController/orderController')
 const { getCoupons, createCoupon, loadAddCoupons, loadEditCoupon, updateCoupon, deleteCoupon } = require('../controllers/adminController/couponController')
 const { getOfferPage, referralUpdation, addCategoryOffer, editCategoryOffer, deleteCategoryOffer } = require('../controllers/adminController/offerController');
-const { getSalesReport,fetchAllOrders } = require('../controllers/adminController/salesController')
+const { getSalesReport, fetchAllOrders } = require('../controllers/adminController/salesController')
+const { loadDashboard } = require('../controllers/adminController/dashboardController')
 // middlewares
 const { authsession, isLogin } = require('../middleware/adminAuth')
 const { validateStockUpdate } = require('../middleware/stockValidation')
@@ -82,8 +83,8 @@ router.put('/category-offer/:id', authsession, editCategoryOffer)
 
 // sales report
 
-router.get('/sales-report',authsession, getSalesReport)
-router.get('/orders/report',authsession, fetchAllOrders);
+router.get('/sales-report', authsession, getSalesReport)
+router.get('/orders/report', authsession, fetchAllOrders);
 
 
 module.exports = router

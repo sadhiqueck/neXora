@@ -29,6 +29,7 @@ const orderSchema = new Schema({
             'Cancelled',
             'Returned',
             'Partially Returned',
+            'Failed'
         ],
         default: 'Pending',
     },

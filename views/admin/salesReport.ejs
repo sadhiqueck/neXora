@@ -204,23 +204,23 @@
             }
         });
 
-        // Category Distribution Chart
-        const categoryData = JSON.parse('<%- JSON.stringify(categoryData) %>');
-        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-        new Chart(categoryCtx, {
-            type: 'doughnut',
-            data: {
-                labels: categoryData.map(d => d._id),
-                datasets: [{
-                    data: categoryData.map(d => d.total),
-                    backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
+            // Category Distribution Chart
+            const categoryData = JSON.parse('<%- JSON.stringify(categoryData) %>');
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryData.map(d => d._id),
+                    datasets: [{
+                        data: categoryData.map(d => d.total),
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
 
         // pdf dopcwnload option
 

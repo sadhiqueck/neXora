@@ -46,19 +46,7 @@ const logout = (req, res) => {
 
 }
 
-const loadDashboard = async (req, res) => {
-    try {
-        if (req.session.admin) {
-            res.render('admin/dashboard', { title: 'Dashboard' })
-        } else {
-            return res.redirect('/admin/login')
-        }
-    } catch (error) {
-        console.log(error);
-        res.render('admin/login', { mssg: "An error occurred, please try again.", layout: false })
 
-    }
-}
 
 const loadUsers = async (req, res) => {
     try {
@@ -198,7 +186,6 @@ const viewUser = async (req, res) => {
 module.exports = {
     login,
     loadLogin,
-    loadDashboard,
     loadUsers,
     deleteUser,
     blockUser,

@@ -53,7 +53,7 @@
                         </div>
                       </div>
                       <div class="flex flex-col items-end">
-                        <% if(order.status !=='Pending' ) {%>
+                        <% if(order.status !=='Pending' && order.status !=='Failed') {%>
                           <a href="/user/order-details/<%=order._id%>">
                             <button class="text-xs font-medium
                                     <%= order.status === 'Cancelled' ? 'text-red-900 hover:text-red-700' : 
@@ -101,6 +101,7 @@
                                     <%= order.paymentMethod %>
                                       </span>
                                       </p>
+                                      <% if(order.status !=='Failed') {%>
                                       <p class="text-xs font-light text-gray-600">
                                         <%= order.status==='Cancelled' ? 'Cancelled on:' : 'Expected Delivery by:' %>
                                           <span class="<%= order.status === 'Cancelled' ? 'text-red-800' : 
@@ -109,6 +110,7 @@
                                             <%= product.deliveryDate.toLocaleDateString('en-IN',{dateStyle:"medium"}) %>
                                           </span>
                                       </p>
+                                      <% } %>
                             </div>
                           </div>
                       </div>
@@ -121,7 +123,7 @@
                         <div class="text-sm text-gray-600 text-right">Total Amount</div>
                         <div class="<%= order.status === 'Cancelled' ? 'text-red-700 line-through' : 
                                               order.status === 'Delivered' ? 'text-green-700' : 
-                                              order.status === 'Pending' ? 'text-red-700' : 
+                                              order.status === 'Pending' || order.status === 'Failed' ? 'text-red-700' : 
                                               'text-blue-700' %> font-medium">
                           <%= order.total.toLocaleString('en-IN',{style:'currency',currency:"INR"})%>
                         </div>
@@ -183,6 +185,15 @@
                                         class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 shadow-sm">
                                         <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
                                         <span class="text-xs font-semibold tracking-wide">Order Not Placed</span>
+                                      </span>
+                                    </div>
+                                  <% }else if (order.status==='Failed') { %>
+                                    <div class="relative inline-flex items-center">
+                                      <span class="absolute rounded-full bg-red-200-200 opacity-75"></span>
+                                      <span
+                                        class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 shadow-sm">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                                        <span class="text-xs font-semibold tracking-wide">Order Failed</span>
                                       </span>
                                     </div>
                                     <% } else { %>
