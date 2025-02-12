@@ -83,21 +83,24 @@
                         <h2 class="text-lg font-semibold mb-4">Payment Method</h2>
                         <div class="space-y-4">
                             <!-- Cash on Delivery Option -->
-                            <label class="block cursor-pointer">
-                                <input type="radio" name="payment" class="hidden peer" value="COD">
+                            <label class="block cursor-pointer" >
+                                <input type="radio" name="payment" class="hidden peer" value="COD" <%= isCODAllowed ? '' : 'disabled' %>>
                                 <div
-                                    class="p-6 rounded-xl border-2 peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-200 transition-all">
+                                    class="p-6 rounded-xl border-2  <%= !isCODAllowed ?  'opacity-75 bg-gray-100': '' %> peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-200 transition-all">
                                     <div class="flex items-center gap-4">
                                         <div
-                                            class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600"
+                                            class="w-12 h-12 <%= !isCODAllowed ?  'opacity-75 bg-gray-100': 'bg-purple-100 text-purple-600' %>  rounded-full flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 "
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
                                         </div>
                                         <div class="flex-1">
-                                            <h3 class="font-medium">Cash on Delivery</h3>
+                                            <div class="flex gap-2">
+                                                <h3 class="font-medium">Cash on Delivery</h3>
+                                                 <h3 class="font-normal italic "><%=!isCODAllowed ?'( Not eligible for this Order )' :'' %></h3> 
+                                            </div>
                                             <p class="text-sm text-gray-600">Pay when you receive your order</p>
                                         </div>
                                     </div>
@@ -331,7 +334,7 @@
                         </div>
                         <div class="flex justify-between text-lg font-bold">
                             <p>Total</p>
-                            <p id="total">₹<%= subTotal.toLocaleString("en-IN")%>.00</p>
+                            <p class="total" id="total"><%= total.toLocaleString("en-IN",{style:'currency',currency:'INR'})%></p>
                         </div>
                     </div>
                     <button onclick="placeOrder()"
@@ -340,7 +343,7 @@
                     </button>
                     <!-- spinner cvode -->
                     <div id="loadingSpinner"
-                        class=" hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        class="  fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div class="bg-white rounded-lg p-8 flex flex-col items-center space-y-4">
                             <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600">
                             </div>
@@ -356,9 +359,12 @@
     </div>
 </body>
 <!-- razorpay -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js" async defer></script>
 <script>
     // variables
+
+    document.getElementById('loadingSpinner').classList.remove('hidden');
+  
     const razorpayKey = '<%= razorpayKey %>'
     const UserName='<%= user.name %>'
     const UserEmail= '<%= user.email %>'

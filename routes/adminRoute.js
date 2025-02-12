@@ -10,7 +10,8 @@ const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage,
      loadEditProductpage, editProduct, deleteProduct, updateProductStock } = require('../controllers/adminController/productController')
 const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval } = require('../controllers/adminController/orderController')
 const { getCoupons, createCoupon, loadAddCoupons, loadEditCoupon, updateCoupon, deleteCoupon } = require('../controllers/adminController/couponController')
-const { getOfferPage, referralUpdation, addCategoryOffer, editCategoryOffer, deleteCategoryOffer } = require('../controllers/adminController/offerController')
+const { getOfferPage, referralUpdation, addCategoryOffer, editCategoryOffer, deleteCategoryOffer } = require('../controllers/adminController/offerController');
+const { getSalesReport,fetchAllOrders } = require('../controllers/adminController/salesController')
 // middlewares
 const { authsession, isLogin } = require('../middleware/adminAuth')
 const { validateStockUpdate } = require('../middleware/stockValidation')
@@ -73,11 +74,16 @@ router.post('/coupons/:id', authsession, updateCoupon);
 router.post('/coupons/:id/delete', authsession, deleteCoupon);
 
 // offer Management
-router.get('/offers', getOfferPage);
-router.post('/referral-bonus-change', referralUpdation)
-router.post('/category-offer', addCategoryOffer)
-router.delete('/category-offer/:id', deleteCategoryOffer)
-router.put('/category-offer/:id', editCategoryOffer)
+router.get('/offers', authsession, getOfferPage);
+router.post('/referral-bonus-change', authsession, referralUpdation)
+router.post('/category-offer', authsession, addCategoryOffer)
+router.delete('/category-offer/:id', authsession, deleteCategoryOffer)
+router.put('/category-offer/:id', authsession, editCategoryOffer)
+
+// sales report
+
+router.get('/sales-report',authsession, getSalesReport)
+router.get('/orders/report',authsession, fetchAllOrders);
 
 
 module.exports = router

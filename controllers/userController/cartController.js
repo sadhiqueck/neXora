@@ -11,6 +11,7 @@ const loadCart = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const cart = await cartDb.findOne({ userId }).populate('products.productId');
+        let deliveryChargeLimit=10000
 
         if (!cart || cart.products.length === 0) {
             return res.render('user/cart', {
@@ -146,7 +147,7 @@ const loadCart = async (req, res) => {
         const subTotal = validProducts.reduce((total, product) => total + product.quantity * product.variantPrice, 0);
         const originalTotal = validProducts.reduce((total, product) => total + product.quantity * (product.productId.price + (product.variantDetails.additionalPrice || 0)), 0);
         const totalSavings = subTotal-originalTotal ;
-        const deliveryCharge = subTotal > 498 ? 0 : 99;
+        const deliveryCharge = subTotal > deliveryChargeLimit ? 0 : 99;
         const tax = Math.round(subTotal * 0.18);
         const total = subTotal + deliveryCharge;
 

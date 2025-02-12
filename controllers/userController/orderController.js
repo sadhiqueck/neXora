@@ -59,10 +59,10 @@ const loadOrderDetails = async (req, res) => {
 
 
         //check if any product is delivered or out for delivery
-        const isCancelable = order.products.every(product => !['Out for delivery', 'Delivered', 'Cancelled','Returned'].includes(product.status));
+        const isCancelable = order.products.every(product => !['Out for delivery', 'Delivered', 'Cancelled', 'Returned'].includes(product.status));
 
         order.products.forEach(product => {
-            product.isReturnable = isWithinReturnPeriod(product.deliveredDate, product.returnPeriod) && product.status !=='Returned' ;
+            product.isReturnable = isWithinReturnPeriod(product.deliveredDate, product.returnPeriod) && product.status !== 'Returned' && product.status !== 'Shipped' && product.status !== 'Processing' && product.status !== 'Cancelled';
         });
         await order.save();
 
@@ -96,20 +96,21 @@ const cancelItem = async (req, res) => {
         if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
         const product = order.products.id(productId);
-        if (['Shipped', 'Out for delivery', 'Delivered'].includes(product.status)) {
+
+        if (['Out for delivery', 'Delivered', 'Returned'].includes(product.status)) {
             return res.status(400).json({
                 success: false,
                 message: `Cannot cancel item in ${product.status} status`
             });
         }
 
-        
+
         product.status = "Cancelled";
 
         // Add stock back to the specific variant
         const productDetails = await productsdb.findById(product.productId);
         const variantDetails = product.variant
-        
+
         fetchedVariant = productDetails.variants.find(v => {
             const colorMatch = v.color === variantDetails.color;
             if (variantDetails.storage) {
@@ -118,35 +119,40 @@ const cancelItem = async (req, res) => {
             }
             return colorMatch;
         });
-           if (fetchedVariant) {
-                    // Update variant stock
-        
-                    await productsdb.updateOne(
-                        {
-                            _id: product.productId,
-                            'variants': {
-                                $elemMatch: {
-                                    color: fetchedVariant.color,
-                                    storage: fetchedVariant.storage,
-                                    storageUnit: fetchedVariant.storageUnit,
-                                }
-                            }
-                        },
-                        {
-                            $inc: {
-                                
-                                'variants.$.stock': +product.quantity,
-                                totalStock: +product.quantity
-                            }
+        if (fetchedVariant) {
+            // Update variant stock
+
+            await productsdb.updateOne(
+                {
+                    _id: product.productId,
+                    'variants': {
+                        $elemMatch: {
+                            color: fetchedVariant.color,
+                            storage: fetchedVariant.storage,
+                            storageUnit: fetchedVariant.storageUnit,
                         }
-                    );
+                    }
+                },
+                {
+                    $inc: {
+
+                        'variants.$.stock': +product.quantity,
+                        totalStock: +product.quantity
+                    }
                 }
+            );
+        }
 
         order.status = computeOrderStatus(order.products);
 
         // Process refund if payment was completed
         if (order.paymentStatus === 'Completed' && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
-            const refundAmount = product.discountedPrice;
+
+            if (product.status === 'Shipped' && order.deliveryCharge) {
+                refundAmount = product.discountedPrice - order.deliveryCharge;
+            } else {
+                refundAmount = product.discountedPrice + order?.deliveryCharge || 0;
+            }
 
             // Update wallet
             const wallet = await Wallet.findOne({ user: userId });
@@ -189,11 +195,11 @@ const cancelOrder = async (req, res) => {
         let totalRefund = 0;
         for (const product of order.products) {
 
-            if (['Processing', 'Pending'].includes(product.status)) {
+            if (['Shipped','Processing', 'Pending'].includes(product.status)) {
                 product.status = 'Cancelled';
                 const productDetails = await productsdb.findById(product.productId);
                 const variantDetails = product.variant;
-        
+
                 const fetchedVariant = productDetails.variants.find(v => {
                     const colorMatch = v.color === variantDetails.color;
                     if (variantDetails.storage) {
@@ -202,7 +208,7 @@ const cancelOrder = async (req, res) => {
                     }
                     return colorMatch;
                 });
-                
+
                 if (fetchedVariant) {
                     // Update variant stock
                     await productsdb.updateOne(
@@ -224,20 +230,32 @@ const cancelOrder = async (req, res) => {
                         }
                     );
                 }
-                
+
                 totalRefund += product.discountedPrice;
+    
             }
         }
+        let previousOrderStatus= order.status
+    
 
         // Update order status
         order.status = computeOrderStatus(order.products);
 
         // Process refund
+        let finalRefund=null;
+
+
         if (totalRefund > 0 && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
             const wallet = await Wallet.findOne({ user: userId });
-            wallet.balance += totalRefund;
+            if(previousOrderStatus!=='Shipped'){
+                finalRefund= totalRefund + order?.deliveryCharge || 0;
+                wallet.balance +=finalRefund
+            }else{
+                wallet.balance += totalRefund;
+            }
+          
             wallet.transactions.push({
-                amount: totalRefund,
+                amount: finalRefund ?? totalRefund ,
                 type: 'credit',
                 description: `Full order refund: ${order.orderNumber}`,
                 status: 'completed'
@@ -263,23 +281,23 @@ const returnOrder = async (req, res) => {
             return res.status(404).json({ success: false, error: 'Order not found' });
         }
 
-        order.status ="Returned"
+        order.status = "Returned"
 
-        order.products.forEach(product=>{
-            product.status ="Returned",
-            product.returnDetails={
-                returnReason:reason,
-                returnDescription:description,
-                returnDate:new Date()
-            }
+        order.products.forEach(product => {
+            product.status = "Returned",
+                product.returnDetails = {
+                    returnReason: reason,
+                    returnDescription: description,
+                    returnDate: new Date()
+                }
         })
-        order.returnDetails={
-            returnReason:reason,
-            returnDescription:description,
-            returnDate:new Date()
+        order.returnDetails = {
+            returnReason: reason,
+            returnDescription: description,
+            returnDate: new Date()
         }
 
-       const updatedOrder= await order.save();
+        const updatedOrder = await order.save();
 
         res.json({ success: true, message: 'Order return request submitted successfully' });
     } catch (error) {
@@ -288,7 +306,7 @@ const returnOrder = async (req, res) => {
     }
 };
 
-const returnItem =async (req, res) => {
+const returnItem = async (req, res) => {
     const { orderId, productId, reason, description } = req.body;
 
     try {
@@ -304,10 +322,10 @@ const returnItem =async (req, res) => {
         }
 
         product.status = 'Returned';
-        product.returnDetails={
-            returnReason:reason,
-            returnDescription:description,
-            returnDate:new Date()
+        product.returnDetails = {
+            returnReason: reason,
+            returnDescription: description,
+            returnDate: new Date()
         }
 
         await order.save();
@@ -316,6 +334,20 @@ const returnItem =async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, error: 'Failed to process return request' });
+    }
+}
+
+
+const getInvoice = async (req, res) => {
+    try {
+        const {orderId}=req.params
+
+        const order = await orderdb.findById(orderId)
+            .populate('userId', 'username email')
+            .populate('products.productId', 'productName price'); 
+        res.json(order);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching order details' });
     }
 }
 
@@ -350,4 +382,4 @@ const isWithinReturnPeriod = (deliveryDate, returnPeriodDays) => {
 };
 
 
-module.exports = { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder,returnItem }
+module.exports = { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder, returnItem, getInvoice }

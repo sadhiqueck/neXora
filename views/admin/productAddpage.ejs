@@ -166,7 +166,7 @@
                         <div class="flex flex-col items-center">
                             <div
                                 class="w-full h-64 relative border-2 border-gray-300 border-dashed rounded-lg p-4 hover:border-purple-500 transition-colors">
-                                
+
                                 <input type="file" class="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
                                     name="images" accept="image/*" id="file-upload-<%= i + 1 %>">
                                 <div class="h-full w-full flex flex-col items-center justify-center">
@@ -182,12 +182,12 @@
                                         <%= i===0 ? 'Thumbnail' :'' %>
                                     </span>
                                 </div>
-                                         <!-- Delete button -->
-                                         <button type="button" data-imageindex="<%= i + 1 %>" 
-                                            class="delete-image-btn absolute top-2 right-2 z-50 bg-red-500 hover:bg-red-700 text-white rounded-full p-1 px-3 shadow-lg transition-colors">
-                                            X
-                                        </button>
-    
+                                <!-- Delete button -->
+                                <button type="button" data-imageindex="<%= i + 1 %>"
+                                    class="delete-image-btn absolute top-2 right-2 z-50 bg-red-500 hover:bg-red-700 text-white rounded-full p-1 px-3 shadow-lg transition-colors">
+                                    X
+                                </button>
+
                                 <img src="" class="hidden absolute inset-0 w-full h-full object-cover rounded-lg"
                                     id="preview-<%= i + 1 %>">
                             </div>
@@ -373,7 +373,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 <script src="/js/admin_script.js"></script>
-<script src="/js/product_script.js"></script>
+<script src="/js/product_script_admin.js"></script>
 <script>
 
     let cropper = null;
@@ -384,41 +384,41 @@
     let variantCount = 1;
     let activeInput = null;
 
-const imageInputs = document.querySelectorAll('input[type="file"]');
-imageInputs.forEach(input => {
-    input.addEventListener('change', function () {
-        const index = input.id.split('-')[2];
-        const preview = document.getElementById(`preview-${index}`);
-        const deleteBtn = document.querySelector(`.delete-image-btn[data-imageindex="${index}"]`);
-        const file = input.file===null ? null : input.files[0];
-        if (!file) {
+    const imageInputs = document.querySelectorAll('input[type="file"]');
+    imageInputs.forEach(input => {
+        input.addEventListener('change', function () {
+            const index = input.id.split('-')[2];
+            const preview = document.getElementById(`preview-${index}`);
+            const deleteBtn = document.querySelector(`.delete-image-btn[data-imageindex="${index}"]`);
+            const file = input.file === null ? null : input.files[0];
+            if (!file) {
+                preview.classList.add('hidden');
+                deleteBtn.classList.add('hidden');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                deleteBtn.classList.remove('hidden');
+            };
+
+            reader.readAsDataURL(file);
+        });
+    });
+
+    const deleteBtn = document.querySelectorAll('.delete-image-btn');
+    deleteBtn.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const index = btn.getAttribute('data-imageindex');
+            const fileInput = document.getElementById(`file-upload-${index}`);
+            const preview = document.getElementById(`preview-${index}`);
+            fileInput.value = '';
             preview.classList.add('hidden');
-            deleteBtn.classList.add('hidden');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.classList.remove('hidden');
-            deleteBtn.classList.remove('hidden');
-        };
-
-        reader.readAsDataURL(file);
-    });
-});
-
-const deleteBtn=document.querySelectorAll('.delete-image-btn');
-deleteBtn.forEach(btn=>{    
-    btn.addEventListener('click',function(){
-        const index=btn.getAttribute('data-imageindex');
-        const fileInput=document.getElementById(`file-upload-${index}`);
-        const preview=document.getElementById(`preview-${index}`);
-        fileInput.value='';
-        preview.classList.add('hidden');
-        btn.classList.add('hidden');
-    });
-})
+            btn.classList.add('hidden');
+        });
+    })
 
     // Add new variant with enhanced animation
     addVariantButton.addEventListener('click', function () {

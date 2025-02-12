@@ -69,7 +69,7 @@ const orderSchema = new Schema({
             },
             paymentStatus: {
                 type: String,
-                enum: ["Completed", "Refunded"],
+                enum: ["Completed", "Refunded",'Failed'],
                 default: this.paymentStatus
             },
             cancelDescription: { type: String, required: false },
@@ -114,9 +114,12 @@ const orderSchema = new Schema({
 
     paymentStatus: {
         type: String,
-        enum: ["Pending", "Completed", "Refunded", "Partial Refund"],
+        enum: ["Pending", "Completed", "Refunded", "Partial Refund",'Failed'],
         default: "Pending",
     },
+    razorpayOrderId: String, 
+
+    paymentFailedAt: Date,
 
     transactionID: {
         type: String,

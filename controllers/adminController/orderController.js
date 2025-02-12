@@ -169,10 +169,10 @@ const updateProductStatus = async (req, res) => {
             product.shippedDate = new Date();
         } else if (status === "Delivered") {
             product.deliveredDate = new Date();
-            order.deliveredDate=new Date();
+            order.deliveredDate = new Date();
         }
 
-    
+
 
         // Compute overall order status
         const newOrderStatus = computeOrderStatus(order.products);
@@ -206,7 +206,7 @@ const cancelAll = async (req, res) => {
         let totalRefund = 0;
         for (const product of order.products) {
 
-            if (['Processing', 'Pending'].includes(product.status)) {
+            if (['Shipped','Processing', 'Pending'].includes(product.status)) {
                 product.status = 'Cancelled';
                 const productDetails = await productsdb.findById(product.productId);
                 const variantDetails = product.variant;
@@ -243,18 +243,25 @@ const cancelAll = async (req, res) => {
                 }
 
                 totalRefund += product.discountedPrice;
+
             }
         }
-
+        let previousOrderStatus = order.status
         // Update order status
         order.status = computeOrderStatus(order.products);
-
+        let finalRefund = null;
         // Process refund
         if (totalRefund > 0 && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
             const wallet = await Wallet.findOne({ user: userId });
-            wallet.balance += totalRefund;
+            if (previousOrderStatus !== 'Shipped') {
+                finalRefund = totalRefund + order?.deliveryCharge || 0;
+                wallet.balance += finalRefund
+            } else {
+                wallet.balance += totalRefund;
+            }
+
             wallet.transactions.push({
-                amount: totalRefund,
+                amount: finalRefund ?? totalRefund,
                 type: 'credit',
                 description: `Full order refund: ${order.orderNumber}`,
                 status: 'completed'
@@ -265,8 +272,6 @@ const cancelAll = async (req, res) => {
         // recalculte order status
         order.status = computeOrderStatus(order.products);
         order.cancelDescription = reasonData || '';
-        console.log(order)
-
         await order.save();
         res.status(200).json({ success: true, message: "All products cancelled succesfully" })
     } catch (error) {
@@ -348,22 +353,24 @@ function computeOrderStatus(products) {
         Returned: 0,
         Delivered: 0,
         Shipped: 0,
-        Processing: 0
+        Processing: 0,
+        'Out for delivery': 0
     };
 
     products.forEach(product => {
         statusCounts[product.status] = (statusCounts[product.status] || 0) + 1;
     });
+    console.log(statusCounts)
 
     if (statusCounts.Cancelled === products.length) return 'Cancelled';
     if (statusCounts.Returned === products.length) return 'Returned';
     if (statusCounts.Delivered === products.length) return 'Delivered';
+    if (statusCounts['Out for delivery'] === products.length) return 'Out for delivery';
     if (statusCounts.Delivered > 0 && statusCounts.Cancelled + statusCounts.Returned + statusCounts.Delivered === products.length) return 'Delivered';
     if (statusCounts.Shipped > 0) return 'Shipped';
     if (statusCounts.Processing > 0) return 'Processing';
     return 'Partially Cancelled';
 }
-
 
 
 module.exports = { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval }

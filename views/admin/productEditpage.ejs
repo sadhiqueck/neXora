@@ -161,7 +161,7 @@
                                 <input type="file" class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
                                     name="images" accept="image/*" id="file-upload-<%= i + 1 %> "
                                     data-productId="<%= product._id  %>">
-                                    
+
                                 <div class="h-full w-full flex flex-col items-center justify-center">
                                     <% if (product.images && product.images[i]) { %>
                                         <!-- Delete button -->
@@ -208,7 +208,7 @@
                             </div>
                         </div>
                         <div class="p-4 border-t flex justify-end gap-3">
-                            <button id="cancelCrop"  type="button"
+                            <button id="cancelCrop" type="button"
                                 class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
                                 Cancel
                             </button>
@@ -618,17 +618,10 @@
                     const file = new File([blob], `image-${index}.${imageFormat.split('/')[1]}`, {
                         type: imageFormat
                     });
-                    console.log(file)
                     formData.append('images', file);
                 }
             });
 
-
-
-            // Log the FormData contents for debugging
-            for (let pair of formData.entries()) {
-                console.log(pair[0], pair[1]);
-            }
 
             const response = await fetch(`/admin/product/edit/${productId}`, {
                 method: 'PUT',
@@ -653,9 +646,7 @@
         }
     });
 
-
-
 </script>
 <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 <script src="/js/admin_script.js"></script>
-<script src="/js/product_script.js"></script>
+<script src="/js/product_script_admin.js"></script>
