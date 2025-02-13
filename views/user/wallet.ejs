@@ -108,7 +108,8 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-600">Cashback Earned</span>
-                                <span class="font-semibold text-green-600"><%=totalReferralEarnings.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>
+                                <span
+                                    class="font-semibold text-green-600"><%=totalReferralEarnings.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-600">Total Referrals</span>
@@ -128,61 +129,62 @@
                 <% if(wallet && wallet.transactions.length>0){ %>
                     <!-- Recent Transactions -->
                     <div class="bg-white rounded-lg shadow-md p-6">
-                        <div class="flex justify-between items-center mb-6">
+                        <!-- Filter Form -->
+                        <form action="/user/wallet" method="GET" class="flex justify-between items-center mb-6">
                             <h3 class="text-xl font-bold text-gray-900">Recent Transactions</h3>
                             <div class="flex items-center gap-4">
-                                <select class="border rounded-md px-3 py-1 text-sm text-gray-600">
-                                    <option>All Transactions</option>
-                                    <option>Money Added</option>
-                                    <option>Purchases</option>
-                                    <option>Rewards</option>
+                                <select name="filter" class="border rounded-md px-3 py-1 text-sm text-gray-600">
+                                    <option value="all" <%=filter==='all' ? 'selected' : '' %>>All Transactions</option>
+                                    <option value="added" <%=filter==='added' ? 'selected' : '' %>>Money Added</option>
+                                    <option value="rewards" <%=filter==='rewards' ? 'selected' : '' %>>Rewards</option>
                                 </select>
-                                <button class="text-indigo-600 hover:text-indigo-700">View All</button>
+                                <button type="submit" class="text-indigo-600 hover:text-indigo-700">Apply</button>
                             </div>
-                        </div>
+                        </form>
 
-                        <div class="space-y-4">
-                            <!-- Transaction  -->
-
-                            <% wallet.transactions.forEach(transaction=>{ %>
-                                <!-- credited -->
-                                <div class="flex items-center justify-between p-4 border-b">
-                                    <div class="flex items-center gap-4">
-                                       
-                                            <% if(transaction.type==='credit' ){ %>
-                                                <div class="bg-green-100 p-3 px-4 rounded-full">
-                                                <i class="fas fa-arrow-down text-green-600"></i>
-                                            </div>
-                                                <% } else if(transaction.type==='bonus' ){ %>
-                                                    <div class="bg-indigo-100 p-3 rounded-full">
-                                                        <i class="fas fa-gift text-indigo-600"></i>
-                                                    </div>
-                                                    <% } else{ %>
-                                                        <div class="bg-red-100 p-3 rounded-full">
-                                                            <i class="fas fa-shopping-bag text-red-600"></i>
-                                                        </div>
-                                                        <% } %>
-                                 
-                                        <div>
-                                            <p class="font-medium text-gray-900">
-                                                <%= transaction.description%>
-                                            </p>
-                                            <p class="text-sm text-gray-600"><%-
-                                                    transaction.createdAt.toLocaleDateString('en-IN', {
-                                                    dateStyle: 'medium' }) %></p>
-                                        </div>
+                        <div id="transactionsList" class="space-y-4">
+                            <% transactions.forEach(transaction => { %>
+                              <div class="flex items-center justify-between p-4 border-b">
+                                <div class="flex items-center gap-4">
+                                  <% if (transaction.type === 'credit') { %>
+                                    <div class="bg-green-100 p-3 rounded-full">
+                                      <i class="fas fa-arrow-down text-green-600"></i>
                                     </div>
-                                    <% if(transaction.type=='credit' || transaction.type=='bonus' ){ %>
-                                    <span class="font-medium text-green-600">+<%-
-                                            transaction.amount.toLocaleString('en-IN',
-                                            {style:'currency',currency:"INR"}) %></span>
-                                            <% } else { %>
-                                                <span class="font-medium text-red-600">-<%-
-                                                    transaction.amount.toLocaleString('en-IN',
-                                                    {style:'currency',currency:"INR"}) %></span>
-                                                <% } %>
+                                  <% } else if (transaction.type === 'bonus') { %>
+                                    <div class="bg-indigo-100 p-3 rounded-full">
+                                      <i class="fas fa-gift text-indigo-600"></i>
+                                    </div>
+                                  <% } else { %>
+                                    <div class="bg-red-100 p-3 rounded-full">
+                                      <i class="fas fa-shopping-bag text-red-600"></i>
+                                    </div>
+                                  <% } %>
+                                  <div>
+                                    <p class="font-medium text-gray-900"><%= transaction.description %></p>
+                                    <p class="text-sm text-gray-600"><%= transaction.createdAt.toLocaleDateString('en-IN', { dateStyle: 'medium' }) %></p>
+                                  </div>
                                 </div>
-                                <% }) %> 
+                                <span class="font-medium <%= transaction.type === 'credit' || transaction.type === 'bonus' ? 'text-green-600' : 'text-red-600' %>">
+                                  <%= transaction.type === 'credit' || transaction.type === 'bonus' ? '+' : '-' %><%= transaction.amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) %>
+                                </span>
+                              </div>
+                            <% }) %>
+                          </div>
+
+                        <!-- Pagination -->
+                        <!-- Pagination Links -->
+                        <div class="flex justify-center mt-6">
+                            <% if (currentPage> 1) { %>
+                                <a href="/user/wallet?page=<%= currentPage - 1 %>&filter=<%= filter %>"
+                                    class="px-4 py-2 bg-gray-200 rounded-l-md">Previous</a>
+                                <% } %>
+                                    <span class="px-4 py-2 bg-gray-100">
+                                        <%= currentPage %> of <%= totalPages %>
+                                    </span>
+                                    <% if (currentPage < totalPages) { %>
+                                        <a href="/user/wallet?page=<%= currentPage + 1 %>&filter=<%= filter %>"
+                                            class="px-4 py-2 bg-gray-200 rounded-r-md">Next</a>
+                                        <% } %>
                         </div>
                     </div>
                     <% } %>
@@ -231,7 +233,7 @@
                         },
                         body: JSON.stringify({ total: amount, isWallet: true }),
                     });
-                    const orderData = await response.json();    
+                    const orderData = await response.json();
 
                     if (!orderData.ok) {
                         errorMssg.textContent = orderData.error;
@@ -315,7 +317,101 @@
                 }
             });
 
+            let currentPage = 1;
+            let currentFilter = 'all';
+            const limit = 10; // Number of transactions per page
 
+            // Fetch transactions from the backend
+            async function fetchTransactions(page, filter) {
+                try {
+                    const response = await fetch(`/user/wallet/?page=${page}&limit=${limit}&filter=${filter}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        renderTransactions(data.transactions);
+                        updatePagination(data.totalPages, data.currentPage);
+                    } else {
+                        console.error('Failed to fetch transactions:', data.error);
+                    }
+                } catch (error) {
+                    console.error('Error fetching transactions:', error);
+                }
+            }
+
+            // Render transactions in the table
+            function renderTransactions(transactions) {
+                const transactionsList = document.getElementById('transactionsList');
+                transactionsList.innerHTML = '';
+
+                transactions.forEach(transaction => {
+                    const transactionItem = document.createElement('div');
+                    transactionItem.className = 'flex items-center justify-between p-4 border-b';
+
+                    // Transaction icon based on type
+                    let iconClass, iconColor;
+                    if (transaction.type === 'credit') {
+                        iconClass = 'fa-arrow-down';
+                        iconColor = 'green';
+                    } else if (transaction.type === 'bonus') {
+                        iconClass = 'fa-gift';
+                        iconColor = 'indigo';
+                    } else {
+                        iconClass = 'fa-shopping-bag';
+                        iconColor = 'red';
+                    }
+
+                    transactionItem.innerHTML = `
+      <div class="flex items-center gap-4">
+        <div class="bg-${iconColor}-100 p-3 rounded-full">
+          <i class="fas ${iconClass} text-${iconColor}-600"></i>
+        </div>
+        <div>
+          <p class="font-medium text-gray-900">${transaction.description}</p>
+          <p class="text-sm text-gray-600">${new Date(transaction.createdAt).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</p>
+        </div>
+      </div>
+      <span class="font-medium text-${transaction.type === 'credit' || transaction.type === 'bonus' ? 'green' : 'red'}-600">
+        ${transaction.type === 'credit' || transaction.type === 'bonus' ? '+' : '-'}${transaction.amount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+      </span>
+    `;
+
+                    transactionsList.appendChild(transactionItem);
+                });
+            }
+
+            // Update pagination buttons and page info
+            function updatePagination(totalPages, currentPage) {
+                const pageInfo = document.getElementById('pageInfo');
+                const prevPageButton = document.getElementById('prevPage');
+                const nextPageButton = document.getElementById('nextPage');
+
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+                prevPageButton.disabled = currentPage === 1;
+                nextPageButton.disabled = currentPage === totalPages;
+            }
+
+            // Event listeners
+            document.getElementById('applyFilter').addEventListener('click', () => {
+                currentFilter = document.getElementById('filter').value;
+                currentPage = 1;
+                fetchTransactions(currentPage, currentFilter);
+            });
+
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    fetchTransactions(currentPage, currentFilter);
+                }
+            });
+
+            document.getElementById('nextPage').addEventListener('click', () => {
+                currentPage++;
+                fetchTransactions(currentPage, currentFilter);
+            });
+
+            // Initial load
+            fetchTransactions(currentPage, currentFilter);
 
 
         </script>

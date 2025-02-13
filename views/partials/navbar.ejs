@@ -36,12 +36,13 @@
                     <!-- wishlist -->
                     <div>
                         <a href="/user/wishlist">
-                        <button class="relative"> <img src="/Icons/Wishlist.svg" alt="">
-                            <div
-                                class="<%= walletItemCount< 1 ? 'hidden' :'' %> absolute wishlistBadge inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-1 dark:border-gray-900">
-                                <%=walletItemCount %> </div>
-                        </button>
-                    </a>
+                            <button class="relative"> <img src="/Icons/Wishlist.svg" alt="">
+                                <div
+                                    class="<%= walletItemCount< 1 ? 'hidden' :'' %> absolute wishlistBadge inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-1 dark:border-gray-900">
+                                    <%=walletItemCount %>
+                                </div>
+                            </button>
+                        </a>
                     </div>
                     <!-- cart -->
                     <div>
@@ -224,5 +225,55 @@
                 </div>
 </nav>
 <script>
+    const searchInput = document.querySelector(' input[name="search-navbar" ]'); const
+        searchResults = document.createElement('div');
+    searchResults.className = 'absolute w-full bg-white mt-1 rounded-lg shadow-lg max-h-96 overflow-y-auto hidden z-50'
+        ; searchInput.parentElement.appendChild(searchResults); let debounceTimer;
+    searchInput.addEventListener('input', function (e) {
+        clearTimeout(debounceTimer);
+        const searchTerm = e.target.value.trim(); if (searchTerm.length < 2) {
+            searchResults.classList.add('hidden'); return;
+        } debounceTimer = setTimeout(async () => {
+            try {
+              
+                console.log(searchTerm)
+                const response = await fetch(`/user/search?q=${encodeURIComponent(searchTerm)}`);
+                const data = await response.json();
 
+                if (data.success) {
+                    displaySearchResults(data.results);
+                }
+              
+            } catch (error) {
+                console.error('Search error:', error);
+              
+            }
+        }, 300);
+    });
+    document.addEventListener('click', function (e) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.classList.add('hidden');
+        }
+    });
+
+    function displaySearchResults(results) {
+        if (results.length === 0) {
+            searchResults.innerHTML = `
+                                    <div class="p-4 text-gray-500 text-center">
+                                        No results found
+                                    </div>
+                                    `;
+        } else {
+            // Group results by type
+            const groupedResults = {
+                products: results.filter(r => r.type === 'product'),
+                categories: results.filter(r => r.type === 'category'),
+                brands: results.filter(r => r.type === 'brand')
+            };
+
+            let html = '';
+        }
+
+        
+    }
 </script>
