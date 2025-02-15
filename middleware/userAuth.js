@@ -47,7 +47,7 @@ async function loginStatus(req, res, next) {
         try {
             const userId = req.session.user._id;
             const cart = await Cart.findOne({ userId });
-            const wishlist = await Wishlist.findOne({ user:userId })
+            const wishlist = await Wishlist.findOne({ user: userId })
             res.locals.cartItemCount = cart ? cart.products.reduce((total, product) => total + product.quantity, 0) : 0;
             res.locals.walletItemCount = wishlist ? wishlist.products.length : 0
         } catch (error) {
@@ -63,6 +63,14 @@ async function loginStatus(req, res, next) {
     next();
 }
 
+const redirectionUrl = (req, res, next) => {
+
+    const redirectUrl = req.query.redirect;
+    if (redirectUrl) {
+        req.session.redirectUrl = redirectUrl;
+    }
+    next();
+}
 
 const validateResetFlow = (req, res, next) => {
     if (!req.session.resetFlow) {
@@ -71,4 +79,4 @@ const validateResetFlow = (req, res, next) => {
     next();
 };
 
-module.exports = { authsession, loginStatus, isLogin, checkoutAccess, validateResetFlow }
+module.exports = { authsession, loginStatus, isLogin, checkoutAccess, validateResetFlow, redirectionUrl }

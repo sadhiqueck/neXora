@@ -132,7 +132,6 @@ const signup = async (req, res) => {
 
       // Delete the OTP after successful signup
       await OTP.deleteOne({ _id: otpRecord._id });
-      // return res.render('user/home', { title: 'HomePage', products })
       return res.redirect('/user/home')
     }
   } catch (error) {
@@ -148,19 +147,24 @@ const signup = async (req, res) => {
 
 const googleLogin = async (req, res) => {
   try {
+    
     const user = req.user
     if (user.isBlocked || user.isDeleted) return res.render('user/login', { title: 'Login_Page', mssg: "You have no access!!" })
     req.session.isLoggedIn = true;
     req.session.user = user;
 
-    return res.redirect('/user/home');
+
+    const redirectUrl = req.user.redirectUrl || '/user/home';
+    delete req.session.redirectUrl; 
+  
+    return res.redirect(redirectUrl);
 
 
   } catch (error) {
-    console.error("Error during Google login:", error);
-    res.render('user/login', {
-      title: 'Login',
-      mssg: "An error occurred, please try again."
+    console.error('Error during Google login:', error);
+    res.status(500).json({
+        success: false,
+        message: 'An internal server error occurred'
     });
   }
 };
@@ -171,24 +175,47 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email })
 
-    if (!user) return res.render('user/login', { title: 'Login_Page', mssg: "User not found!!" });
-    if (!user.password) return res.render('user/login', { title: 'Login_Page', mssg: "Please sign in with google!!" })
-    if (user.isBlocked || user.isDeleted) return res.render('user/login', { title: 'Login_Page', mssg: "You have no access!!" })
+    if (!user) {
+      return res.status(401).json({
+          success: false,
+          message: 'User not exist with this Email!'
+      });
+  }
+
+    if (!user.password) {
+      return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+      });
+  }
+
+    if (user.isBlocked || user.isDeleted){
+      return res.status(401).json({
+        success:false,
+        message:"You have no access!, Please Contact Customer Support"
+      })
+    } 
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
       req.session.user = user;
       req.session.isLoggedIn = true;
-      return res.redirect('/user/home')
+      return res.status(200).json({
+        success:true,
+        message:'Validated Succesfully'   
+      })
     } else {
-      return res.render('user/login', { title: 'HomePage', mssg: "Incorrect password!, Please try again" })
+      return res.status(401).json({ success:false, message: "Incorrect password!, Please try again" })
     }
 
 
   } catch (error) {
-    console.log(error);
-    res.render('user/login', { title: 'HomePage', mssg: "An error occurred, please try again." });
+    console.error('Login error:', error);
+    res.status(500).json({
+        success: false,
+        message: 'An internal server error occurred'
+    });
   }
 }
 

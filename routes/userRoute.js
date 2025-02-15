@@ -23,7 +23,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 // middlewares
-const { isLogin, authsession, checkoutAccess, validateResetFlow } = require("../middleware/userAuth");
+const { isLogin, authsession, checkoutAccess, validateResetFlow, redirectionUrl } = require("../middleware/userAuth");
 const { validateProductsFilter } = require('../middleware/validateProductFilter')
 const { stockStatusValidation } = require('../middleware/stockValidation')
 
@@ -43,27 +43,22 @@ router.post('/forgot-password', sendresetOtp);
 router.get('/otp-verify', validateResetFlow, loadResetOtpPage)
 router.post('/forgot/verify-otp', validateResetFlow, resetPassword)
 
-
 // google signup
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/auth/google', redirectionUrl, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Callback route after Google authentication   
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/signup' }), googleLogin);
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/signup', session: true }), googleLogin);
 
-
-// home page
 
 //default access
-router.get('/home', loadHome);
-router.post('/home', login)
+router.get('/home', loadHome); // home page
+
+router.post('/login', login)
 router.post('/send-otp', isLogin, sendOTP);
 router.post('/verify-otp', isLogin, signup);
 router.post('/resend-otp', isLogin, resendOtp);
 router.get('/logout', authsession, logout)
-
-// Basic search route
-// router.get('/search', getSearchResult);
 
 // API endpoint for live search 
 router.get('/api/search', searchResultApi);

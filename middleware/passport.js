@@ -11,13 +11,14 @@ const configurePassport = () => {
                 clientID: process.env.GOOGLE_CLIENT_ID,
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 callbackURL: '/user/auth/google/callback',
+                passReqToCallback: true
             },
-            async (accessToken, refreshToken, profile, done) => {
+            async (req, accessToken, refreshToken, profile, done) => { 
                 try {
                     const email = profile.emails[0].value;
-                    const googleId = profile.id
+                    const googleId = profile.id;
 
-                    // search for user exist in database
+                 
                     let user = await User.findOne({ email });
 
                     if (user) {
@@ -26,27 +27,40 @@ const configurePassport = () => {
                             await user.save();
                         }
                     } else {
-                        // if no user exist
+                       
                         user = await User.create({
                             googleId,
                             email,
                             username: profile.displayName
-                        })
+                        });
                     }
-                    return done(null, user);
-                } catch (err) {
-                    return done(err,null);
-                }
 
+                    if (req.session.redirectUrl) {
+                        user.redirectUrl = req.session.redirectUrl;
+                        delete req.session.redirectUrl;
+                    }
+
+                    return done(null, user); // Success
+                } catch (err) {
+                    return done(err, null); // Error
+                }
             }
         )
-    );
+    )
 
     // Serialize and deserialize user
-    passport.serializeUser((user, done) => done(null, user.id));
-    passport.deserializeUser(async (id, done) => {
+    passport.serializeUser((user, done) => {
+        done(null, {
+            id: user.id,
+            redirectUrl: user.redirectUrl 
+        });
+    });
+
+    // Deserialize user
+    passport.deserializeUser(async (obj, done) => {
         try {
-            const user = await User.findById(id);
+            const user = await User.findById(obj.id);
+            user.redirectUrl = obj.redirectUrl; 
             done(null, user);
         } catch (err) {
             done(err, null);

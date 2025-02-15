@@ -20,7 +20,7 @@
             name="code"
             id="code"
             value="<%= coupon ? coupon.code : '' %>"
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
@@ -31,7 +31,7 @@
             name="discountType",
             id="discountType"
             
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="percentage" <%= coupon?.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
             <option value="fixed" <%= coupon?.discountType === 'fixed' ? 'selected' : '' %>>Fixed Amount</option>
@@ -47,7 +47,7 @@
             id="value"
             value="<%= coupon ? coupon.value : '' %>"
             
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
@@ -59,7 +59,7 @@
             name="maxDiscount"
             id="maxDiscount"
             value="<%= coupon?.maxDiscount || '' %>"
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
@@ -71,7 +71,7 @@
             name="minPurchase"
             id="minPurchase"
             value="<%= coupon?.minPurchase || '' %>"
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
@@ -84,7 +84,7 @@
             id="expiryDate"
             value="<%= coupon ? coupon.expiryDate.toISOString().split('T')[0] : '' %>"
             
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
@@ -96,7 +96,7 @@
             name="usageLimit"
             id="usageLimit"
             value="<%= coupon ? coupon.usageLimit : 1 %>"
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
@@ -106,7 +106,7 @@
           <select
             name="applicableTo"
             id="applicableTo"
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="all" <%= coupon?.applicableTo === 'all' ? 'selected' : '' %>>All Categories</option>
             <option value="specific" <%= coupon?.applicableTo === 'specific' ? 'selected' : '' %>>Specific Categories</option>
@@ -120,7 +120,7 @@
             name="categories"
             id="categories"
             multiple
-            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           >
             <% categories.forEach(category => { %>
               <option 
@@ -140,7 +140,7 @@
             name="isActive"
             id="isActive"
             <%= (coupon?.isActive ||!coupon) ? 'checked' : '' %>
-            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
           />
           <label class="ml-2 text-sm text-gray-900">Active Coupon</label>
         </div>
@@ -149,7 +149,7 @@
       <div class="mt-6">
         <button
           type="submit"
-          class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+          class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
         >
           <%= coupon ? 'Update Coupon' : 'Create Coupon' %>
         </button>

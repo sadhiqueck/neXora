@@ -38,8 +38,8 @@ const loadOrder = async (req, res) => {
             .lean();
         
         const totalPages = Math.ceil(totalOrders / limit);
-        const startIndex = (page - 1) * limit + 1;
-        const endIndex = Math.min(page * limit, totalPages);
+        const startIndex = skip + 1;
+        const endIndex = Math.min(skip + limit, totalOrders);
         
         res.render('user/orders', {
             title: 'Orders', 
@@ -109,7 +109,7 @@ const loadOrderDetails = async (req, res) => {
 
 const cancelItem = async (req, res) => {
     try {
-        const { orderId, productId } = req.body;
+        const { orderId, productId, reason } = req.body;
         const userId = req.session.user._id;
 
         const order = await orderdb.findOne({
@@ -129,14 +129,14 @@ const cancelItem = async (req, res) => {
             });
         }
 
-
         product.status = "Cancelled";
+        product.cancelDescription = reason; // Save the cancellation reason
 
         // Add stock back to the specific variant
         const productDetails = await productsdb.findById(product.productId);
-        const variantDetails = product.variant
+        const variantDetails = product.variant;
 
-        fetchedVariant = productDetails.variants.find(v => {
+        const fetchedVariant = productDetails.variants.find(v => {
             const colorMatch = v.color === variantDetails.color;
             if (variantDetails.storage) {
                 const storageMatch = `${v.storage}${v.storageUnit}` === variantDetails.storage;
@@ -144,9 +144,9 @@ const cancelItem = async (req, res) => {
             }
             return colorMatch;
         });
+
         if (fetchedVariant) {
             // Update variant stock
-
             await productsdb.updateOne(
                 {
                     _id: product.productId,
@@ -160,7 +160,6 @@ const cancelItem = async (req, res) => {
                 },
                 {
                     $inc: {
-
                         'variants.$.stock': +product.quantity,
                         totalStock: +product.quantity
                     }
@@ -172,7 +171,7 @@ const cancelItem = async (req, res) => {
 
         // Process refund if payment was completed
         if (order.paymentStatus === 'Completed' && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
-
+            let refundAmount;
             if (product.status === 'Shipped' && order.deliveryCharge) {
                 refundAmount = product.discountedPrice - order.deliveryCharge;
             } else {
@@ -209,7 +208,7 @@ const cancelItem = async (req, res) => {
 // cancel full order
 const cancelOrder = async (req, res) => {
     try {
-        const { orderId } = req.body;
+        const { orderId, reason } = req.body;
         const userId = req.session.user._id;
 
         const order = await orderdb.findById(orderId);
@@ -222,6 +221,7 @@ const cancelOrder = async (req, res) => {
 
             if (['Shipped','Processing', 'Pending'].includes(product.status)) {
                 product.status = 'Cancelled';
+                product.cancelDescription = reason; // Save the cancellation reason
                 const productDetails = await productsdb.findById(product.productId);
                 const variantDetails = product.variant;
 

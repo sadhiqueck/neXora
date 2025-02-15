@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add to cart button event listener
-    document.querySelector('.addToCart').addEventListener('click', productDetailsaddToCart);
+    document?.querySelector('.addToCart')?.addEventListener('click', productDetailsaddToCart);
 });
 
 

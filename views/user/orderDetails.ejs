@@ -1,7 +1,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
 
-<div class="container mx-auto px-4 py-8 max-w-[80%] ">
+<div class="container mx-auto px-4 py-8 max-w-[80%]  ">
     <!-- breadcrumb -->
 
     <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8 pl-4 pr-20 pt-6">
@@ -90,7 +90,8 @@
 
                         <% if((order.status==='Pending' ||order.status==='Processing' || order.status==='Shipped' ) &&
                             isCancelable ) { %>
-                            <button id="orderCancelBtn"
+                            <button id="orderCancelBtn" data-modal-target="cancelOrderModal"
+                                data-modal-toggle="cancelOrderModal"
                                 class="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg">
                                 <i class="fas fa-times mr-2"></i>
                                 Cancel Order
@@ -296,27 +297,38 @@
                                 </div>
 
                             </div>
-                            <p class="text-gray-500 text-sm">Model: <%=product.model %>
-                            </p>
-
-                            <p class="text-gray-500 text-sm mt-1">
-                                Color: <%= product.variant.color %>
-                                    <%= product.variant.storage ? '| Size: ' + product.variant.storage : '' %>
-                            </p>
-                            <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %>
-                            </p>
-                            <div class="mt-4 flex gap-10">
-                                <!-- expected delivery date -->
-                                <% if(product?.status!=='Delivered' && product?.status!=='Returned' &&
-                                    product?.status!=='Out for delivery' ){ %>
-                                    <p
-                                        class="text-sm <%= product.status === 'Cancelled' ? 'text-gray-500 line-through' : 'text-secondry-button' %> font-semibold">
-                                        <i class="fas fa-truck mr-2"></i>
-                                        Item will be delivered by <%= product.deliveryDate.toLocaleString('en-IN',{
-                                            year:'numeric',month:'short', day:'numeric', }) %>
+                            <!-- product Description -->
+                            <div class="flex">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Model: <%=product.model %>
                                     </p>
 
-                                    <% } %>
+                                    <p class="text-gray-500 text-sm mt-1">
+                                        Color: <%= product.variant.color %>
+                                            <%= product.variant.storage ? '| Size: ' + product.variant.storage : '' %>
+                                    </p>
+                                    <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %>
+                                    </p>
+                                    <div class="mt-4 flex gap-10">
+                                        <!-- expected delivery date -->
+                                        <% if(product?.status!=='Delivered' && product?.status!=='Returned' &&
+                                            product?.status!=='Out for delivery' ){ %>
+                                            <p
+                                                class="text-sm <%= product.status === 'Cancelled' ? 'text-gray-500 line-through' : 'text-secondry-button' %> font-semibold">
+                                                <i class="fas fa-truck mr-2"></i>
+                                                Item will be delivered by <%=
+                                                    product.deliveryDate.toLocaleString('en-IN',{
+                                                    year:'numeric',month:'short', day:'numeric', }) %>
+                                            </p>
+
+                                            <% } %>
+                                    </div>
+                                </div>
+                                    <% if(product.status==='Cancelled' || order.status==='Cancelled') { %>
+                                        <div class="p-4">
+                                            <p class="text-gray-700">Reason :- <span class="text-red-600 italic"><%-product?.cancelDescription%></span></p>
+                                        </div>
+                                   <% } %>
                             </div>
                         </div>
                         <div class="text-right space-y-1">
@@ -332,7 +344,8 @@
                             <!-- cancel button -->
                             <div class="flex justify-end">
                                 <% if(product.status==='Shipped' || product.status==='Processing' ) { %>
-                                    <button data-product-id="<%= product._id %>"
+                                    <button data-product-id="<%= product._id %>" data-modal-target="cancelOrderModal"
+                                        data-modal-toggle="cancelOrderModal"
                                         class="cancelItem text-red-500 underline hover:text-red-600 text-sm font-inter font-semibold">
                                         <i class="fas fa-times"></i>
                                         Cancel Item
@@ -387,7 +400,7 @@
                 <span>Coupon Discount</span>
                 <span>-<%= order.couponApplied ?
                         order.couponApplied?.discount.toLocaleString('en-IN',{style:'currency',currency:'INR'}) : 0 %>
-                        </span>
+                </span>
             </div>
             <div class="border-t pt-3 mt-3">
                 <div class="flex justify-between font-semibold text-lg">
@@ -569,296 +582,47 @@
     </div>
 </div>
 
+<!-- Cancel Reason Modal -->
+
+<div id="cancelOrderModal"
+    class="hidden overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3 p-6 mx-auto mt-24">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Cancel Order</h3>
+            <button data-modal-hide="cancelOrderModal" class="text-gray-500 hover:text-gray-700 ">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="mb-4">
+            <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Cancellation</label>
+            <textarea id="reason" rows="4" required
+                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Enter the reason for cancellation..."></textarea>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex justify-end space-x-3">
+            <button data-modal-hide="cancelOrderModal" type="reset"
+                class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">
+                Cancel
+            </button>
+            <button class="confirmCancelBtn bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                Confirm Cancellation
+            </button>
+        </div>
+    </div>
+</div>
+
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-
-
-
-    document.addEventListener('DOMContentLoaded', () => {
-
-        const cancelItemBtns = document.querySelectorAll('.cancelItem');
-        let currentProductId = null;
-        const returnOrderModal = document.getElementById('returnOrderModal');
-        const returnReasonSelect = document.getElementById('reasonOptions');
-        const returnDescriptionTextarea = document.getElementById('reasonDescription');
-        const confirmReturnBtn = document.querySelector('.confirmReturnBtn')
-
-        cancelItemBtns.forEach(button => {
-
-            button.addEventListener('click', async () => {
-                try {
-                    const orderId = '<%=order._id %>'
-                    const productId = button.getAttribute('data-product-id');
-                    // Confirm and process cancellation
-                    const result = await Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You want to cancel this product?",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#EF4444',
-                        cancelButtonColor: '#6B7280',
-                        confirmButtonText: 'Yes, cancel it!'
-                    });
-                    if (result.isConfirmed) {
-
-                        const response = await fetch('/user/order/cancel-item', {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ orderId, productId })
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok && data.success) {
-                            notyf.success('Product cancelled succesfully');
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 500);
-                        }
-                        else {
-                            notyf.error(data.message)
-                        }
-                    }
-                } catch (error) {
-                    console.log(error);
-                    notyf.error(error.message || "Failed to cancel")
-                }
-            })
-        })
-
-        // cancel entire order
-
-        const cancelOrderBtn = document.getElementById('orderCancelBtn');
-
-        cancelOrderBtn?.addEventListener('click', async () => {
-            try {
-                const orderId = '<%=order._id %>'
-                // Confirm and process cancellation
-                const result = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You want to cancel this Order?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#EF4444',
-                    cancelButtonColor: '#6B7280',
-                    confirmButtonText: 'Yes, cancel Order!'
-                });
-                if (result.isConfirmed) {
-
-                    const response = await fetch('/user/order/cancel', {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ orderId })
-                    })
-
-                    const data = await response.json();
-
-                    if (response.ok && data.success) {
-
-                        notyf.success("Order Cancelled Succesfully");
-                        setTimeout(() => {
-                            window.location.reload()
-                        }, 500);
-
-                    } else {
-                        throw new Error(data.error)
-                    }
-                }
-            } catch (error) {
-                console.log(error);
-                notyf.error(error.message || "Failed to cancel")
-            }
-        })
-
-
-
-        // Single event listener for confirm button
-        confirmReturnBtn.addEventListener('click', async () => {
-            console.log('fnkjasfnbksd')
-            const reason = returnReasonSelect.value;
-            const description = returnDescriptionTextarea.value;
-            const orderId = '<%=order._id %>';
-
-            try {
-                let endpoint = '/user/order/return';
-                let body = { orderId, reason, description };
-
-                if (currentProductId) {
-                    endpoint = '/user/order/return-item';
-                    body.productId = currentProductId;
-                }
-
-                console.log(endpoint);
-                console.log(body)
-
-                const response = await fetch(endpoint, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    notyf.success(`Return request submitted successfully`);
-                    setTimeout(() => window.location.reload(), 500);
-                } else {
-                    throw new Error(data.error);
-                }
-            } catch (error) {
-                notyf.error(error.message || "Failed to submit return request");
-            } finally {
-                // returnOrderModal.classList.add('hidden');
-                currentProductId = null;
-            }
-        });
-
-        // Order return button handler
-        document.getElementById('orderReturnBtn')?.addEventListener('click', () => {
-            currentProductId = null;
-            // returnOrderModal.classList.remove('hidden');
-        });
-
-        // Item return buttons handler
-        document.querySelectorAll('.returnItem').forEach(button => {
-            button.addEventListener('click', () => {
-                currentProductId = button.getAttribute('data-product-id');
-                // returnOrderModal.classList.remove('hidden');
-            });
-        });
-
-        // Reset modal state when closed
-        returnOrderModal.querySelector('[data-modal-hide]').addEventListener('click', () => {
-            returnReasonSelect.value = '';
-            returnDescriptionTextarea.value = '';
-            currentProductId = null;
-        });
-    })
-
-    async function downloadInvoice(orderId) {
-        try {
-
-            notyf.success('Downloading...')
-            // Fetch order details
-            const response = await fetch(`/user/order/${orderId}/invoice`);
-            const order = await response.json();
-
-            // Create invoice HTML
-            const invoiceHtml = `
-        <div style="font-family: Arial, sans-serif; padding: 40px;">
-            <!-- Header -->
-            <div style="text-align: center; margin-bottom: 20px;">
-                <img src="/Images/LOGO.png" alt="Company Logo" style="width: 150px; height: auto;">
-                <h1 style="font-size: 24px; margin: 10px 0;">Invoice</h1>
-            </div>
-
-            <!-- Order and Customer Details -->
-            <div style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <div>
-                        <h2 style="font-size: 18px; margin-bottom: 10px;">Order Details</h2>
-                        <p><strong>Order ID:</strong> ${order.orderNumber}</p>
-                        <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
-                    </div>
-                    <div>
-                        <h2 style="font-size: 18px; margin-bottom: 10px;">Customer Details</h2>
-                        <p><strong>Name:</strong> ${order.userId?.username || 'Guest'}</p>
-                        <p><strong>Email:</strong> ${order.userId?.email || 'N/A'}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Shipping and Billing Addresses -->
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <div>
-                    <h2 style="font-size: 18px; margin-bottom:10px ;"><b>Shipping Address</b></h2>
-                    <p>${order.shippingAddress.fullName}</p>
-                    <p>${order.shippingAddress.addressLine1}</p>
-                    <p>${order.shippingAddress.addressLine2},${order.shippingAddress.landmark},
-                     ${order.shippingAddress.city},${order.shippingAddress.state} ${order.shippingAddress.pincode}</p>
-                    <p>India</p>
-                </div>
-                <div>
-                    <h2 style="font-size: 18px; margin-bottom: 10px font-bold;"><b>Billing Address</b></h2>
-                    <p>${order.userId?.username}</p>
-                    <p>${order.shippingAddress.addressLine1}</p>
-                    <p>${order.shippingAddress.addressLine2}, ${order.shippingAddress.state} ${order.shippingAddress.pincode}</p>
-                    <p>India</p>
-                </div>
-            </div>
-
-            <!-- Order Items Table -->
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                <thead>
-                    <tr style="background-color: #f3f4f6;">
-                        <th style="padding: 10px; border: 1px solid #ddd;">Product</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Quantity</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Discount</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Tax(GST)</th>
-                        <th style="padding: 10px; border: 1px solid #ddd;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${order.products.map(item =>
-                ` <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">${item.productName}- ${item.model}</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">${item.quantity}</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 82 / 100).toFixed(2)}</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">-₹${(item.price - item.discountedPrice).toFixed(2)}</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 18 / 100).toFixed(2)} (18%)</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.quantity * item.discountedPrice).toFixed(2)}</td>
-                        </tr>
-                        
-                    `).join('')}
-                </tbody>
-            </table>
-
-            <!-- Order Summary -->
-            <div style="text-align: right;">
-                <p><strong>Subtotal:</strong> ₹${order.originalTotal.toFixed(2)}</p>
-                <p><strong>Discount:</strong>- ₹${((order.totalSavings+order.couponApplied.discount) || 0).toFixed(2)}</p>
-                <p><strong>Shipping Charges:</strong> ₹${((order.deliveryCharge) || 0).toFixed(2)}</p>
-                <p><strong>Total:</strong> ₹${(order.total).toFixed(2)}</p>
-            </div>
-
-            <!-- Footer -->
-            <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #666;">
-                <p>Thank you for shopping with us!</p>
-                <p>Contact us at support@nexora.com for any queries.</p>
-            </div>
-        </div>
-    `;
-
-            // Create a temporary container for the invoice
-            const tempContainer = document.createElement('div');
-            tempContainer.innerHTML = invoiceHtml;
-            document.body.appendChild(tempContainer);
-
-            // Generate PDF
-            html2canvas(tempContainer, { scale: 2 }).then((canvas) => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-                const imgWidth = 210;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                pdf.save(`invoice_${order.orderNumber}.pdf`);
-            });
-            document.body.removeChild(tempContainer);
-        } catch (error) {
-            console.log(error);
-            notyf.error('Cannot download invoice')
-        } finally {
-            notyf.success('Downloaded')
-        }
-
-    }
-
-
-</script>
+<script>const orderId = '<%=order._id %>';</script>
+<script src="/js/order_script.js"></script>

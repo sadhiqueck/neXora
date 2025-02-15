@@ -3,12 +3,12 @@
 
 function showSpinner() {
     document.getElementById('loadingSpinner').classList.remove('hidden');
-  }
-  
-  function hideSpinner() {
+}
+
+function hideSpinner() {
     document.getElementById('loadingSpinner').classList.add('hidden');
-  }
-  
+}
+
 // global Notyf instance
 const notyf = new Notyf({
     duration: 2000,
@@ -78,15 +78,16 @@ async function addToCart(button) {
 
 
 function redirectToLogin() {
+    const currentPath = window.location.pathname + window.location.search;
     notyf.error("Login First!!");
     setTimeout(() => {
-        window.location.href = '/user/login';
-    }, 1000);
+        window.location.href = `/user/login?redirect=${encodeURIComponent(currentPath)}`;
+    }, 600);
 
 
 }
 
-// wish list 
+// wishlist 
 async function toggleWishlist(button) {
     try {
         const productId = button.getAttribute('data-product-id');
@@ -110,14 +111,14 @@ async function toggleWishlist(button) {
 
             const wishlistBadge = document.querySelector('.wishlistBadge');
             let currentCount = parseInt(wishlistBadge.textContent) || 0;
-            if(newWishlistState){
+            if (newWishlistState) {
                 wishlistBadge.classList.remove('hidden')
                 currentCount += 1;
-                
-            }else{
+
+            } else {
                 currentCount -= 1;
             }
-            
+
             wishlistBadge.textContent = currentCount;
 
             button.setAttribute('data-is-wishlisted', newWishlistState);
@@ -133,7 +134,7 @@ async function toggleWishlist(button) {
     } catch (err) {
         console.error('Wishlist error:', err);
     } finally {
-       
+
         button.disabled = false;
     }
 }
@@ -144,22 +145,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (document.body.id === 'login-page') {
 
-
-        const form = document.querySelector('form');
+        const form = document.getElementById('loginForm');
         const emailInput = document.querySelector("#email");
         const passwordInput = document.querySelector("#password");
         const mssg = document.querySelector("#mssg");
         const urlParams = new URLSearchParams(window.location.search);
         const sccsmsg = urlParams.get('mssg');
-
-
-
         const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
         const passwordRegex = /^.{6,}$/;
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
 
@@ -183,8 +179,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } else {
                 mssg.textContent = "";
-                form.submit();
+
+                try {
+
+                    const response = await fetch('/user/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const redirectUrl = urlParams.get('redirect') || '/user/home';
+                        console.log('url', urlParams.get('redirect'))
+                        window.location.href = redirectUrl;
+                    } else {
+                        mssg.textContent = data.message || 'Login failed!';
+                        mssg.style.color = 'red';
+                    }
+
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    mssg.textContent = 'An error occurred. Please try again.';
+                    mssg.style.color = 'red';
+                }
             }
+
+
         });
 
         if (sccsmsg) {
@@ -192,15 +213,37 @@ document.addEventListener("DOMContentLoaded", () => {
             messageElement.textContent = sccsmsg;
             messageElement.style.color = 'green';
         }
+
+        document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+
+            const button = document.getElementById('googleLoginBtn');
+            button.disabled = true;
+
+            button.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Signin with Google...
+        `;
+
+            let googleAuthUrl = '/user/auth/google';
+            if (redirectUrl) {
+                googleAuthUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
+            }
+                window.location.href = googleAuthUrl;
+        
+
+        })
+
+
     }
 
     // signup page
 
     if (document.body.id === 'signup_page') {
 
-
-
-        const form = document.querySelector('form');
+        const form = document.getElementById('signupForm');
         const usernameInput = document.querySelector("#username");
         const emailInput = document.querySelector("#email");
         const passwordInput = document.querySelector("#password");
@@ -213,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
         const passwordRegex = /^.{6,}$/;
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = usernameInput.value.trim();
             const email = emailInput.value.trim();
@@ -379,7 +422,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Resend otp timer
 
-       const resendLink = document.getElementById('resendLink');
+        const resendLink = document.getElementById('resendLink');
         const timerSpan = document.getElementById('timer');
         let timer = 15;
         let countdown;
@@ -409,7 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     .then(response => {
                         if (response.ok) {
                             notyf.success('OTP re-sent successfully.');
-                          
+
                         } else {
                             notyf.error('Failed to resend OTP. Please try again.');
                         }
@@ -417,7 +460,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (error) {
                 console.error('Error resending OTP:', error);
                 notyf.error('Something went wrong. Please try again.');
-            } 
+            }
         };
 
 

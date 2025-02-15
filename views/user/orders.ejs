@@ -224,7 +224,7 @@
           </span>
           of
           <span class="font-medium">
-            <%= pagination.totalcategory%>
+            <%= pagination.totalOrders%>
           </span>
           Orders
         </p>
@@ -238,9 +238,9 @@
             </a>
             <% } %>
 
-              <% for (let i=1; i <=pagination.totalPages; i++) { %>
+              <% for (let i=1; i<=pagination.totalPages; i++) { %>
                 <a href="?page=<%= i %>"
-                  class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>">
+                  class="px-3 py-2 border  text-button-color <%= pagination.currentPage == i ? 'bg-indigo-100' : 'bg-white'  %>">
                   <%= i %>
                 </a>
                 <% }%>
