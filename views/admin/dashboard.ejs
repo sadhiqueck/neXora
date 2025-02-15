@@ -47,8 +47,28 @@
                             <option value="yearly" <%=timeFilter==='yearly' ? 'selected' : '' %>>Yearly</option>
                             <option value="monthly" <%=timeFilter==='monthly' ? 'selected' : '' %>>Monthly</option>
                             <option value="weekly" <%=timeFilter==='weekly' ? 'selected' : '' %>>Weekly</option>
+                            <option value="custom" <%=timeFilter==='custom' ? 'selected' : '' %>>Custom</option>
                         </select>
                     </div>
+
+                    <div class="flex gap-4  <%= timeFilter !== 'custom' ? 'hidden' : '' %>" id="customDateInput">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Start Date</label>
+                            <input type="date" name="startDate" value="<%= startDate ? new Date(startDate).toISOString().split('T')[0] : '' %>"
+                                class="mt-1 block rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">End Date</label>
+                            <input type="date" name="endDate" value="<%= startDate ? new Date(endDate).toISOString().split('T')[0] : '' %>"
+                                class="mt-1 block rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <div class="pt-6">
+                            <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-800">
+                                Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                    
                 </form>
                 <canvas id="salesChart" height="100"></canvas>
             </div>
@@ -202,6 +222,7 @@
     // Category Distribution Chart
 
     const categoryData = JSON.parse('<%- JSON.stringify(categoryData) %>');
+    console.log(categoryData)
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
     new Chart(categoryCtx, {
         type: 'doughnut',
@@ -219,14 +240,76 @@
     });
 
     // Time filter change handler
-    document.getElementById('timeFilter').addEventListener('change', async function (e) {
-        try {
-            const form = document.getElementById('timeFilterForm')
-            form.submit()
-        } catch (error) {
-            console.error('Error updating chart:', error);
+    document.getElementById('timeFilter').addEventListener('change', function (e) {
+        const timeFilter = e.target.value;
+        const customDateInput = document.getElementById('customDateInput');
+        
+        if (timeFilter === 'custom') {
+            customDateInput.classList.remove('hidden');
+        } else {
+            customDateInput.classList.add('hidden');
+            document.getElementById('timeFilterForm').submit();
         }
     });
+    
+    const timeFilterForm = document.getElementById('timeFilterForm');
+    const timeFilterSelect = document.getElementById('timeFilter');
+    const customDateInput = document.getElementById('customDateInput');
+    const startDateInput = document.querySelector('input[name="startDate"]');
+    const endDateInput = document.querySelector('input[name="endDate"]');
+
+    // Store initial custom date values if they exist
+    let savedStartDate = startDateInput.value;
+    let savedEndDate = endDateInput.value;
+
+    timeFilterSelect.addEventListener('change', function(e) {
+        const isCustom = e.target.value === 'custom';
+        
+        if (isCustom) {
+            // Show custom date inputs and restore saved values if they exist
+            customDateInput.classList.remove('hidden');
+            startDateInput.value = savedStartDate;
+            endDateInput.value = savedEndDate;
+        } else {
+            // Hide custom date inputs but save their values
+            customDateInput.classList.add('hidden');
+            savedStartDate = startDateInput.value;
+            savedEndDate = endDateInput.value;
+            
+            // Clear the actual input values when submitting non-custom filters
+            startDateInput.value = '';
+            endDateInput.value = '';
+            
+            // Automatically submit the form for non-custom filters
+            timeFilterForm.submit();
+        }
+    });
+
+    timeFilterForm.addEventListener('submit', function(e) {
+        const isCustom = timeFilterSelect.value === 'custom';
+        
+        if (isCustom) {
+            // Validate custom date range
+            if (!startDateInput.value || !endDateInput.value) {
+                e.preventDefault();
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            
+            if (endDate < startDate) {
+                e.preventDefault();
+                alert('End date must be after start date');
+                return;
+            }
+        }
+    });
+
+    // Initialize visibility on page load
+    customDateInput.classList.toggle('hidden', timeFilterSelect.value !== 'custom');
+
 
 </script>
 

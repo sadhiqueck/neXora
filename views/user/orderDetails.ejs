@@ -750,7 +750,7 @@
 
             // Create invoice HTML
             const invoiceHtml = `
-        <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <div style="font-family: Arial, sans-serif; padding: 40px;">
             <!-- Header -->
             <div style="text-align: center; margin-bottom: 20px;">
                 <img src="/Images/LOGO.png" alt="Company Logo" style="width: 150px; height: auto;">
@@ -800,7 +800,7 @@
                         <th style="padding: 10px; border: 1px solid #ddd;">Quantity</th>
                         <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
                         <th style="padding: 10px; border: 1px solid #ddd;">Discount</th>
-                         
+                        <th style="padding: 10px; border: 1px solid #ddd;">Tax(GST)</th>
                         <th style="padding: 10px; border: 1px solid #ddd;">Total</th>
                     </tr>
                 </thead>
@@ -811,7 +811,7 @@
                             <td style="padding: 10px; border: 1px solid #ddd;">${item.quantity}</td>
                             <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 82 / 100).toFixed(2)}</td>
                             <td style="padding: 10px; border: 1px solid #ddd;">-₹${(item.price - item.discountedPrice).toFixed(2)}</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 18 / 100).toFixed(2)}</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 18 / 100).toFixed(2)} (18%)</td>
                             <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.quantity * item.discountedPrice).toFixed(2)}</td>
                         </tr>
                         

@@ -192,9 +192,9 @@ const cancelItem = async (req, res) => {
             await wallet.save();
 
             // Update payment status
-            order.paymentStatus = order.products.some(p => p.status !== 'Cancelled')
-                ? 'Partial Refund'
-                : 'Refunded';
+            order.paymentStatus = order.products.length === 1 || order.products.every(p => p.status === 'Cancelled')
+                ? 'Refunded'
+                : 'Partial Refund';
         }
 
         await order.save();

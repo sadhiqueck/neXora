@@ -3,35 +3,30 @@
         <a href="/user/home" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="/Images/lOGO.png" class="h-8" alt="Nexora" />
         </a>
-        <div class="flex md:order-2">
-            <button type="button" data-collapse-toggle="navbar-search" aria-controls="navbar-search"
-                aria-expanded="false"
-                class="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 me-1">
-                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 20 20">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                </svg>
-                <span class="sr-only">Search</span>
-            </button>
-            <div class="relative hidden md:block ">
-                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
-                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                    </svg>
-                    <span class="sr-only">Search icon</span>
-                </div>
-                <input type="text" name="search-navbar"
-                    class="block w-full sm:w-20 md:w-24 lg:w-36 xl:w-[500px]  p-2  ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Search for products, brands, and more" />
+        <div class="flex md:order-2 ">
+            <form action="">
+                <div class="relative hidden md:block ">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
+                        <span class="sr-only">Search icon</span>
+                    </div>
+                    <input type="text" name="search-navbar" id="searchInput" autocomplete="off"
+                        class="block w-full sm:w-20 md:w-24 lg:w-36 xl:w-[500px]  p-2  ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Search for products, brands, and more" />
+                        <!-- search results -->
 
-            </div>
+                        <div id="liveSearchResults"
+                        class=" absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto"></div>
+                    </div>
+            </form>
+
+
             <% if (isLoggedIn) { %>
-
                 <!-- active -->
-
                 <div class="w-30 pl-10 flex space-x-4">
                     <!-- wishlist -->
                     <div>
@@ -115,6 +110,7 @@
                             <!-- not active -->
 
                             <div class="w-30 pl-10 flex space-x-4">
+
                                 <!-- wishlist -->
                                 <div>
                                  <a href="/user/login"><button> <img src="/Icons/Wishlist.svg" alt=""></button></a> 
@@ -235,7 +231,7 @@
             searchResults.classList.add('hidden'); return;
         } debounceTimer = setTimeout(async () => {
             try {
-              
+
                 console.log(searchTerm)
                 const response = await fetch(`/user/search?q=${encodeURIComponent(searchTerm)}`);
                 const data = await response.json();
@@ -243,10 +239,10 @@
                 if (data.success) {
                     displaySearchResults(data.results);
                 }
-              
+
             } catch (error) {
                 console.error('Search error:', error);
-              
+
             }
         }, 300);
     });
@@ -274,6 +270,6 @@
             let html = '';
         }
 
-        
+
     }
 </script>

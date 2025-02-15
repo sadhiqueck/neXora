@@ -1661,6 +1661,10 @@ input:checked + .toggle-bg {
   height: 100%;
 }
 
+.max-h-96 {
+  max-height: 24rem;
+}
+
 .max-h-\[500px\] {
   max-height: 500px;
 }
@@ -1675,10 +1679,6 @@ input:checked + .toggle-bg {
 
 .max-h-full {
   max-height: 100%;
-}
-
-.max-h-96 {
-  max-height: 24rem;
 }
 
 .min-h-full {
@@ -2884,6 +2884,11 @@ input:checked + .toggle-bg {
   background-color: rgb(194 120 3 / var(--tw-bg-opacity, 1));
 }
 
+.bg-red-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 36 36 / var(--tw-bg-opacity, 1));
+}
+
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
 }
@@ -3726,10 +3731,6 @@ input:checked + .toggle-bg {
 
 .opacity-90 {
   opacity: 0.9;
-}
-
-.opacity-25 {
-  opacity: 0.25;
 }
 
 .shadow {

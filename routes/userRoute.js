@@ -3,15 +3,16 @@ const router = express.Router();
 const { loadHome, loadUserProfile, updateName, loadAddressprofile,
     updateAddress, profileAddAddress, deleteAddress, LoadChangePassword,
     updatePassword } = require('../controllers/userController/userController');
+const { searchResultApi } = require('../controllers/userController/searchController');
 const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
 const { sendOTP, resendOtp, sendresetOtp } = require('../controllers/userController/otpController')
 const { signup, login, googleLogin, logout, forgotPassword, loadResetOtpPage, resetPassword } = require('../controllers/userController/authController');
 const { loadCart, addToCart, productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
 const { loadAddress, addAddress, loadShippingMethod,
     saveDeliveryMethod, shippingMethod } = require('../controllers/userController/checkoutController');
-    
+
 const { loadPaymentPage, placeOrder, orderSuccess, verifyPayment,
-    createRazorpayOrder, verifyWalletPayment, handlePaymentFailure,retryPayment,verifyRetryPayment } = require('../controllers/userController/paymentController')
+    createRazorpayOrder, verifyWalletPayment, handlePaymentFailure, retryPayment, verifyRetryPayment } = require('../controllers/userController/paymentController')
 
 const { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder, returnItem, getInvoice } = require('../controllers/userController/orderController');
 const { addTransaction, getWallet } = require('../controllers/userController/walletController');
@@ -61,6 +62,12 @@ router.post('/verify-otp', isLogin, signup);
 router.post('/resend-otp', isLogin, resendOtp);
 router.get('/logout', authsession, logout)
 
+// Basic search route
+// router.get('/search', getSearchResult);
+
+// API endpoint for live search 
+router.get('/api/search', searchResultApi);
+
 // product page
 router.get('/products/:category', validateProductsFilter, loadProductsPage)
 router.get('/product/:id', getProductsDetails)
@@ -89,8 +96,8 @@ router.post('/save-delivery', authsession, saveDeliveryMethod)
 router.get('/payment', authsession, checkoutAccess, loadPaymentPage)
 router.post('/place-order', authsession, checkoutAccess, placeOrder)
 router.get('/order-success', authsession, checkoutAccess, orderSuccess)
-router.post('/handle-payment-failure',authsession, handlePaymentFailure);
-router.post('/retry-payment',authsession, retryPayment);
+router.post('/handle-payment-failure', authsession, handlePaymentFailure);
+router.post('/retry-payment', authsession, retryPayment);
 
 // validate coupon
 router.post('/coupon-validate', authsession, checkoutAccess, validateCoupon)
@@ -98,7 +105,7 @@ router.post('/coupon-validate', authsession, checkoutAccess, validateCoupon)
 // razorpay
 router.post('/create-razorpay-order', authsession, checkoutAccess, stockStatusValidation, createRazorpayOrder);
 router.post('/verify-payment', authsession, checkoutAccess, verifyPayment);
-router.post('/verify-retryPayment',authsession,verifyRetryPayment)
+router.post('/verify-retryPayment', authsession, verifyRetryPayment)
 
 // user dashboard
 router.get('/profile', authsession, loadUserProfile)

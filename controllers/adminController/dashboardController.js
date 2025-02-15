@@ -5,16 +5,29 @@ const User = require('../../models/userModel')
 
 const loadDashboard = async (req, res) => {
     try {
-
         const timeFilter = req.query.timeFilter || 'monthly';
-        const dateRange = getDateRange(timeFilter);
+        const rawStartDate = req.query.startDate ? new Date(req.query.startDate) : null;
+        const rawEndDate = req.query.endDate ? new Date(req.query.endDate) : null;
+
+        // Adjust dates to cover full days for custom range
+        let adjustedStartDate = rawStartDate;
+        let adjustedEndDate = rawEndDate;
+        if (rawStartDate && rawEndDate) {
+            adjustedStartDate = new Date(rawStartDate);
+            adjustedStartDate.setHours(0, 0, 0, 0);
+            adjustedEndDate = new Date(rawEndDate);
+            adjustedEndDate.setHours(23, 59, 59, 999);
+        }
+
+        // Get date range query
+        const dateRange = getDateRange(timeFilter, adjustedStartDate, adjustedEndDate);
 
         const orderQuery = {
             status: 'Delivered',
-            createdAt: { $gte: dateRange }
+            ...dateRange  
         };
 
-        // fetch statistics
+        // Fetch statistics
         const [
             totalSales,
             totalOrders,
@@ -26,19 +39,19 @@ const loadDashboard = async (req, res) => {
             calculateTotalSales(orderQuery),
             Order.countDocuments(orderQuery),
             getTopSellingProducts(dateRange),
-            getTopSellingBrands(dateRange),
+            getTopSellingBrands(),
             getRecentOrders(),
             getCategorySales(dateRange)
         ]);
 
-        // Calculate average order value
         const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
 
-        // Get sales chart data
-        const salesChartData = await getSalesChartData(timeFilter);
-
+        const salesChartData = await getSalesChartData(
+            timeFilter,
+            adjustedStartDate,
+            adjustedEndDate
+        );
         const categoryData = await getCategoryDistribution();
-        console.log(topBrands)
 
         res.render('admin/dashboard', {
             totalSales,
@@ -52,9 +65,10 @@ const loadDashboard = async (req, res) => {
             salesChartData,
             categoryData,
             timeFilter,
+            startDate: rawStartDate,
+            endDate: rawEndDate,
             title: "Dashboard"
         });
-
     } catch (error) {
         console.error('Dashboard Error:', error);
         res.status(500).json({
@@ -64,22 +78,51 @@ const loadDashboard = async (req, res) => {
     }
 };
 
-// Helper Functions
-const getDateRange = (timeFilter) => {
+
+const getDateRange = (timeFilter, startDate, endDate) => {
+    if (startDate && endDate) {
+        return {
+            orderDate: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        };
+    }
+
     const now = new Date();
+    let dateQuery = {};
+
     switch (timeFilter) {
         case 'yearly':
-            return new Date(now.getFullYear(), 0, 1);
+            dateQuery = {
+                $gte: new Date(now.getFullYear(), 0, 1),
+                $lte: now
+            };
+            break;
         case 'monthly':
-            return new Date(now.getFullYear(), now.getMonth(), 1);
+            dateQuery = {
+                $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+                $lte: now
+            };
+            break;
         case 'weekly':
-            const lastWeek = new Date(now);
-            lastWeek.setDate(now.getDate() - 7);
-            return lastWeek;
+            const weekAgo = new Date(now);
+            weekAgo.setDate(now.getDate() - 7);
+            dateQuery = {
+                $gte: weekAgo,
+                $lte: now
+            };
+            break;
         default:
-            return new Date(now.getFullYear(), 0, 1); // Default to yearly
+            dateQuery = {
+                $gte: new Date(now.getFullYear(), 0, 1),
+                $lte: now
+            };
     }
+
+    return { orderDate: dateQuery };
 };
+
 
 const calculateTotalSales = async (query) => {
     const result = await Order.aggregate([
@@ -89,9 +132,15 @@ const calculateTotalSales = async (query) => {
     return result[0]?.total || 0;
 };
 
+
 const getTopSellingProducts = async (dateRange) => {
     return await Order.aggregate([
-        { $match: { createdAt: { $gte: dateRange }, status: 'Delivered' } },
+        { 
+            $match: { 
+                status: 'Delivered',
+                ...dateRange 
+            } 
+        },
         { $unwind: '$products' },
         {
             $group: {
@@ -120,9 +169,9 @@ const getTopSellingProducts = async (dateRange) => {
         { $limit: 10 }
     ]);
 };
-const getTopSellingBrands = async (dateRange) => {
+
+const getTopSellingBrands = async () => {
     return await Order.aggregate([
-        { $match: { createdAt: { $gte: dateRange }, status: 'Delivered' } },
         { $unwind: '$products' },
         {
             $lookup: {
@@ -154,14 +203,14 @@ const getTopSellingBrands = async (dateRange) => {
 
 const getRecentOrders = async () => {
     return await Order.find({ status: 'Delivered' })
-        .sort({ createdAt: -1 })
+        .sort({ orderDate: -1 })
         .limit(10)
         .populate('userId', 'username email');
 };
 
 const getCategorySales = async (dateRange) => {
     return await Order.aggregate([
-        { $match: { createdAt: { $gte: dateRange }, status: 'Delivered' } },
+        { $match: { orderDate: { $gte: dateRange }, status: 'Delivered' } },
         { $unwind: '$products' },
         {
             $lookup: {
@@ -197,15 +246,27 @@ const getCategorySales = async (dateRange) => {
     ]);
 };
 
-const getSalesChartData = async (timeFilter) => {
-    const dateRange = getDateRange(timeFilter);
-    const groupByFormat = timeFilter === 'yearly' ? '%Y-%m' : '%Y-%m-%d';
+const getSalesChartData = async (timeFilter, startDate, endDate) => {
+    let dateQuery = {};
+    let groupByFormat = '%Y-%m-%d';
+
+    if (startDate && endDate) {
+        dateQuery.orderDate = { 
+            $gte: startDate,
+            $lte: endDate
+        };
+        const diffDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        groupByFormat = diffDays > 60 ? '%Y-%m' : '%Y-%m-%d';
+    } else {
+        dateQuery = getDateRange(timeFilter);
+        groupByFormat = timeFilter === 'yearly' ? '%Y-%m' : '%Y-%m-%d';
+    }
 
     return await Order.aggregate([
-        { $match: { createdAt: { $gte: dateRange }, status: 'Delivered' } },
+        { $match: { ...dateQuery, status: 'Delivered' } },
         {
             $group: {
-                _id: { $dateToString: { format: groupByFormat, date: '$createdAt' } },
+                _id: { $dateToString: { format: groupByFormat, date: '$orderDate' } },
                 sales: { $sum: '$total' }
             }
         },
