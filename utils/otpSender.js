@@ -17,8 +17,7 @@ const otpSender = async (email, title, body) => {
       to: email,
       subject: title,
       html: body,
-    });
-    console.log("Email info: ", info);
+    }); 
     return info;
   } catch (error) {
     console.error("Error in otpSender:", error.message);

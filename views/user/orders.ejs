@@ -15,6 +15,38 @@
     <div class="space-y-6 p-6 w-full mx-auto bg-white rounded-lg shadow-lg border-2  ">
       <h2 class="font-semibold mb-6 text-xl">Your Orders</h2>
 
+      <!-- Add Filter Controls Here -->
+  <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center border-b pb-4 mb-6">
+    <form method="GET" class="flex flex-wrap gap-4 items-center" id="filterForm">
+      <!-- Status Filter -->
+      <div class="relative">
+        <select name="status"  id="statusOption" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-indigo-500">
+          <option value="">All Statuses</option>
+          <option value="Pending" <%= typeof status !== 'undefined' && status === 'Pending' ? 'selected' : '' %>>Pending</option>
+          <option value="Processing" <%= typeof status !== 'undefined' && status === 'Processing' ? 'selected' : '' %>>Processing</option>
+          <option value="Shipped" <%= typeof status !== 'undefined' && status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+          <option value="Delivered" <%= typeof status !== 'undefined' && status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+          <option value="Cancelled" <%= typeof status !== 'undefined' && status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+          <option value="Failed" <%= typeof status !== 'undefined' && status === 'Failed' ? 'selected' : '' %>>Failed</option>
+        </select>
+      </div>
+
+      <!-- Time Period Filter -->
+      <div class="relative">
+        <select name="timePeriod" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-indigo-500">
+          <option value="all">All Time</option>
+          <option value="30" <%= typeof timePeriod !== 'undefined' && timePeriod === '30' ? 'selected' : '' %>>Last 30 Days</option>
+          <option value="90" <%= typeof timePeriod !== 'undefined' && timePeriod === '90' ? 'selected' : '' %>>Last 3 Months</option>
+          <option value="180" <%= typeof timePeriod !== 'undefined' && timePeriod === '180' ? 'selected' : '' %>>Last 6 Months</option>
+        </select>
+      </div>
+
+      <% if (typeof status !== 'undefined' || typeof timePeriod !== 'undefined') { %>
+        <a href="/user/orders" class="text-red-500 hover:text-red-700 px-4 py-2">Clear Filters</a>
+      <% } %>
+    </form>
+  </div>
+
 
       <!-- Order list container -->
       <div class="max-w-6xl mx-auto space-y-4 p-4">
@@ -257,6 +289,15 @@
 </div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+const filterForm= document.getElementById('filterForm');
+const options= filterForm.querySelectorAll('select')
+
+options.forEach(option=>{
+  option.addEventListener('change',()=>{
+    filterForm.submit();
+  })
+})
+
   async function retryPayment(orderId) {
     try {
       // Call the backend to create a new Razorpay order
@@ -335,4 +376,6 @@
       notyf.error('Failed to retry payment');
     }
   }
+
+
 </script>

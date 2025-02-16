@@ -8,44 +8,62 @@ const Coupons= require('../../models/couponModel')
 const loadOrder = async (req, res) => {
     try {
         const userId = req.session.user._id;
-        const page = req.query.page || 1;
+        const { page = 1, status, timePeriod } = req.query;
         const limit = 6;
         const skip = (Math.max(1, page) - 1) * limit;
 
-       
-        const thirtyMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 
-        
+        const thirtyMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
         const failedOrders = await orderdb.find({
             userId,
-            paymentStatus:'Failed',
+            paymentStatus: 'Failed',
             isOrderable: true,
-            orderDate: { $lt: thirtyMinutesAgo }  
+            orderDate: { $lt: thirtyMinutesAgo }
         });
-   
 
-        // each failed order, revert stock and coupon
+       
         for (const order of failedOrders) {
             await revertStockAndCoupon(order);
         }
 
-        const totalOrders = await orderdb.countDocuments({});
-        const orders = await orderdb.find({ userId })
-            .populate('products.productId')
-            .sort({ orderDate: -1 })
-            .skip(skip)
-            .limit(limit)
-            .lean();
         
+        const query = { userId };
+
+     
+        if (status && status !== 'all') {
+            query.status = status;
+        }
+
+ 
+        if (timePeriod && timePeriod !== 'all') {
+            const days = parseInt(timePeriod);
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+            query.orderDate = { $gte: startDate };
+        }
+
+ 
+        const [totalOrders, orders] = await Promise.all([
+            orderdb.countDocuments(query),
+            orderdb.find(query)
+                .populate('products.productId')
+                .sort({ orderDate: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean()
+        ]);
+
         const totalPages = Math.ceil(totalOrders / limit);
         const startIndex = skip + 1;
         const endIndex = Math.min(skip + limit, totalOrders);
-        
+
         res.render('user/orders', {
-            title: 'Orders', 
+            title: 'Orders',
             orders,
+            status,
+            timePeriod,
             pagination: {
-                currentPage: page,
+                currentPage: Number(page),
                 totalOrders,
                 totalPages,
                 startIndex,
@@ -53,13 +71,14 @@ const loadOrder = async (req, res) => {
                 hasNextPage: page < totalPages,
                 hasPrevPage: page > 1
             },
-            razorpayKey:process.env.RAZORPAY_KEY_ID
+            razorpayKey: process.env.RAZORPAY_KEY_ID
         });
     } catch (error) {
         console.error('Error loading orders:', error);
         return res.status(500).json({ error: 'Failed to load orders' });
     }
 }
+
 const loadOrderDetails = async (req, res) => {
     try {
         const { orderId } = req.params

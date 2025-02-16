@@ -484,7 +484,6 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, trans
                 });
 
                 if (variant) {
-                    console.log(variant)
                     await productsDB.updateOne(
                         { _id: product._id, 'variants._id': variant._id },
                         { $inc: { 'variants.$.stock': -item.quantity, totalStock: -item.quantity } }
@@ -543,7 +542,6 @@ const retryPayment = async (req, res) => {
       };
   
       const razorpayOrder = await razorpay.orders.create(options);
-      console.log(razorpayOrder)
   
       // Update the failed order with the new Razorpay order ID
       await ordersDb.findByIdAndUpdate(failedOrder._id, {

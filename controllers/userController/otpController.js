@@ -192,8 +192,7 @@ const LoadOtpVerifyPage= async(req,res)=>{
 const resendOtp = async (req, res) => {
     try {
         const {email} = req.session.userData;
-        console.log(req.session.userData)
-
+     
         if(!email){
             return res.status(404).json({error:"No user found in this email!"})
            

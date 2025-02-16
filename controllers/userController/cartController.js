@@ -233,7 +233,6 @@ const productDetailsaddToCart = async (req, res) => {
 
     try {
         const { productId, selectedColor, selectedStorage } = req.body;
-        console.log(req.body)
         const userId = req.session.user._id;
         const product = await productsDB.findById(productId);
         if (!product) {
@@ -305,7 +304,6 @@ const removeFromCart = async (req, res) => {
         const userId = req.session.user._id;
         let cart = await cartDb.findOne({ userId });
         const productIndex = cart.products.findIndex(product => product.productId.toString() === productId);
-        console.log(productIndex);
         if (productIndex === -1) {
             return res.status(400).json({ message: 'Product not found' });
         }

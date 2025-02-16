@@ -2,6 +2,8 @@
 const adminSchema = require('../../models/adminModel');
 const bcrypt = require('bcrypt');
 const Users = require("../../models/userModel");
+const Orders = require('../../models/ordersModel')
+const Wallet = require('../../models/walletModel');
 
 
 
@@ -99,12 +101,54 @@ const loadUsers = async (req, res) => {
             const totalPages = Math.ceil(totalUsers / limit);
             const startIndex = (page - 1) * limit + 1;
             const endIndex = Math.min(page * limit, totalUsers)
+            const userOrders = await Orders.aggregate([
+                {
+                    $match: { status: 'Delivered' }
+                },
+                {
+                    $group: {
+                        _id: "$userId",
+                        totalOrders: { $sum: 1 }
+                    }
+                }
+            ]);
+        
+            const userOrdersMap = userOrders.reduce((acc, order) => {
+                acc[order._id] = order.totalOrders;
+                return acc;
+            }, {});
+
+          
+
+            users.forEach(user => {
+                user.totalOrders = userOrdersMap[user._id] || 0;
+            });
+
+
+            const userWallets = await Wallet.aggregate([
+                {
+                    $group: {
+                        _id: "$user",
+                        totalBalance: { $sum: "$balance" }
+                    }
+                }
+            ]);
+            const userWalletsMap = userWallets.reduce((acc, wallet) => {
+                acc[wallet._id] = wallet.totalBalance;
+                return acc;
+            }, {});
+
+            users.forEach(user => {
+                user.totalBalance = userWalletsMap[user._id] || 0;
+            });
+
+            // console.log(users)
             res.render("admin/user_manage", {
                 users,
                 title: 'User Management',
                 sort,
                 searchQuery: search,
-                pagination:{
+                pagination: {
                     currentPage: page,
                     totalUsers,
                     totalPages,

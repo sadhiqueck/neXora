@@ -26,6 +26,47 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 
+// offline bannner
+document.addEventListener('DOMContentLoaded', function() {
+    const banner = document.getElementById('offlineBanner');
+    const closeButton = document.getElementById('closeBanner');
+    let isOffline = false;
+  
+    function showBanner() {
+      banner.classList.remove('hidden', '-translate-y-full');
+      banner.classList.add('translate-y-0');
+    }
+  
+    function hideBanner() {
+      banner.classList.add('-translate-y-full');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 300);
+    }
+  
+    // Check online/offline status
+    window.addEventListener('online', function() {
+      isOffline = false;
+      hideBanner();
+    });
+  
+    window.addEventListener('offline', function() {
+      isOffline = true;
+      showBanner();
+    });
+  
+    // Close button handler
+    closeButton.addEventListener('click', function() {
+      hideBanner();
+    });
+  
+    // Initial check
+    if (!navigator.onLine) {
+      isOffline = true;
+      showBanner();
+    }
+  });
+
 async function addToCart(button) {
     const productId = button.getAttribute('data-product_id');
     try {

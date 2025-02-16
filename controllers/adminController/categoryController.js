@@ -1,14 +1,15 @@
 const adminSchema = require('../../models/adminModel');
 const bcrypt = require('bcrypt');
 const Users = require("../../models/userModel");
-const categoryDB = require('../../models/categoryModel')
+const categoryDB = require('../../models/categoryModel');
+const Products = require('../../models/productModel')
 
 
 const loadCategories = async (req, res) => {
     try {
         if (req.session.admin) {
 
-            const {sort = '', search = '' } = req.query;
+            const { sort = '', search = '' } = req.query;
             const page = parseInt(req.query.page) || 1;
             const limit = 5;
             const skip = (page - 1) * limit;
@@ -56,11 +57,52 @@ const loadCategories = async (req, res) => {
             const startIndex = (page - 1) * limit + 1;
             const endIndex = Math.min(page * limit, totalCategory)
 
-            res.render("admin/category_manage", { categories, 
-                title:"Category Management",
+            const totalCategoryStock = await Products.aggregate([
+                {
+                    $match: { isDeleted: false }
+                },
+                {
+                    $group: {
+                        _id: "$category",
+                        totalStock: { $sum: "$totalStock" }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "_id",
+                        foreignField: "categoryName",
+                        as: "categoryDetails"
+                    }
+                },
+                {
+                    $unwind: "$categoryDetails"
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        category: "$categoryDetails.categoryName",
+                        totalStock: 1
+                    }
+                }
+            ])
+
+            categories.forEach(item => {
+                totalCategoryStock.forEach(stock => {
+                    if (item.categoryName == stock.category) {
+                        item.totalStock = stock.totalStock
+                    }
+                })
+
+            });
+
+
+            res.render("admin/category_manage", {
+                categories,
+                title: "Category Management",
                 sort,
                 searchQuery: search,
-                pagination:{
+                pagination: {
                     currentPage: page,
                     totalCategory,
                     totalPages,
@@ -69,7 +111,7 @@ const loadCategories = async (req, res) => {
                     hasNextPage: page < totalPages,
                     hasPrevPage: page > 1
                 }
-             })
+            })
         }
         else {
             return res.redirect('/admin/login')
