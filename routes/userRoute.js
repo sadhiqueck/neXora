@@ -5,7 +5,7 @@ const { loadHome, loadUserProfile, updateName, loadAddressprofile,
     updatePassword } = require('../controllers/userController/userController');
 const { searchResultApi } = require('../controllers/userController/searchController');
 const { loadProductsPage, getProductsDetails } = require('../controllers/userController/productController');
-const { sendOTP, resendOtp, sendresetOtp } = require('../controllers/userController/otpController')
+const { sendOTP, resendOtp, sendresetOtp,LoadOtpVerifyPage } = require('../controllers/userController/otpController')
 const { signup, login, googleLogin, logout, forgotPassword, loadResetOtpPage, resetPassword } = require('../controllers/userController/authController');
 const { loadCart, addToCart, productDetailsaddToCart, removeFromCart, updateCart } = require('../controllers/userController/cartController');
 const { loadAddress, addAddress, loadShippingMethod,
@@ -23,7 +23,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 // middlewares
-const { isLogin, authsession, checkoutAccess, validateResetFlow, redirectionUrl } = require("../middleware/userAuth");
+const { isLogin, authsession, checkoutAccess, validateResetFlow,validateSignupFlow, redirectionUrl } = require("../middleware/userAuth");
 const { validateProductsFilter } = require('../middleware/validateProductFilter')
 const { stockStatusValidation } = require('../middleware/stockValidation')
 
@@ -38,6 +38,13 @@ router.get('/signup', isLogin, (req, res) => {
     res.render('user/signup', { title: 'User_signup' })
 })
 
+router.post('/login', login)
+router.post('/send-otp', isLogin, sendOTP);
+router.get('/verify-otp', isLogin,validateSignupFlow, LoadOtpVerifyPage);
+router.post('/verify-otp', isLogin, signup);
+router.post('/resend-otp', isLogin, resendOtp);
+router.get('/logout', authsession, logout)
+// forgot password
 router.get('/forgot-password', forgotPassword)
 router.post('/forgot-password', sendresetOtp);
 router.get('/otp-verify', validateResetFlow, loadResetOtpPage)
@@ -53,12 +60,6 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 
 //default access
 router.get('/home', loadHome); // home page
-
-router.post('/login', login)
-router.post('/send-otp', isLogin, sendOTP);
-router.post('/verify-otp', isLogin, signup);
-router.post('/resend-otp', isLogin, resendOtp);
-router.get('/logout', authsession, logout)
 
 // API endpoint for live search 
 router.get('/api/search', searchResultApi);
@@ -138,8 +139,8 @@ router.post('/wishlist/:productId', authsession, addToWishlist);
 router.delete('/wishlist/:productId', authsession, removeFromWishlist);
 router.post('/moveAlltoCart', authsession, moveAllToCart);
 
-// wallet
+// refferal
 router.get('/referral', authsession, getRefferalPage)
-router.post('/verify-referral', authsession, verifyReferralCode)
+router.post('/verify-referral', verifyReferralCode)
 
 module.exports = router

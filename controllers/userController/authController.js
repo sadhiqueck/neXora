@@ -126,7 +126,7 @@ const signup = async (req, res) => {
       await newWallet.save();
 
       }
-
+      req.session.resetFlow=false;
       req.session.user = newUser;
       req.session.isLoggedIn = true;
 

@@ -4,19 +4,18 @@
         <!-- Carousel wrapper -->
         <div class="relative overflow-hidden rounded-lg md:h-[400px] lg:h-[500px] h-[250px] ">
             <!-- Item 1 -->
-            <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full bg-[#c1b3f8]" data-carousel-item
-                id="banner_1">
-
+             <a href="/user/product/678a65ab46d59cde3b298175">
+            <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full bg-[#c1b3f8]" 
+            data-carousel-item id="banner_1">
                 <img src="/Images/Meta_banner.png" alt="" class="w-full h-full rounded-lg ">
                 <a href="/user/product/678a65ab46d59cde3b298175"
                     class="absolute lg:bottom-22 lg:right-[18%] md:bottom-[18%] md:right-[22%] md:px-4 right-[16%] bottom-[18%] py-1 px-5 text-[6px] bg-gray-900 text-main-white lg:py-2 lg:px-12 rounded-lg lg:text-xs hover:bg-gray-800">
                     Buy Now
                 </a>
-
-
-
             </div>
+        </a>
             <!-- Item 2 -->
+            <a href="/user/product/678a6fe097c59b8dc11c6cc1">
             <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full" data-carousel-item id="banner_3">
                 <img src="/Images/Banner_3.jpg" alt="" class="w-full h-full bg-cover  rounded-lg ">
 
@@ -25,6 +24,7 @@
                     Buy Now
                 </a>
             </div>
+        </a>
         </div>
         <!-- Slider indicators -->
         <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
@@ -126,7 +126,7 @@
         </div>
     </div>
 
-    <div class="container w-[90%]  mx-auto px-4 py-8 pt-10 font-inter">
+    <div class="container w-full md:w-[90%]  mx-auto md:px-4 py-8 pt-10 font-inter">
         <!-- filtered products -->
         <div class="flex space-x-6 text-sm font-medium text-gray-500 border-b border-gray-300 pb-2">
             <a href="#" class="text-button-color border-button-color border-b-2 pb-1">New Arrival</a>
@@ -135,7 +135,8 @@
         </div>
 
         <!-- Product grid -->
-        <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
+         <div class="flex-1 mt-6">
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-2 p-2 w-full ">
             <% if (products && products.length> 0 ) { %>
                 <% products.forEach((product, index)=> { %>
                     <!-- card -->
@@ -273,6 +274,7 @@
                             <h1>No products available</h1>
                             <% } %>
         </div>
+    </div>
 
         <div class="w-full text-center mt-10">
             <button type="button"
@@ -315,11 +317,13 @@
     </section>
 
     <!--  offer proucts -->
-    <h2 class="text-2xl font-inter font-bold  text-gray-900sm:text-2xl mt-20 pl-20 ">Exclusive Offers
+      <div class="w-[80%] mx-auto">
+    <h2 class="text-2xl font-inter font-bold  text-gray-900sm:text-2xl mt-20   ">Exclusive Offers
     </h2>
+</div>
 
 
-    <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 pt-10 mx-auto w-[90%] pb-14">
+    <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 pt-10 mx-auto w-[80%] pb-14">
 
         <!-- card -->
         <% let limit=4; %> <!--to control maximum of 4 cards -->
@@ -331,7 +335,7 @@
                     .forEach((product, index) => { %>
                     <!-- card -->
                     <div
-                        class="relative  flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
+                        class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
                         <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4"
                             href="/user/product/<%= product._id %>">
                             <img class="max-h-50 w-[80%] mx-auto object-contain" src="<%= product.images[0] %>"
@@ -373,26 +377,31 @@
                                             </h5>
                                         </a>
                                         <div class="mt-2 mb-5 flex items-center justify-between">
-                                            <p>
-                                                <span class="text-xl font-bold text-slate-900">₹<%=
-                                                        product.discountedPrice.toLocaleString("en-IN") %>
-                                                </span>
-                                                <span class="text-sm text-gray-600 line-through ml-2">₹ <%=
-                                                        product.price.toLocaleString("en-IN") %></span>
-                                            </p>
-                                            <!-- Rating -->
-
-                                            <div
-                                                class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
-                                                <span><svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current"
-                                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                                        </path>
-                                                    </svg></span>5.0
-                                            </div>
-
-                                        </div>
+                                                    <p>
+                                                        <span
+                                                            class="text-sm lg:text-lg md:text-md font-bold text-slate-900">₹
+                                                            <%= product.discountedPrice.toLocaleString("en-IN") %>
+                                                        </span>
+                                                        <span
+                                                            class="text-xs lg:text-xs md:text-xs text-gray-600 line-through ml-2">
+                                                            ₹<%= product.price.toLocaleString("en-IN") %>
+                                                        </span>
+                                                    </p>
+                                                    <div
+                                                        class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
+                                                        <span>
+                                                            <svg aria-hidden="true" class="h-5 w-5 text-black"
+                                                                fill="Current" viewBox="0 0 20 20"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                                                </path>
+                                                            </svg>
+                                                        </span>
+                                                        5.0
+                                                    </div>
+                                                </div>
+                                                
                                         <div class="button-container">
                                             <% if(product.totalStock<1) { %>
                                                 <button disabled

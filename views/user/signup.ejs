@@ -2,10 +2,10 @@
 
     <main>
 
-        <section class="bg-main-white pt-10 pr-20 pl-20 pb-10 ">
+        <section class="bg-main-white pt-10 pr-20 pl-20 pb-10 rounded-lg">
             <div class="grid grid-cols-1 lg:grid-cols-2 shadow-lg rounded-lg">
-                <div class="flex items-center justify-center px-4 py-10 bg-white sm:px-6 lg:px-8 sm:py-16 lg:py-24">
-                    <div class="xl:w-full xl:max-w-sm 2xl:max-w-md xl:mx-auto">
+                <div class="flex items-center rounded-lg justify-center px-4 py-10 bg-white sm:px-6 lg:px-8 sm:py-16 lg:py-24">
+                    <div class="xl:w-full xl:max-w-sm 2xl:max-w-md xl:mx-auto rounded-lg">
                         <h2 class="text-3xl font-bold leading-tight text-black sm:text-4xl">Create Account</h2>
                         <p class="mt-2 text-base text-gray-600">Already have an account? <a href="/user/login" title=""
                                 class="font-medium text-secondry-button transition-all duration-200 hover:text-blue-700 hover:underline focus:text-blue-700">Login</a>
@@ -15,7 +15,7 @@
                                     <% } %>
                         </p>
 
-                        <form action="/user/send-otp" method="POST" class="mt-8" id="signupForm">
+                        <form  class="mt-8" id="signupForm">
                             <div class="space-y-5">
                                 <div>
                                     <label for="username" class="text-base font-medium text-gray-900"> Full Name
@@ -61,7 +61,7 @@
                                         <input type="text" name="referralCode" id="referralCode"
                                             placeholder="Enter referral code"
                                             class="block w-full p-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-button-color focus:bg-white caret-button-color uppercase" />
-                                        <button type="button" onclick="verifyReferralCode()"
+                                        <button type="button" onclick="verifyReferralCode(this)" id="referralverifybtn"
                                             class="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 text-sm font-medium text-button-color hover:text-secondry-button focus:outline-none">
                                             Verify
                                         </button>
@@ -100,7 +100,7 @@
                                 <div class="w-full h-0.5 bg-gray-200 dark:bg-gray-700"></div>
                             </div>
 
-                            <button id="g_id_onload" onclick="window.location.href='/user/auth/google'"
+                            <button id="googleLoginBtn"
                                 class=" relative inline-flex items-center justify-center w-full px-4 py-4 text-base font-semibold text-gray-700 transition-all duration-200 bg-white border-2 border-gray-200 rounded-lg hover:bg-gray-100 focus:bg-gray-100 hover:text-black focus:text-black focus:outline-none "
                                 type="submit">
                                 <svg class="w-5 h-5 mr-2" viewBox="0 0 21 20" fill="none"
@@ -140,27 +140,27 @@
                 </div>
             </div>
         </section>
-
+        
+        <div id="loadingSpinner" class=" hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 flex flex-col items-center space-y-4">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600">
+                </div>
+                <div class="text-xl font-semibold text-gray-800">Please wait...</div>
+                <div class="text-sm text-gray-600">Please wait while we process your request</div>
+            </div>
+        </div>
 
     </main>
     <script>
-        function toTitleCase(input) {
-            return input
-                .toLowerCase()
-                .split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
-        }
+        document.getElementById('referralCode').addEventListener('keydown', () => {
+            const btn = document.getElementById('referralverifybtn');
+            const statusElement = document.getElementById('referralStatus');
+            btn.textContent = 'Verify'
+            btn.disabled = false;
+            statusElement.textContent=''
+        })
 
-        document.querySelector('#form').addEventListener("submit", (event) => {
-            const nameInput = document.getElementById("username");
-            const titleCasedName = toTitleCase(nameInput.value);
-
-            // Update the input value to the title-cased value
-            nameInput.value = titleCasedName;
-        });
-
-        async function verifyReferralCode() {
+        async function verifyReferralCode(btn) {
             const referralCode = document.getElementById('referralCode').value;
             const statusElement = document.getElementById('referralStatus');
 
@@ -184,7 +184,9 @@
 
                 statusElement.classList.remove('hidden');
                 if (data.valid) {
-                    statusElement.textContent = 'Valid referral code';
+                    statusElement.textContent = 'Referal Code Verified ✅';
+                    btn.textContent = '✅'
+                    btn.disabled = true;
                     statusElement.classList.remove('text-red-500', 'text-gray-500');
                     statusElement.classList.add('text-green-500');
                 } else {
@@ -199,6 +201,5 @@
             }
         }
     </script>
-
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>

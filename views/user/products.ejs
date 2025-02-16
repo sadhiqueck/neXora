@@ -1,10 +1,10 @@
 <body id="products">
-    <div class="bg-main-white py-8 antialiased md:py-12 mt-1">
-        <div class="mx-auto max-w-screen-2xl px-4 2xl:px-2 ">
-         
+    <div class="bg-main-white py-8 antialiased md:py-12 mt-1 ">
+        <div class="mx-auto max-w-screen-3xl px-4 2xl:px-2 ">
+
             <div class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8 pl-4 pr-20">
                 <div>
-                       <!-- Breadcrumb -->
+                    <!-- Breadcrumb -->
                     <nav class="flex" aria-label="Breadcrumb">
                         <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                             <li class="inline-flex items-center">
@@ -37,6 +37,7 @@
                             </li>
                         </ol>
                     </nav>
+
                     <% if(category==='all' || (filters?.selectedcategories?.length===4) ){ %>
                         <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                             Explore All Products
@@ -49,30 +50,60 @@
                 </div>
                 <!-- sort -->
                 <form method="GET" action="/user/products/<%= category %>" id="filter-form">
-                <div class="flex items-center">
-                    <svg class="-ms-0.5 me-2 h-8 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="60"
-                        height="32" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 4v16M7 4l3 3M7 4 4 7m9-3h6l-6 6h6m-6.5 10 3.5-7 3.5 7M14 18h4" />
-                    </svg>
-                    <select name="sort" onchange="this.form.submit()"
-                    class="w-full px-1 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="" disabled selected>Sort By</option>
-                    <option value="new-arrivals" <%= filters.sort === 'new-arrivals' ? 'selected' : '' %>>New Arrivals</option>
-                    <option value="price-asc" <%= filters.sort === 'price-asc' ? 'selected' : '' %>>Price: Low to High</option>
-                    <option value="price-desc" <%= filters.sort === 'price-desc' ? 'selected' : '' %>>Price: High to Low</option>
-                    <option value="discount" <%= filters.sort === 'discount' ? 'selected' : '' %>>Highest Discount</option>
-                </select>
-                </div>
+                    <div class="flex items-center">
+                        <svg class="-ms-0.5 me-2 h-8 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            width="60" height="32" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 4v16M7 4l3 3M7 4 4 7m9-3h6l-6 6h6m-6.5 10 3.5-7 3.5 7M14 18h4" />
+                        </svg>
+                        <select name="sort" onchange="this.form.submit()"
+                            class="w-full px-1 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="" disabled selected>Sort By</option>
+                            <option value="new-arrivals" <%=filters.sort==='new-arrivals' ? 'selected' : '' %>>New
+                                Arrivals</option>
+                            <option value="price-asc" <%=filters.sort==='price-asc' ? 'selected' : '' %>>Price: Low to
+                                High</option>
+                            <option value="price-desc" <%=filters.sort==='price-desc' ? 'selected' : '' %>>Price: High
+                                to Low</option>
+                            <option value="discount" <%=filters.sort==='discount' ? 'selected' : '' %>>Highest Discount
+                            </option>
+                        </select>
+                    </div>
             </div>
             <%}%>
                 <main>
-                    <section class="flex">
+                    <!-- Mobile Filter Toggle Button -->
+                    <button id="filter-toggle" type="button"
+                        class="md:hidden w-full bg-white shadow-md rounded-lg p-4 mb-4 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="4" y1="21" x2="4" y2="14"></line>
+                                <line x1="4" y1="10" x2="4" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12" y2="3"></line>
+                                <line x1="20" y1="21" x2="20" y2="16"></line>
+                                <line x1="20" y1="12" x2="20" y2="3"></line>
+                                <line x1="1" y1="14" x2="7" y2="14"></line>
+                                <line x1="9" y1="8" x2="15" y2="8"></line>
+                                <line x1="17" y1="16" x2="23" y2="16"></line>
+                            </svg>
+                            <span class="font-semibold">Filters</span>
+                        </div>
+                        <svg id="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="transform transition-transform duration-200">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
 
+                    <section class="flex flex-col md:flex-row gap-4">
                         <!-- Product Filter Sidebar -->
-                        <div class="w-full space-y-6 max-w-xs bg-white shadow-lg rounded-lg p-6 ">
+                        <div id="filter-sidebar" class="hidden w-full md:w-72 bg-white shadow-md rounded-lg p-4 space-y-2">
                             <!-- Header -->
-                            <div class="flex justify-between items-center mb-6">
+                            <div class="flex justify-between items-center mb-4">
                                 <h2 class="text-xl font-semibold">Filters</h2>
                                 <a href="/user/products/all" class="text-sm text-gray-500 hover:text-gray-700">
                                     Clear all
@@ -82,177 +113,173 @@
                             <!-- Active Filters -->
                             <div class="mb-4 flex flex-wrap gap-2" id="active-filters">
                                 <% if (filters) { %>
-                                    <% if (filters.availability === 'in-stock') { %>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100" data-filter="availability">
+                                    <% if (filters.availability==='in-stock' ) { %>
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100"
+                                            data-filter="availability">
                                             In Stock Only
                                         </span>
-                                    <% } %>
-                                    
-                                    <% if (filters.minPrice || filters.maxPrice) { %>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100" data-filter="price">
-                                            <%= filters.minPrice ? '₹' + filters.minPrice : '₹0' %> - <%= filters.maxPrice ? '₹' + filters.maxPrice : '∞' %>
-                                        </span>
-                                    <% } %>
-                            
-                                    <% if (filters.discount) { %>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100" data-filter="discount">
-                                            <%= filters.discount %>% or more off
-                                        </span>
-                                    <% } %>
-                            
-                                    <% if (filters.search) { %>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100" data-filter="search">
-                                            Search: "<%= filters.search %>"
-                                        </span>
-                                    <% } %>
-                            
-                                    <% if (filters.categories && filters.categories.length > 0) { %>
-                                        <% filters.categories.forEach(category => { %>
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100" data-filter="category-<%= category %>">
-                                                <%= category %>
-                                            </span>
-                                        <% }) %>
-                                    <% } %>
-                                <% } %>
+                                        <% } %>
+
+                                            <% if (filters.minPrice || filters.maxPrice) { %>
+                                                <span
+                                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100"
+                                                    data-filter="price">
+                                                    <%= filters.minPrice ? '₹' + filters.minPrice : '₹0' %> - <%=
+                                                            filters.maxPrice ? '₹' + filters.maxPrice : '∞' %>
+                                                </span>
+                                                <% } %>
+
+                                                    <% if (filters.discount) { %>
+                                                        <span
+                                                            class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100"
+                                                            data-filter="discount">
+                                                            <%= filters.discount %>% or more off
+                                                        </span>
+                                                        <% } %>
+
+                                                            <% if (filters.search) { %>
+                                                                <span
+                                                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100"
+                                                                    data-filter="search">
+                                                                    Search: "<%= filters.search %>"
+                                                                </span>
+                                                                <% } %>
+
+                                                                    <% if (filters.categories &&
+                                                                        filters.categories.length> 0) { %>
+                                                                        <% filters.categories.forEach(category=> { %>
+                                                                            <span
+                                                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100"
+                                                                                data-filter="category-<%= category %>">
+                                                                                <%= category %>
+                                                                            </span>
+                                                                            <% }) %>
+                                                                                <% } %>
+                                                                                    <% } %>
                             </div>
 
-                      
 
-                                <!-- Search input -->
-                                <div class="mb-4 relative">
-                                    <input 
-                                        type="text" 
-                                        name="search" 
-                                        id="product-search"
-                                        placeholder="Search products..." 
-                                        value="<%= filters.search %>" 
-                                        autocomplete="off"
-                                        class="w-full pl-10 pr-3 py-2 border rounded-md"
-                                    >
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <p id="error-message" class="text-red-500 text-sm mt-1 hidden"></p>
+
+                            <!-- Search input -->
+                            <div class="mb-4 relative">
+                                <input type="text" name="search" id="product-search" placeholder="Search products..."
+                                    value="<%= filters.search %>" autocomplete="off"
+                                    class="w-full pl-10 pr-3 py-2 border rounded-md">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                            clip-rule="evenodd" />
+                                    </svg>
                                 </div>
+                                <p id="error-message" class="text-red-500 text-sm mt-1 hidden"></p>
+                            </div>
 
-                                <!-- New Arrivals -->
-                                <!-- <div>
-                                    <h3 class="text-sm font-medium mb-4">New Arrivals</h3>
-                                    <div class="space-y-2">
-                                        <label class="flex items-center space-x-2">
-                                            <input type="radio" name="timeFrame" value="last-24h"
-                                                class="text-secondry-button focus:ring-secondry-button">
-                                            <span class="text-sm">Last 7 Days</span>
-                                        </label>
-                                        <label class="flex items-center space-x-2">
-                                            <input type="radio" name="timeFrame" value="last-week"
-                                                class="text-secondry-button focus:ring-secondry-button">
-                                            <span class="text-sm">Last 30 Days</span>
-                                        </label>
-                                        <label class="flex items-center space-x-2">
-                                            <input type="radio" name="timeFrame" value="last-month"
-                                                class="text-secondry-button focus:ring-secondry-button">
-                                            <span class="text-sm">Last 90 Days</span>
-                                        </label>
-                                    </div>
-                                </div> -->
-
-                                <!-- Availability -->
-                                <div>
-                                    <h3 class="text-sm font-medium mb-4">Availability</h3>
-                                    <div class="space-y-2">
-                                        <label class="flex items-center space-x-2">
-                                            <input type="checkbox" name="availability" value="in-stock" class=" availability-btn rounded text-secondry-button focus:ring-indigo-500"
-                                                <%= filters.availability === 'in-stock' ? 'checked' : '' %>>
-                                            <span>In Stock Only</span>
-                                        </label>
-                                    </div>
+                            <!-- Availability -->
+                            <div>
+                                <h3 class="text-sm font-medium mb-4">Availability</h3>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" name="availability" value="in-stock"
+                                            class=" availability-btn rounded text-secondry-button focus:ring-indigo-500"
+                                            <%=filters.availability==='in-stock' ? 'checked' : '' %>>
+                                        <span>In Stock Only</span>
+                                    </label>
                                 </div>
+                            </div>
 
-                                <!-- Discounts -->
-                                <div>
-                                    <h3 class="text-sm font-medium mb-4">Discounts</h3>
-                                    <select name="discount" class="w-full px-3 py-2 border rounded-md">
-                                        <option value="">All Discounts</option>
-                                        <option value="10" <%= filters.discount === '10' ? 'selected' : '' %>>10% or more</option>
-                                        <option value="25" <%= filters.discount === '25' ? 'selected' : '' %>>25% or more</option>
-                                        <option value="50" <%= filters.discount === '50' ? 'selected' : '' %>>50% or more</option>
-                                    </select>
-                                </div>
+                            <!-- Discounts -->
+                            <div>
+                                <h3 class="text-sm font-medium mb-4">Discounts</h3>
+                                <select name="discount" class="w-full px-3 py-2 border rounded-md">
+                                    <option value="">All Discounts</option>
+                                    <option value="10" <%=filters.discount==='10' ? 'selected' : '' %>>10% or more
+                                    </option>
+                                    <option value="25" <%=filters.discount==='25' ? 'selected' : '' %>>25% or more
+                                    </option>
+                                    <option value="50" <%=filters.discount==='50' ? 'selected' : '' %>>50% or more
+                                    </option>
+                                </select>
+                            </div>
 
-                                <!-- Price Range -->
-                                <div>
-                                    <h3 class="text-sm font-medium mb-4">Price Range</h3>
-                                    <div class="flex gap-4">
-                                        <div class="flex-1 relative">
-                                            <label class="block text-xs text-gray-500 mb-1">Min</label>
-                                            <div
-                                                class="absolute inset-y-0 left-0 pl-2 pt-5 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 text-lg">₹</span>
-                                            </div>
-                                            <input type="number" name="minPrice" placeholder="0" value="<%= filters.minPrice %>"
-                                                class="w-full px-5 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <!-- Price Range -->
+                            <div>
+                                <h3 class="text-sm font-medium mb-4">Price Range</h3>
+                                <div class="flex gap-4">
+                                    <div class="flex-1 relative">
+                                        <label class="block text-xs text-gray-500 mb-1">Min</label>
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-2 pt-5 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 text-lg">₹</span>
                                         </div>
-                                        <div class="flex-1 relative">
-                                            <div
-                                                class="absolute inset-y-0 left-0 pl-2 pt-5 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 text-lg">₹</span>
-                                            </div>
-                                            <label class="block text-xs text-gray-500 mb-1">Max</label>
-                                            <input type="number" name="maxPrice" placeholder="500000" value="<%= filters.maxPrice %>"
-                                                class="w-full px-5 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <input type="number" name="minPrice" placeholder="0"
+                                            value="<%= filters.minPrice %>"
+                                            class="w-full px-5 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div class="flex-1 relative">
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-2 pt-5 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 text-lg">₹</span>
                                         </div>
+                                        <label class="block text-xs text-gray-500 mb-1">Max</label>
+                                        <input type="number" name="maxPrice" placeholder="500000"
+                                            value="<%= filters.maxPrice %>"
+                                            class="w-full px-5 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Categories -->
-                                <div>
-                                    <h3 class="text-sm font-medium mb-4">Categories</h3>
-                                    <div class="space-y-2">
-                                        <% categories.forEach(categoryData=> { %>
-                                            <label class="flex items-center space-x-2">
-                                                <input type="checkbox" name="selectedcategories[]" value="<%= categoryData.categoryName %>" 
-                                                <%= filters?.selectedcategories?.includes(categoryData.categoryName) ? "checked" : "" %>
-                                                <%= category=== categoryData.categoryName ? "checked" : "" %>  
-                                                    class="rounded border-gray-300 text-secondry-button focus:ring-indigo-500">
+                            <!-- Categories -->
+                            <div>
+                                <h3 class="text-sm font-medium mb-4">Categories</h3>
+                                <div class="space-y-2">
+                                    <% categories.forEach(categoryData=> { %>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" name="selectedcategories[]"
+                                                value="<%= categoryData.categoryName %>"
+                                                <%=filters?.selectedcategories?.includes(categoryData.categoryName)
+                                                ? "checked" : "" %>
+                                            <%= category===categoryData.categoryName ? "checked" : "" %>
+                                                class="rounded border-gray-300 text-secondry-button
+                                                focus:ring-indigo-500">
                                                 <span class="text-sm">
                                                     <%= categoryData.categoryName %>
                                                 </span>
-                                            </label>
-                                            <% }); %>
-                                    </div>
+                                        </label>
+                                        <% }); %>
                                 </div>
+                            </div>
 
-                                <!-- Brands -->
-                                <div>
-                                    <h3 class="text-sm font-medium mb-4">Brands</h3>
-                                    <div class="space-y-2">
-                                        <% brands.forEach(brand=>{ %>
-                                            <label class="flex items-center space-x-2">
-                                                <input type="checkbox" name="brand" value='<%= brand%>' 
-                                                <%= filters?.brand?.includes(brand) ? "checked" : "" %> 
-                                                    class="rounded border-gray-300 text-secondry-button focus:ring-indigo-500">
-                                                <span class="text-sm">
-                                                    <%= brand%>
-                                                </span>
-                                            </label>
-                                            <% }) %>
-                                    </div>
+                            <!-- Brands -->
+                            <div>
+                                <h3 class="text-sm font-medium mb-4">Brands</h3>
+                                <div class="space-y-2">
+                                    <% brands.forEach(brand=>{ %>
+                                        <label class="flex items-center space-x-2">
+                                            <input type="checkbox" name="brand" value='<%= brand%>'
+                                                <%=filters?.brand?.includes(brand) ? "checked" : "" %>
+                                            class="rounded border-gray-300 text-secondry-button focus:ring-indigo-500">
+                                            <span class="text-sm">
+                                                <%= brand%>
+                                            </span>
+                                        </label>
+                                        <% }) %>
                                 </div>
+                            </div>
 
-                                <!-- Apply Filters Button -->
-                                    <button type="submit"
-                                        class="w-full bg-secondry-button text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                        Apply Filters
-                                    </button>
+                            <!-- Apply Filters Button -->
+                            <button type="submit"
+                                class="w-full bg-secondry-button text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                Apply Filters
+                            </button>
                             </form>
                         </div>
 
-                        <div> 
+                        <div class="flex-1">
                             <!-- products -->
-                            <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 p-4"
+                            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 p-2"
                                 id="product-list">
                                 <% if (products && products.length> 0 ) { %>
                                     <% products.forEach((product, index)=> { %>
@@ -263,115 +290,83 @@
                                                 href="/user/product/<%= product._id %>">
                                                 <img class="max-h-50 w-[80%] mx-auto object-contain lazyload"
                                                     src="<%= product.images[0] %>" alt="product image" />
-                                                    
-                                                  <!-- Regular Discount Label -->
-                                                <span class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
+
+                                                <!-- Regular Discount Label -->
+                                                <span
+                                                    class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
                                                     <%= product.discount %> % OFF
                                                 </span>
-                                                   <!-- Special Discount Label  -->
-                                                   <% if (product.hasCategoryOffer) { %>
-                                                    <div class="absolute bottom-0 left-0 right-0 bg-red-500 text-white py-1 px-3 text-center transform rotate-0">
-                                                        <span class="text-sm font-semibold ">Special offer for <%=product.category%></span>
-                                                            <span class="block text-xs font-medium">Extra <%= product.effectiveDiscount-product.discount%>% OFF</span>  
+                                                <!-- Special Discount Label  -->
+                                                <% if (product.hasCategoryOffer) { %>
+                                                    <div
+                                                        class="absolute bottom-0 left-0 right-0 bg-red-500 text-white py-1 px-3 text-center transform rotate-0">
+                                                        <span class="text-sm font-semibold ">Special offer for
+                                                            <%=product.category%></span>
+                                                        <span class="block text-xs font-medium">Extra <%=
+                                                                product.effectiveDiscount-product.discount%>% OFF</span>
                                                     </div>
-                                                <% } %>
-                                                                        </a>
+                                                    <% } %>
+                                            </a>
                                             <% if(isLoggedIn) { %>
                                                 <button
                                                     class="wishlist-btn absolute top-4 right-4 rounded-full p-3 shadow-md bg-white flex mx-auto transition-colors duration-200 <%- product.isWishlisted ? 'text-red-500' : 'text-gray-600' %>"
-                                                    data-product-id="<%= product._id %>" data-is-wishlisted="<%= product.isWishlisted %>"
+                                                    data-product-id="<%= product._id %>"
+                                                    data-is-wishlisted="<%= product.isWishlisted %>"
                                                     onclick="toggleWishlist(this)">
                                                     <i
                                                         class="<%- product.isWishlisted ? 'fa-solid' : 'fa-regular' %> fa-heart h-6 w-6 heart-icon"></i>
                                                 </button>
                                                 <% }else{ %>
-                                                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md"
+                                                    <button
+                                                        class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md"
                                                         onclick="redirectToLogin()">
                                                         <img src="/Icons/Wishlist.svg" class="opacity-20"></a>
                                                     </button>
                                                     <% } %>
-                                            <div class="mt-4 px-5 pb-5">
-                                                <a href="/user/product/<%= product._id %>">
-                                                    <h5
-                                                        class="text-sm md:text-md font-medium tracking-tight text-slate-900 h-10 overflow-hidden">
-                                                        <%= product.productName %>
-                                                    </h5>
-                                                </a>
-                                                <div class="mt-2 mb-5 flex items-center justify-between">
-                                                    <p>
-                                                        <span
-                                                            class="text-sm lg:text-lg md:text-md font-bold text-slate-900">₹
-                                                            <%= product.discountedPrice.toLocaleString("en-IN") %>
-                                                        </span>
-                                                        <span
-                                                            class="text-xs lg:text-xs md:text-xs text-gray-600 line-through ml-2">
-                                                            ₹<%= product.price.toLocaleString("en-IN") %>
-                                                        </span>
-                                                    </p>
-                                                    <div
-                                                        class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
-                                                        <span>
-                                                            <svg aria-hidden="true" class="h-5 w-5 text-black"
-                                                                fill="Current" viewBox="0 0 20 20"
-                                                                xmlns="http://www.w3.org/2000/svg">
-                                                                <path
-                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                                                </path>
-                                                            </svg>
-                                                        </span>
-                                                        5.0
-                                                    </div>
-                                                </div>
-                                                <div class="button-container">
-                                                    <% if(product.totalStock<1) { %>
-                                                        <button disabled
-                                                            class="w-full flex items-center justify-center rounded-md bg-gray-300 px-5 py-2.5 text-center text-sm font-medium text-gray-600 cursor-not-allowed">
-                                                            Out of Stock
-                                                        </button>
-                                                        <% } else if(isLoggedIn) { %>
-                                                            <% if(product.inCart) { %>
-                                                                <a href="/user/cart"
-                                                                    class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                        class="mr-2 h-6 w-6" fill="none"
-                                                                        viewBox="0 0 24 24" stroke="currentColor"
-                                                                        stroke-width="2">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round"
-                                                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                                    </svg>
-                                                                    Go to Cart
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                        height="24" viewBox="0 0 24 24"
-                                                                        style="fill: rgba(255, 255, 255, 1)">
-                                                                        <path
-                                                                            d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
-                                                                        </path>
-                                                                        <path
-                                                                            d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
-                                                                        </path>
-                                                                    </svg>
-                                                                </a>
-                                                                <% } else { %>
-                                                                    <button data-product_id="<%= product._id %>"
-                                                                        onclick="addToCart(this)"
-                                                                        class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            class="mr-2 h-6 w-6" fill="none"
-                                                                            viewBox="0 0 24 24" stroke="currentColor"
-                                                                            stroke-width="2">
-                                                                            <path stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                        <div class="mt-4 px-5 pb-5">
+                                                            <a href="/user/product/<%= product._id %>">
+                                                                <h5
+                                                                    class="text-sm md:text-md font-medium tracking-tight text-slate-900 h-10 overflow-hidden">
+                                                                    <%= product.productName %>
+                                                                </h5>
+                                                            </a>
+                                                            <div class="mt-2 mb-5 flex items-center justify-between">
+                                                                <p>
+                                                                    <span
+                                                                        class="text-sm lg:text-lg md:text-md font-bold text-slate-900">₹
+                                                                        <%= product.discountedPrice.toLocaleString("en-IN")
+                                                                            %>
+                                                                    </span>
+                                                                    <span
+                                                                        class="text-xs lg:text-xs md:text-xs text-gray-600 line-through ml-2">
+                                                                        ₹<%= product.price.toLocaleString("en-IN") %>
+                                                                    </span>
+                                                                </p>
+                                                                <div
+                                                                    class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
+                                                                    <span>
+                                                                        <svg aria-hidden="true"
+                                                                            class="h-5 w-5 text-black" fill="Current"
+                                                                            viewBox="0 0 20 20"
+                                                                            xmlns="http://www.w3.org/2000/svg">
+                                                                            <path
+                                                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                                                            </path>
                                                                         </svg>
-                                                                        Add to Cart
+                                                                    </span>
+                                                                    5.0
+                                                                </div>
+                                                            </div>
+                                                            <div class="button-container">
+                                                                <% if(product.totalStock<1) { %>
+                                                                    <button disabled
+                                                                        class="w-full flex items-center justify-center rounded-md bg-gray-300 px-5 py-2.5 text-center text-sm font-medium text-gray-600 cursor-not-allowed">
+                                                                        Out of Stock
                                                                     </button>
-
-                                                                    <% } %>
-                                                                        <% } else { %>
-                                                                            <button onclick="redirectToLogin()"
-                                                                                title="⚠️ Please log in to add items"
-                                                                                class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                                                                    <% } else if(isLoggedIn) { %>
+                                                                        <% if(product.inCart) { %>
+                                                                            <a href="/user/cart"
+                                                                                class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
                                                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                                                     class="mr-2 h-6 w-6" fill="none"
                                                                                     viewBox="0 0 24 24"
@@ -381,16 +376,64 @@
                                                                                         stroke-linejoin="round"
                                                                                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                                                                 </svg>
-                                                                                Add to Cart
-                                                                            </button>
-                                                                            <% } %>
+                                                                                Go to Cart
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    width="24" height="24"
+                                                                                    viewBox="0 0 24 24"
+                                                                                    style="fill: rgba(255, 255, 255, 1)">
+                                                                                    <path
+                                                                                        d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
+                                                                                    </path>
+                                                                                    <path
+                                                                                        d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
+                                                                                    </path>
+                                                                                </svg>
+                                                                            </a>
+                                                                            <% } else { %>
+                                                                                <button
+                                                                                    data-product_id="<%= product._id %>"
+                                                                                    onclick="addToCart(this)"
+                                                                                    class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                        class="mr-2 h-6 w-6" fill="none"
+                                                                                        viewBox="0 0 24 24"
+                                                                                        stroke="currentColor"
+                                                                                        stroke-width="2">
+                                                                                        <path stroke-linecap="round"
+                                                                                            stroke-linejoin="round"
+                                                                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                                                    </svg>
+                                                                                    Add to Cart
+                                                                                </button>
 
-                                                </div>
-                                            </div>
+                                                                                <% } %>
+                                                                                    <% } else { %>
+                                                                                        <button
+                                                                                            onclick="redirectToLogin()"
+                                                                                            title="⚠️ Please log in to add items"
+                                                                                            class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                                class="mr-2 h-6 w-6"
+                                                                                                fill="none"
+                                                                                                viewBox="0 0 24 24"
+                                                                                                stroke="currentColor"
+                                                                                                stroke-width="2">
+                                                                                                <path
+                                                                                                    stroke-linecap="round"
+                                                                                                    stroke-linejoin="round"
+                                                                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                                                            </svg>
+                                                                                            Add to Cart
+                                                                                        </button>
+                                                                                        <% } %>
+
+                                                            </div>
+                                                        </div>
                                         </div>
                                         <% }) %>
                                             <% } else { %>
-                                                <h1 class=" w-screen text-2xl text-center font-bold pr-80">Sorry,No products available as per your criteria</h1>
+                                                <h1 class=" w-screen text-2xl text-center font-bold pr-80">Sorry,No
+                                                    products available as per your criteria</h1>
                                                 <% } %>
                             </div>
 
@@ -429,23 +472,51 @@
         });
 
         document.querySelector('.availability-btn').addEventListener('change', (e) => {
-                filterForm.submit();
-            });
-         
-         ProductSearchInput.addEventListener("input", function () {
-        const regex = /^[A-Za-z0-9 ]*$/; 
-        const errorMessage = document.getElementById("error-message");
+            filterForm.submit();
+        });
 
-        if (!regex.test(this.value)) {
-            errorMessage.classList.remove("hidden");
-            this.value = this.value.replace(/[^A-Za-z0-9 ]/g, "");
-        } else {
-            errorMessage.classList.add("hidden");
-        }
-    });
-               
+        ProductSearchInput.addEventListener("input", function () {
+            const regex = /^[A-Za-z0-9 ]*$/;
+            const errorMessage = document.getElementById("error-message");
+
+            if (!regex.test(this.value)) {
+                errorMessage.classList.remove("hidden");
+                this.value = this.value.replace(/[^A-Za-z0-9 ]/g, "");
+            } else {
+                errorMessage.classList.add("hidden");
+            }
+        });
+
 
     </script>
 
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterSidebar = document.getElementById('filter-sidebar');
+    const chevronIcon = document.getElementById('chevron-icon');
+    let isOpen = false;
 
+    filterToggle.addEventListener('click', function() {
+        isOpen = !isOpen;
+        
+        // Toggle filter visibility
+        filterSidebar.classList.toggle('hidden');
+        
+        // Rotate chevron icon
+        chevronIcon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0)';
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) { // md breakpoint
+            filterSidebar.classList.remove('hidden');
+        } else if (!isOpen) {
+            filterSidebar.classList.add('hidden');
+        }
+    });
+});
+</script>
+
+    
 </body>

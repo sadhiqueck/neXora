@@ -231,9 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (redirectUrl) {
                 googleAuthUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
             }
-                window.location.href = googleAuthUrl;
-        
-
+            window.location.href = googleAuthUrl;
         })
 
 
@@ -262,6 +260,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
             const confirmPassword = confirmPasswordInput.value.trim();
+            const referralCode = document.getElementById('referralCode').value
+
 
 
             if (username === "" || email === "" || password === "" || confirmPassword === "") {
@@ -307,7 +307,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } else {
                 mssg.textContent = "";
-                form.submit();
+                const titleCasedName = toTitleCase(usernameInput.value);
+                usernameInput.value = titleCasedName;
+                try {
+                    showSpinner()
+                    const response = await fetch('/user/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, email, password, referralCode })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        notyf.success('OTP Sended Succesfully')
+                        setTimeout(() => {
+                            window.location.href = '/user/verify-otp';
+                        }, 300);
+
+                    } else {
+                        mssg.textContent = data.message || 'Signup failed!';
+                        mssg.style.color = 'red';
+                    }
+
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    mssg.textContent = 'An error occurred. Please try again.';
+                    mssg.style.color = 'red';
+                } finally {
+                    hideSpinner()
+                }
             }
         });
 
@@ -316,7 +344,38 @@ document.addEventListener("DOMContentLoaded", () => {
             mssg.textContent = sccsmsg;
             mssg.style.color = 'green';
         }
+
+        document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+    
+            const button = document.getElementById('googleLoginBtn');
+            button.disabled = true;
+    
+            button.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            SignUp with Google...
+        `;
+    
+            let googleAuthUrl = '/user/auth/google';
+            if (redirectUrl) {
+                googleAuthUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
+            }
+            window.location.href = googleAuthUrl;
+    
+    
+        })
+        function toTitleCase(input) {
+            return input
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
     }
+
+
 
 
 

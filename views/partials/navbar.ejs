@@ -1,225 +1,226 @@
-<nav class="bg-white border-gray-200 shadow-md">
-    <div class="max-w-screen-2xl flex flex-wrap items-center justify-evenly p-4 ">
-        <a href="/user/home" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <img src="/Images/lOGO.png" class="h-8" alt="Nexora" />
-        </a>
-        <div class="flex md:order-2 ">
-            <form action="">
-                <div class="relative hidden md:block ">
-                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                        <span class="sr-only">Search icon</span>
-                    </div>
-                    <input type="text" name="search-navbar" id="searchInput" autocomplete="off"
-                        class="block w-full sm:w-20 md:w-24 lg:w-36 xl:w-[500px]  p-2  ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="Search for products, brands, and more" />
-                        <!-- search results -->
+    <nav class="bg-white border-gray-200 shadow-md ">
+        <div class="max-w-screen-3xl flex flex-wrap items-center justify-evenly p-4 ">
+            <a href="/user/home" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="/Images/lOGO.png" class="h-8" alt="Nexora" />
+            </a>
+            <div class="flex md:order-2 ">
+                <form action="">
+                    <div class="relative hidden md:block ">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                            <span class="sr-only">Search icon</span>
+                        </div>
+                        <input type="text" name="search-navbar" id="searchInput" autocomplete="off"
+                            class="block searchInput sm:w-20 md:w-24 lg:w-36 xl:w-[700px]  p-2  ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Search for products, brands, and more" />
+                            <!-- search results -->
 
-                        <div id="liveSearchResults"
-                        class=" absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto"></div>
-                    </div>
-            </form>
+                            <div id="liveSearchResults"
+                            class=" absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto"></div>
+                        </div>
+                </form>
 
 
-            <% if (isLoggedIn) { %>
-                <!-- active -->
-                <div class="w-30 pl-10 flex space-x-4">
-                    <!-- wishlist -->
-                    <div>
-                        <a href="/user/wishlist">
-                            <button class="relative"> <img src="/Icons/Wishlist.svg" alt="">
-                                <div
-                                    class="<%= walletItemCount< 1 ? 'hidden' :'' %> absolute wishlistBadge inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-1 dark:border-gray-900">
-                                    <%=walletItemCount %>
-                                </div>
-                            </button>
-                        </a>
-                    </div>
-                    <!-- cart -->
-                    <div>
-                        <a href="/user/cart">
-                            <button class="relative"> <img src="/Icons/Cart.svg" alt="">
-                                <div
-                                    class=" <%= cartItemCount<1 ? 'hidden' :'' %> cartBadge absolute  items-center justify-center w-5 h-5 text-xs font-bold text-white bg-button-color border-2 border-white  rounded-full -top-1 -end-1  dark:border-gray-900">
-                                    <%= cartItemCount %>
-                                </div>
-                            </button>
-                        </a>
-                    </div>
-
-                    <!-- user button -->
-                    <div class="relative ml-3 ">
-                        <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName"
-                            class=" z-10 flex items-center text-sm pe-1 font-medium text-gray-900 rounded-full hover:text-button-color dark:hover:text-button-color md:me-0 ring-4 ring-gray-100"
-                            type="button">
-                            <span class="sr-only">Open user menu</span>
-                            <img class="w-8 h-8 me-2 rounded-full" src="/Icons/Active_user.svg" alt="user photo">
-                            <span>Hi, <%= user.username.split(' ')[0] %></span> 
-                                <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
-                        </button>
-
-                        <!-- Dropdown menu -->
-                        <div id="dropdownAvatarName"
-                            class="z-10 font-inter hidden bg-white divide-y divide-gray-300 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                            <div class="px-4 py-1 text-sm text-gray-900 bg-purple-100 ">
-                                <div class="flex">
-                                    <img src="/Icons/account_circle.svg" alt="My Profile" width="24" height="24">
-                                    <a href="/user/profile" class="block  px-4 py-2  truncate ">My Profile</a>
-                                </div>
-                                <p class="text-xs overflow-hidden mx-auto truncate w-36">
-                                    <%= user.email%>
-                                </p>
-                            </div>
-
-                            <ul class="py-2 text-sm text-gray-700 "
-                                aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton">
-                                <li class="flex px-4 ">
-                                    <img src="/Icons/orders.svg" alt="My Profile" width="20" height="20">
-                                    <a href="/user/orders" class="block px-1 py-2 ">Orders</a>
-                                </li>
-                                <li class="flex px-4">
-                                    <img src="/Icons/wishlist_small.svg" alt="My Profile" width="20" height="20">
-                                    <a href="/user/wishlist" class="block px-1 py-2 ">Wishlist(<%=walletItemCount %>)</a>
-                                </li class="flex px-4">
-                                <li class="flex px-4">
-                                    <img src="/Icons/wallet_small.svg" alt="My Profile" width="20" height="20">
-                                    <a href="/user/wallet" class="block px-1 py-2 ">Wallet</a>
-                                </li class="flex px-4">
-                                <li class="flex px-4">
-                                    <img src="/Icons/notifications.svg" alt="My Profile" width="20" height="20">
-                                    <a href="#" class="block px-1 py-2 ">Notifications</a>
-                                </li class="flex px-4">
-                            </ul>
-                            <div class="flex px-4 py-1">
-                                <img src="/Icons/logout_small.svg" alt="My Profile" width="20" height="20">
-                                <a href="/user/logout"
-                                    class="block w-full px-1 py-2 text-sm font-medium text-button-color ">LogOut</a>
-                            </div>
+                <% if (isLoggedIn) { %>
+                    <!-- active -->
+                    <div class="w-30 pl-10 flex space-x-4">
+                        <!-- wishlist -->
+                        <div>
+                            <a href="/user/wishlist">
+                                <button class="relative"> <img src="/Icons/Wishlist.svg" alt="">
+                                    <div
+                                        class="<%= walletItemCount< 1 ? 'hidden' :'' %> absolute wishlistBadge inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -end-1 dark:border-gray-900">
+                                        <%=walletItemCount %>
+                                    </div>
+                                </button>
+                            </a>
+                        </div>
+                        <!-- cart -->
+                        <div>
+                            <a href="/user/cart">
+                                <button class="relative"> <img src="/Icons/Cart.svg" alt="">
+                                    <div
+                                        class=" <%= cartItemCount<1 ? 'hidden' :'' %> cartBadge absolute  items-center justify-center w-5 h-5 text-xs font-bold text-white bg-button-color border-2 border-white  rounded-full -top-1 -end-1  dark:border-gray-900">
+                                        <%= cartItemCount %>
+                                    </div>
+                                </button>
+                            </a>
                         </div>
 
+                        <!-- user button -->
+                        <div class="relative ml-3 ">
+                            <button id="dropdownAvatarNameButton" data-dropdown-toggle="dropdownAvatarName"
+                                class=" z-10 flex items-center text-sm pe-1 font-medium text-gray-900 rounded-full hover:text-button-color dark:hover:text-button-color md:me-0 ring-4 ring-gray-100"
+                                type="button">
+                                <span class="sr-only">Open user menu</span>
+                                <img class="w-8 h-8 me-2 rounded-full" src="/Icons/Active_user.svg" alt="user photo">
+                                <span>Hi, <%= user.username.split(' ')[0] %></span> 
+                                    <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="m1 1 4 4 4-4" />
+                                    </svg>
+                            </button>
 
-                        <% } else { %>
-                            <!-- not active -->
-
-                            <div class="w-30 pl-10 flex space-x-4">
-
-                                <!-- wishlist -->
-                                <div>
-                                 <a href="/user/login"><button> <img src="/Icons/Wishlist.svg" alt=""></button></a> 
+                            <!-- Dropdown menu -->
+                            <div id="dropdownAvatarName"
+                                class="z-10 font-inter hidden bg-white divide-y divide-gray-300 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                                <div class="px-4 py-1 text-sm text-gray-900 bg-purple-100 ">
+                                    <div class="flex">
+                                        <img src="/Icons/account_circle.svg" alt="My Profile" width="24" height="24">
+                                        <a href="/user/profile" class="block  px-4 py-2  truncate ">My Profile</a>
+                                    </div>
+                                    <p class="text-xs overflow-hidden mx-auto truncate w-36">
+                                        <%= user.email%>
+                                    </p>
                                 </div>
 
-
-                                <!-- cart -->
-                                <div>
-                                    <a href="/user/login">  <button> <img src="/Icons/Cart.svg" alt=""></button></a>
+                                <ul class="py-2 text-sm text-gray-700 "
+                                    aria-labelledby="dropdownInformdropdownAvatarNameButtonationButton">
+                                    <li class="flex px-4 ">
+                                        <img src="/Icons/orders.svg" alt="My Profile" width="20" height="20">
+                                        <a href="/user/orders" class="block px-1 py-2 ">Orders</a>
+                                    </li>
+                                    <li class="flex px-4">
+                                        <img src="/Icons/wishlist_small.svg" alt="My Profile" width="20" height="20">
+                                        <a href="/user/wishlist" class="block px-1 py-2 ">Wishlist(<%=walletItemCount %>)</a>
+                                    </li class="flex px-4">
+                                    <li class="flex px-4">
+                                        <img src="/Icons/wallet_small.svg" alt="My Profile" width="20" height="20">
+                                        <a href="/user/wallet" class="block px-1 py-2 ">Wallet</a>
+                                    </li class="flex px-4">
+                                    <li class="flex px-4">
+                                        <img src="/Icons/notifications.svg" alt="My Profile" width="20" height="20">
+                                        <a href="#" class="block px-1 py-2 ">Notifications</a>
+                                    </li class="flex px-4">
+                                </ul>
+                                <div class="flex px-4 py-1">
+                                    <img src="/Icons/logout_small.svg" alt="My Profile" width="20" height="20">
+                                    <a href="/user/logout"
+                                        class="block w-full px-1 py-2 text-sm font-medium text-button-color ">LogOut</a>
                                 </div>
-                                <!-- user button -->
-                                <div class="relative ml-3 ">
-                                    <button type="button" data-dropdown-toggle="dropdownHover"
-                                        data-dropdown-trigger="hover" class="relative flex rounded-full text-sm mr-10 "
-                                        id="user-menu-button" aria-expanded="false" aria-haspopup="true" >
-                                        <img src="/Icons/User.svg" alt="">
-                                    </button>
+                            </div>
 
 
-                                    <!-- Dropdown menu -->
-                                    <div id="dropdownHover"
-                                        class="z-10 hidden absolute  left-0 top-full bg-purple-200 divide-y divide-gray-100 rounded-lg shadow-lg w-44 dark:bg-gray-700">
-                                        <div class="px-6 py-3 text-sm text-gray-900 ">
-                                            <div>New Customer?</div>
-                                            <a class="font-small truncate text-button-color"
-                                                href="/user/signup">Signup</a>
-                                        </div>
-                                        <ul class="py-2 text-md text-white bg-[#8729eb] rounded-b-md font-mono"
-                                            aria-labelledby="user-menu-button">
+                            <% } else { %>
+                                <!-- not active -->
 
-                                            <li class="flex px-3">
-                                                <img src="/Icons/login_white.svg" alt="My Profile" width="20"
-                                                    height="20">
-                                                <a href="/user/login"
-                                                    class="block w-full px-1 py-2 font-semibold ">LogIn</a>
-                                            </li>
-                                        </ul>
-
+                                <div class="w-30 pl-10 flex space-x-4">
+                                    <!-- wishlist -->
+                                    <div>
+                                    <a href="/user/login"><button> <img src="/Icons/Wishlist.svg" alt=""></button></a> 
                                     </div>
 
 
-                                    <% } %>
+                                    <!-- cart -->
+                                    <div>
+                                        <a href="/user/login">  <button> <img src="/Icons/Cart.svg" alt=""></button></a>
+                                    </div>
+                                    <!-- user button -->
+                                    <div class="relative ml-3 ">
+                                        <button type="button" data-dropdown-toggle="dropdownHover"
+                                            data-dropdown-trigger="hover" class="relative flex rounded-full text-sm mr-10 "
+                                            id="user-menu-button" aria-expanded="false" aria-haspopup="true" >
+                                            <img src="/Icons/User.svg" alt="">
+                                        </button>
+
+
+                                        <!-- Dropdown menu -->
+                                        <div id="dropdownHover"
+                                            class="z-10 hidden absolute  left-0 top-full bg-purple-200 divide-y divide-gray-100 rounded-lg shadow-lg w-44 dark:bg-gray-700">
+                                            <div class="px-6 py-3 text-sm text-gray-900 ">
+                                                <div>New Customer?</div>
+                                                <a class="font-small truncate text-button-color"
+                                                    href="/user/signup">Signup</a>
+                                            </div>
+                                            <ul class="py-2 text-md text-white bg-[#8729eb] rounded-b-md font-mono"
+                                                aria-labelledby="user-menu-button">
+
+                                                <li class="flex px-3">
+                                                    <img src="/Icons/login_white.svg" alt="My Profile" width="20"
+                                                        height="20">
+                                                    <a href="/user/login"
+                                                        class="block w-full px-1 py-2 font-semibold ">LogIn</a>
+                                                </li>
+                                            </ul>
+
+                                        </div>
+
+
+                                        <% } %>
 
 
 
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-
-                            </div>
-                            <button data-collapse-toggle="navbar-search" type="button"
-                                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                                aria-controls="navbar-search" aria-expanded="false">
-                                <span class="sr-only">Open main menu</span>
-                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 17 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
-                                </svg>
-                            </button>
-                    </div>
-                    <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-                        id="navbar-search">
-                        <div class="relative mt-3 md:hidden">
-                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                </svg>
-                            </div>
-                            <input type="text" name="search-navbar"
-                                class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="Search..." />
+                                <div></div>
+                                
+                                <button data-collapse-toggle="navbar-search" type="button"
+                                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                                    aria-controls="navbar-search" aria-expanded="false">
+                                    <span class="sr-only">Open main menu</span>
+                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 17 14">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+                                    </svg>
+                                </button>
                         </div>
-                        <ul
-                            class="flex flex-col p-4 md:p-0 mt-4 font-light border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                            <li>
-                                <a href="/user/home"
-                                    class="block py-2 px-3 font-medium text-white bg-button-color rounded md:bg-transparent md:text-button-color md:p-0 md:dark:text-blue-500"
-                                    aria-current="page">Home</a>
-                            </li>
-                            <li>
-                                <a href="/user/products/all?selectedcategories%5B%5D=Entertainment+%26+Gaming&selectedcategories%5B%5D=Smart+Home+Devices&selectedcategories%5B%5D=Wearable+Devices&selectedcategories%5B%5D=Accessories"
-                                    class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:to-button-color md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                    Shop</a>
-                            </li>
-                            <li>
-                                <a href="#"
-                                    class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-button-color md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                    About</a>
-                            </li>
-                            <li>
-                                <a href="#"
-                                    class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-button-color md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                                    Contact Us</a>
-                            </li>
-                            <!-- Show or hide the Sign In option -->
-                            <% if (!isLoggedIn) { %>
-                                <li><a href="/user/login" class="text-button-color">Sign In</a></li>
-                                <% } else{ %>
-                                    <li></li>
-                                    <% } %>
-                        </ul>
+                    
+                        <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+                            id="navbar-search">
+                            <form class="relative mt-3 md:hidden">
+                                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                    </svg>
+                                </div>
+                                <input type="text"name="search-navbar"  autocomplete="off"
+                                    class="searchInput block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    placeholder="Search..." />
+                            </form>
+                            <div id="liveSearchResults"
+                            class=" absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto"></div>
+                            <ul
+                                class="flex flex-col p-4 md:p-0 mt-4 font-light border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                                <li>
+                                    <a href="/user/home"
+                                        class="block py-2 px-3 font-medium text-white bg-button-color rounded md:bg-transparent md:text-button-color md:p-0 md:dark:text-blue-500"
+                                        aria-current="page">Home</a>
+                                </li>
+                                <li>
+                                    <a href="/user/products/all?selectedcategories%5B%5D=Entertainment+%26+Gaming&selectedcategories%5B%5D=Smart+Home+Devices&selectedcategories%5B%5D=Wearable+Devices&selectedcategories%5B%5D=Accessories"
+                                        class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:to-button-color md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                        Shop</a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-button-color md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                        About</a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="block py-2 px-3 text-gray-600 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-button-color md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                                        Contact Us</a>
+                                </li>
+                                <!-- Show or hide the Sign In option -->
+                                <% if (!isLoggedIn) { %>
+                                    <li><a href="/user/login" class="text-button-color">Sign In</a></li>
+                                    <% } else{ %>
+                                        <li></li>
+                                        <% } %>
+                            </ul>
+
+                        </div>
 
                     </div>
-
-                </div>
-</nav>
+    </nav>
 <script>
     const searchInput = document.querySelector(' input[name="search-navbar" ]'); const
         searchResults = document.createElement('div');

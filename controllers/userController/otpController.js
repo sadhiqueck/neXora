@@ -146,7 +146,7 @@ const sendOTP = async function (req, res) {
 
 
         if (checkUserPresent) {
-            return res.render("user/signup", { title: 'Signup_Page', mssg: "User already exists in this email" });
+            return res.status(401).json({ success:false, message: "User already exists in this email" });
         }
 
         // Generate otp
@@ -171,14 +171,21 @@ const sendOTP = async function (req, res) {
 
         // Send OTP to user's email
         await sendVerificationEmail(email, otp);
-        return res.render("user/otp_verify", { title: 'OTP Verification', mssg: "OTP sent successfully to your email!" });
+        req.session.resetFlow=true;
+        return res.status(200).json({success:true,message:"Otp Sended Succesfully"})
 
     } catch (error) {
         console.log(error.message);
-        return res.render("user/signup", { title: 'Signup_Page', mssg: "Failed to send OTP" });
+        return res.status(500).json({ success:false, error: error.message });
     }
 };
 
+const LoadOtpVerifyPage= async(req,res)=>{
+    res.render("user/otp_verify", {
+         title: 'OTP Verification',
+          mssg: "OTP sent successfully to your email!" 
+        });
+}
 
 // resend otp
 
@@ -219,8 +226,7 @@ const resendOtp = async (req, res) => {
         return res.status(200).json({message:"A new OTP has been sent to your email."})
     } catch (error) {
         console.log('Error during OTP resend:', error.message);
-       
-        return res.status(404).json({error:error.message})
+        return res.status(500).json({error:error.message})
     }
 };
 
@@ -273,4 +279,4 @@ const sendresetOtp = async (req, res) => {
 }
 
 
-module.exports = { sendVerificationEmail, sendOTP, resendOtp, sendresetOtp }
+module.exports = { sendVerificationEmail, sendOTP, resendOtp, sendresetOtp,LoadOtpVerifyPage }

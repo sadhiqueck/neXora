@@ -78,5 +78,11 @@ const validateResetFlow = (req, res, next) => {
     }
     next();
 };
+const validateSignupFlow = (req, res, next) => {
+    if (!req.session.resetFlow) {
+        return res.redirect('/user/signup');
+    }
+    next();
+};
 
-module.exports = { authsession, loginStatus, isLogin, checkoutAccess, validateResetFlow, redirectionUrl }
+module.exports = { authsession, loginStatus, isLogin, checkoutAccess, validateResetFlow, redirectionUrl,validateSignupFlow }

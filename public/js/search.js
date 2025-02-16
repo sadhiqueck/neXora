@@ -1,6 +1,6 @@
 // public/js/search.js
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
+    const searchInput = document.querySelector('.searchInput');
     const liveResults = document.getElementById('liveSearchResults');
   
     if (searchInput && liveResults) {
