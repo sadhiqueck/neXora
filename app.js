@@ -6,9 +6,13 @@ const path = require("path");
 const adminRoute= require('./routes/adminRoute');
 const userRoute= require('./routes/userRoute');
 const expressLayouts = require('express-ejs-layouts');
-const configurePassport=require("./middleware/passport")
+const configurePassport=require("./middleware/passport");
 const passport=require('passport');
 const {loginStatus}=require('./middleware/userAuth');
+const statusCodes = require('./utils/statusCodes');
+const errorHandler = require('./utils/errors/errorHandler');
+const AppError = require('./utils/errors/AppError');
+
 app.use(expressLayouts);
 
 app.use(express.json());
@@ -49,13 +53,16 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
 app.use('/admin',adminRoute)
 app.use('/user',loginStatus,userRoute)
 
-
-
+// 404 Route
+app.all('*', (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, statusCodes.NOT_FOUND));
+  });
+  
+  // Error Handling Middleware
+  app.use(errorHandler);
 
 
 module.exports = app;

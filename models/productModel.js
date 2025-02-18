@@ -124,4 +124,5 @@ productSchema.index({ category: 1, discountedPrice: 1, discount: 1,brand: 1  });
 productSchema.index({ productName: 'text' });
 productSchema.index({ totalStock: 1 });
 
+
 module.exports = mongoose.model("Products", productSchema)

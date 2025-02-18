@@ -29,6 +29,7 @@
     "express-session": "^1.18.1",
     "flash": "^1.1.0",
     "flowbite": "^2.5.2",
+    "http-errors": "^2.0.0",
     "moment": "^2.30.1",
     "mongoose": "^8.8.4",
     "mongoose-findorcreate": "^4.0.0",

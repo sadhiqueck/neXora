@@ -1,5 +1,6 @@
 const Users = require('../../models/userModel')
 const productsDB = require("../../models/productModel")
+const mongoose = require('mongoose')
 const Cart = require('../../models/cartModel');
 const categoriesDB = require('../../models/categoryModel');
 const Wishlist = require('../../models/wishListModel');
@@ -170,11 +171,13 @@ const loadProductsPage = async (req, res) => {
 const getProductsDetails = async (req, res) => {
     try {
         const productId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(404).render('404',{layout:false});
+        }
         const product = await productsDB.findById(productId);
 
-
         if (!product) {
-            return res.status(404).json({ message: "product not found!" });
+            return res.status(404).render('404',{layout:false});
         }
 
         const categoryOffers = await CategoryOffer.find({

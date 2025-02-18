@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-white to-gray-100 h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-4xl w-">
+        <div class="animate-bounce mt-4">
+            <svg class="w-24 h-24 mx-auto text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
+        <!-- Top Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-[180px] md:text-[240px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 leading-none select-none">
+                404
+            </h1>
+        </div>
+
+        <!-- Middle Section -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+            <div class="space-y-6">
+                <h2 class="text-4xl md:text-6xl font-bold text-gray-800 tracking-tight">
+                    Page Not Found
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto">
+                    The page you're looking for seems to have vanished into the digital void.
+                </p>
+                <div class="flex justify-center">
+                    <button onclick="window.location.href='/user/home'" class="px-12 py-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-lg font-semibold rounded-xl transition duration-300 transform hover:scale-105">
+                        Return Home
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Decoration -->
+        <!-- <div class="mt-12 flex justify-center">
+            <div class="animate-pulse">
+                <svg class="w-24 h-24 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.59-13L12 10.59 8.41 7 7 8.41 10.59 12 7 15.59 8.41 17 12 13.41 15.59 17 17 15.59 13.41 12 17 8.41z"></path>
+                </svg>
+            </div>
+        </div> -->
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div class="absolute top-[10%] left-[10%] w-4 h-4 bg-blue-400 rounded-full animate-[ping_4s_ease-in-out_infinite]"></div>
+        <div class="absolute top-[20%] left-[50%] w-3 h-3 bg-indigo-400 rounded-full animate-[ping_3s_ease-in-out_infinite]"></div>
+        <div class="absolute top-[80%] left-[70%] w-2 h-2 bg-purple-400 rounded-full animate-[ping_5s_ease-in-out_infinite]"></div>
+    </div>
+</body>
+</html>
