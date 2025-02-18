@@ -86,10 +86,5 @@ router.put('/category-offer/:id', authsession, editCategoryOffer)
 router.get('/sales-report', authsession, getSalesReport)
 router.get('/orders/report', authsession, fetchAllOrders);
 
-
-router.get('/error', (req, res, next) => {
-     next(new AppError('This is a test error', statusCodes.INTERNAL_SERVER_ERROR));
-   });
-
    
 module.exports = router
