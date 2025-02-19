@@ -143,7 +143,7 @@
                         </form>
 
                         <div id="transactionsList" class="space-y-4">
-                            <% transactions.forEach(transaction => { %>
+                            <% transactions?.forEach(transaction => { %>
                               <div class="flex items-center justify-between p-4 border-b">
                                 <div class="flex items-center gap-4">
                                   <% if (transaction.type === 'credit') { %>

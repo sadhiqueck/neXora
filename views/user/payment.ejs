@@ -89,7 +89,7 @@
                                     class="p-6 rounded-xl border-2  <%= !isCODAllowed ?  'opacity-75 bg-gray-100': '' %> peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-200 transition-all">
                                     <div class="flex items-center gap-4">
                                         <div
-                                            class="w-12 h-12 <%= !isCODAllowed ?  'opacity-75 bg-gray-100': 'bg-purple-100 text-purple-600' %>  rounded-full flex items-center justify-center">
+                                            class="w-12 h-12 <%= !isCODAllowed ?  'opacity-50 bg-gray-100': 'bg-purple-100 text-purple-600' %>  rounded-full flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 "
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -98,8 +98,8 @@
                                         </div>
                                         <div class="flex-1">
                                             <div class="flex gap-2">
-                                                <h3 class="font-medium">Cash on Delivery</h3>
-                                                 <h3 class="font-normal italic "><%=!isCODAllowed ?'( Not eligible for this Order )' :'' %></h3> 
+                                                <h3 class="font-medium <%= !isCODAllowed ?  'opacity-50': '' %>">Cash on Delivery</h3>
+                                                 <h3 class="font-normal italic text-red-500 "><%=!isCODAllowed ?'( Not eligible for this Order )' :'' %></h3> 
                                             </div>
                                             <p class="text-sm text-gray-600">Pay when you receive your order</p>
                                         </div>
