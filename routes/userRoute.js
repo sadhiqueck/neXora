@@ -19,7 +19,7 @@ const { loadPaymentPage, placeOrder, orderSuccess, verifyPayment,
 
 const { loadOrder, loadOrderDetails, cancelItem, cancelOrder, returnOrder, returnItem, getInvoice } = require('../controllers/userController/orderController');
 const { addTransaction, getWallet } = require('../controllers/userController/walletController');
-const { getWishlist, addToWishlist, removeFromWishlist, moveAllToCart } = require('../controllers/userController/wishlistController')
+const { getWishlist, toggleWishlist, removeFromWishlist, moveAllToCart } = require('../controllers/userController/wishlistController')
 const { validateCoupon } = require('../controllers/adminController/couponController')
 const { getRefferalPage, verifyReferralCode } = require('../controllers/userController/offerController')
 const passport = require('passport');
@@ -138,7 +138,7 @@ router.post('/wallet/verify-payment', authsession, verifyWalletPayment);
 
 // wishlist
 router.get('/wishlist', authsession, getWishlist)
-router.post('/wishlist/:productId', authsession, addToWishlist);
+router.post('/wishlist/:productId', authsession, toggleWishlist);
 router.delete('/wishlist/:productId', authsession, removeFromWishlist);
 router.post('/moveAlltoCart', authsession, moveAllToCart);
 

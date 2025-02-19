@@ -136,7 +136,6 @@ async function toggleWishlist(button) {
         const heartIcon = button.querySelector('.fa-heart');
 
         button.disabled = true;
-
         const method = isWishlisted ? 'DELETE' : 'POST';
         const endpoint = `/user/wishlist/${productId}`;
 

@@ -61,30 +61,35 @@ const getWishlist = async (req, res) => {
   };
 
 
-const addToWishlist = async (req, res) => {
+const toggleWishlist = async (req, res) => {
 
     try {
-        const wishlist = await Wishlist.findOneAndUpdate(
-            { user: req.user.id },
+        let wishlist = await Wishlist.findOneAndUpdate(
+            { user: req.session.user._id },
             { $addToSet: { products: { product: req.params.productId } } },
             { new: true, upsert: true }
         ).populate('products.product');
 
-        res.status(200).json({success:true});
-    } catch (err) {
-        res.status(500).send('Server error');
-    }
+        if (!wishlist) {
+          wishlist = new Wishlist({ user:  req.session.user._id, products: [] });
+        }
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
 }
 
 const removeFromWishlist= async (req, res) => {
     try {
       const wishlist = await Wishlist.findOneAndUpdate(
-        { user: req.user.id },
+        { user: req.session.user._id },
         { $pull: { products: { product: req.params.productId } } },
         { new: true }
       ).populate('products.product');
       
-      res.json(wishlist?.products || []);
+      console.log(wishlist)
+      res.status(200).json(wishlist?.products || []);
     } catch (err) {
       res.status(500).send('Server error');
     }
@@ -175,4 +180,4 @@ const moveAllToCart = async (req, res) => {
 };
 
 
-module.exports = { getWishlist, addToWishlist, removeFromWishlist, moveAllToCart }
+module.exports = { getWishlist, toggleWishlist, removeFromWishlist, moveAllToCart }

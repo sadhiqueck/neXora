@@ -53,6 +53,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// default route
+app.get('/',(req,res)=>{
+    res.redirect('/user/home')
+})
 app.use('/admin',adminRoute)
 app.use('/user',loginStatus,userRoute)
 

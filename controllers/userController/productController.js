@@ -258,56 +258,32 @@ const getProductsDetails = async (req, res) => {
 
         if (req.session.user) {
             const userId = req.session.user._id;
-            const userCart = await Cart.findOne({
-                userId,
-            });
+            const userCart = await Cart.findOne({ userId });
 
             const productWithCart = product.toObject();
-            // Check if any variant is in cart
-            productWithCart.variantsInCart = activeVariants
-                .filter(variant =>
-                    userCart.products.some(cartItem =>
-                        cartItem.productId.equals(product._id) &&
-                        cartItem.variantDetails.color === variant.color
-                        &&
-                        (variant.storage ? cartItem.variantDetails.storage === `${variant.storage}${variant.storageUnit}` : true)
-                    )
-                )
-                .map(variant => ({
-                    color: variant.color,
-                    storage: variant.storage,
-                    storageUnit: variant.storageUnit
-                }));
-
-            productWithCart.inCart = productWithCart.variantsInCart.length > 0;
+            productWithCart.inCart = userCart ? userCart.products.some(cartItem => cartItem.productId.equals(product._id)) : false;
 
             // get wishlist
             const userWishlist = await Wishlist.findOne({ user: req.session.user._id }).lean();
             const wishlistProductIds = new Set(userWishlist?.products.map(item => item.product.toString()) || []);
 
-            productWithCart.isWishlisted = wishlistProductIds.has(product._id.toString())
+            productWithCart.isWishlisted = wishlistProductIds.has(product._id.toString());
 
             // Check if any related product is in cart
             relatedProducts = relatedProducts.map(relProduct => {
-                const relProductObj = relProduct.toObject();
-                relProductObj.variantsInCart = relProduct.variants
-                    .filter(variant =>
-                        userCart.products.some(cartItem =>
-                            cartItem.productId.equals(relProduct._id)))
-                relProductObj.inCart = relProductObj.variantsInCart.length > 0;
-
-                relProductObj.isWishlisted = wishlistProductIds.has(relProduct._id.toString());
-                return relProductObj;
+            const relProductObj = relProduct.toObject();
+            relProductObj.inCart = userCart ? userCart.products.some(cartItem => cartItem.productId.equals(relProduct._id)) : false;
+            relProductObj.isWishlisted = wishlistProductIds.has(relProduct._id.toString());
+            return relProductObj;
             });
 
-
             return res.render('user/product_details', {
-                title: 'Product_details',
-                product: productWithCart,
-                relatedProducts:updatedRelatedProducts,
-                colors,
-                storages,
-                hasAdditionalDiscount
+            title: 'Product_details',
+            product: productWithCart,
+            relatedProducts: updatedRelatedProducts,
+            colors,
+            storages,
+            hasAdditionalDiscount
             });
         }
 
