@@ -80,7 +80,7 @@
                         <!-- Edit Address Modal -->
                         <div id="editModal<%= index %>"
                             class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-                            <div class="bg-white rounded-lg shadow-lg p-6 w-2/4">
+                            <div class="bg-white rounded-lg shadow-lg md:p-6 p-2 md:w-2/4">
                                 <h2 class="text-lg font-semibold mb-4">Edit Address</h2>
                                 <!-- form -->
                                 <form id="editAddressForm<%= index %>" action="/user/update-address" method="POST">
@@ -274,7 +274,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Add more fields as needed -->
                                     <button type="submit" class="bg-button-color text-white px-6 py-2 rounded-md">Save
                                         Changes</button>
                                     <button data-modal-toggle="editModal<%= index %>"
@@ -308,7 +307,7 @@
 
 
             <!-- add new address form -->
-            <div class="mx-auto w-full max-w-[90%] bg-purple-50 p-10 rounded-lg border border-purple-300 relative"
+            <div class="mx-auto w-full md:max-w-[90%] bg-purple-50 md:p-10 rounded-lg border border-purple-300 relative"
                 id="adressAddForm" style="display:none; ">
                 <p id="mssg" class="text-red-600 text-center mb-4 mssg"></p>
                 <form action="/user/profile-addAddress" method="POST" id="addressAddForm">

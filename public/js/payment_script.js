@@ -62,7 +62,7 @@ async function handleRazorpayPayment(total) {
                 shipping_address: order.shippingAddress,
                 customer_id: order.userId
             },
-            image: '/images/lOGO.png',
+            image: '/Images/lOGO.png',
 
             handler: async function (response) {
                 const appliedCouponData = document.getElementById('appliedCouponData').value;
