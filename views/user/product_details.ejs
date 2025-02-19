@@ -65,12 +65,12 @@
 
                     <% if (product.images.length> 0) { %>
                         <div class="w-full  md:w-1/2 px-4 mb-8  relative">
-                        
+
                             <% if(isLoggedIn) { %>
                                 <button
                                     class="wishlist-btn absolute top-4 right-10 rounded-full p-3 shadow-md bg-white flex mx-auto transition-colors duration-200 <%- product.isWishlisted ? 'text-red-500' : 'text-gray-600' %>"
-                                        data-product-id="<%= product._id %>" data-is-wishlisted="<%= product.isWishlisted %>"
-                                        onclick="toggleWishlist(this)">
+                                    data-product-id="<%= product._id %>"
+                                    data-is-wishlisted="<%= product.isWishlisted %>" onclick="toggleWishlist(this)">
                                     <i
                                         class="<%- product.isWishlisted ? 'fa-solid' : 'fa-regular' %> fa-heart h-8 w-8 font-light heart-icon"></i>
                                 </button>
@@ -81,22 +81,24 @@
                                     </button>
                                     <% } %>
 
-                            <div class="overflow-hidden rounded-lg shadow-md ">
-                                <img src="<%= product.images[0] %>" alt="Product" data-zoom="<%= product.images[0] %>"
-                                    class="mainImageContainer cursor-zoom-in w-full h-auto max-w-full max-h-[500px] mx-auto object-contain rounded-lg shadow-md p-10"
-                                    id="mainImage">
+                                        <div class="overflow-hidden rounded-lg shadow-md ">
+                                            <img src="<%= product.images[0] %>" alt="Product"
+                                                data-zoom="<%= product.images[0] %>"
+                                                class="mainImageContainer cursor-zoom-in w-full h-auto max-w-full max-h-[500px] mx-auto object-contain rounded-lg shadow-md p-10"
+                                                id="mainImage">
 
-                            </div>
-                            <p class="text-gray-500 text-center ">Roll over image to zoom in</p>
+                                        </div>
+                                        <p class="text-gray-500 text-center ">Roll over image to zoom in</p>
 
-                            <!-- Thumbnails for Changing Main Image -->
-                            <div class="flex gap-4 py-4 justify-center overflow-x-auto rounded-lg shadow-sm">
-                                <% product.images.forEach((image, index)=> { %>
-                                    <img src="<%= product.images[index] %>" alt="Thumbnail"
-                                        class="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                                        onclick="changeImage('<%= product.images[index] %>')">
-                                    <% }) %>
-                            </div>
+                                        <!-- Thumbnails for Changing Main Image -->
+                                        <div
+                                            class="flex gap-4 py-4 justify-center overflow-x-auto rounded-lg shadow-sm">
+                                            <% product.images.forEach((image, index)=> { %>
+                                                <img src="<%= product.images[index] %>" alt="Thumbnail"
+                                                    class="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
+                                                    onclick="changeImage('<%= product.images[index] %>')">
+                                                <% }) %>
+                                        </div>
                         </div>
 
                         <% } %>
@@ -147,8 +149,8 @@
                                             </svg>
                                             <span class="ml-2 text-gray-600">4.5 (120 reviews)</span>
                                         </div>
-                                         <!-- Find first available variant const  -->
-                                        <%   firstAvailableVariant=product.variants.find(variant=>
+                                        <!-- Find first available variant const  -->
+                                        <% firstAvailableVariant=product.variants.find(variant=>
                                             variant.status === 'active' && variant.stock > 0
                                             ) || product.variants.find(variant => variant.status === 'active') || null;
 
@@ -180,23 +182,27 @@
                                     <span class="text-gray-500 line-through" id="variantPrice">₹<%=(product.price +
                                             firstAvailableVariant.additionalPrice).toLocaleString("en-IN") %></span>
 
-                                <div class="flex items-center mt-2">
+                                    <div class="flex items-center mt-2">
                                         <!-- Existing discount -->
-                                        <span class=" font-semibold text-lg <%=hasAdditionalDiscount ? 'text-red-500' : 'text-indigo-600' %> ">
+                                        <span
+                                            class=" font-semibold text-lg <%=hasAdditionalDiscount ? 'text-red-500' : 'text-indigo-600' %> ">
                                             <%= product.discount %>% off
                                         </span>
-                                        
+
                                         <!-- Special offer badge -->
                                         <% if (hasAdditionalDiscount) { %>
                                             <div class="ml-4 inline-flex items-center">
-                                                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold flex items-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                <span
+                                                    class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-bold flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                                     </svg>
                                                     Special Deal for <%= product.category %>
                                                 </span>
                                             </div>
-                                        <% } %>
+                                            <% } %>
                                     </div>
                                 </div>
 
@@ -231,14 +237,14 @@
                                 <!-- storage -->
 
                                 <div class="block w-full mb-10">
-                                    <% if(storages && storages.length> 0) {%>
+                                    <% if(storages && storages.length> 0) { %>
                                         <p class="font-medium text-lg leading-8 text-gray-900 mb-4">Size</p>
-                                        <div class="grid grid-cols-2 min-[400px]:grid-cols-4 gap-3">
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
                                             <% // find the first in-stock variant
                                                 firstInStockIndex=storages.findIndex(storage=> storage.stock > 0);
                                                 storages.forEach((storage, index) => {
                                                 %>
-                                                <label class="relative">
+                                                <label class="relative flex flex-col">
                                                     <input type="radio" name="storage" <%=storage.stock===0 ? 'disabled'
                                                         : '' %>
                                                     value="<%= storage.storage + storage.storageUnit %>"
@@ -247,39 +253,44 @@
                                                             data-price="<%= storage.additionalPrice %>"
                                                                 data-stock="<%= storage.stock %>"
                                                                     data-discount="<%= product.discount %>"
-                                                                        data-ogPrice="<%= product.price %>">
+                                                                        data-ogPrice="<%= product.price %>"
+                                                                            >
 
-                                                                            <p class="peer-checked:text-gray-900 peer-checked:border-black peer-checked:bg-gray-50
-                                                         text-gray-400 rounded-lg border border-gray-400 px-6 py-2 
-                                                         font-normal font-inter cursor-pointer transition-all">
-                                                                                <%= storage.storage %>
-                                                                                    <%= storage.storageUnit %>
-                                                                                        <span class="block text-sm">
-                                                                                            <%=Math.floor(((product.price
-                                                                                                +
-                                                                                                storage.additionalPrice)
-                                                                                                * (1 - product.discount
-                                                                                                /
-                                                                                                100))).toLocaleString('en-IN',{style:'currency',currency:'INR'})
-                                                                                                %>
-                                                                                        </span>
-                                                                            </p>
+                                                                            <div class="peer-checked:text-gray-900 peer-checked:border-black peer-checked:bg-gray-50
+               text-gray-400 rounded-lg border border-gray-400 px-3 sm:px-4 md:px-6 py-2 
+               font-normal font-inter cursor-pointer transition-all h-full flex flex-col justify-center">
+                                                                                <span
+                                                                                    class="text-center text-sm sm:text-base">
+                                                                                    <%= storage.storage %>
+                                                                                        <%= storage.storageUnit %>
+                                                                                </span>
+                                                                                <span
+                                                                                    class="block text-xs sm:text-sm text-center mt-1">
+                                                                                    <%= Math.floor(((product.price +
+                                                                                        storage.additionalPrice) * (1 -
+                                                                                        product.discount /
+                                                                                        100))).toLocaleString('en-IN',
+                                                                                        {style:'currency',
+                                                                                        currency:'INR'}) %>
+                                                                                </span>
+                                                                            </div>
 
                                                                             <% if (storage.stock < 5 && storage.stock>
                                                                                 0) { %>
                                                                                 <span
-                                                                                    class="absolute -top-4 right-0 text-xs text-orange-500 pt-6 p-2">Only
-                                                                                    Few Left!</span>
+                                                                                    class="absolute -top-2 right-0 text-xs text-orange-500 pt-2 p-2 rounded-md">
+                                                                                    Only <%= storage.stock %> Left!
+                                                                                </span>
                                                                                 <% } else if(storage.stock===0) { %>
                                                                                     <span
-                                                                                        class="absolute -top-2 right-0 text-xs text-red-400 pt-4 p-2">Out
-                                                                                        of Stock</span>
+                                                                                        class="absolute -top-2 right-0 text-xs text-red-400 pt-2 p-2 rounded-md">
+                                                                                        Out of Stock
+                                                                                    </span>
                                                                                     <% } %>
                                                 </label>
                                                 <% }) %>
                                         </div>
                                 </div>
-
                                 <% } %>
 
                                     <% if(product.totalStock) { %>
@@ -288,7 +299,7 @@
                                                 <% if(isLoggedIn) { %>
                                                     <% if(product.inCart) { %>
                                                         <!-- Go to Cart Button when product is in cart -->
-                                                        
+
                                                         <a href="/user/cart"
                                                             class="group py-3 px-5 border border-indigo-600 rounded-lg bg-indigo-50 text-indigo-700 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:shadow-indigo-300 hover:bg-indigo-100">
                                                             <svg class="stroke-indigo-600 transition-all duration-500 group-hover:stroke-indigo-700"
@@ -381,8 +392,10 @@
                                                         <div class="w-full">
                                                             <span
                                                                 class="text-neutral-500 text-sm font-medium font-['Inter']">
-                                                                <% if ((product.price+firstAvailableVariant.additionalPrice) * (1 -
-                                                                product.discount/100) > 10000) { %> Eligible for free
+                                                                <% if
+                                                                    ((product.price+firstAvailableVariant.additionalPrice)
+                                                                    * (1 - product.discount/100)> 10000) { %> Eligible
+                                                                    for free
                                                                     delivery <% } else { %>
                                                                         Delivery
                                                                         Charge
@@ -394,7 +407,7 @@
 
 
 
-                                                    <div class="grow  h-14 rounded-lg  justify-center gap-4 flex ">
+                                                    <div class="grow h-14 rounded-lg  justify-center gap-4 flex ">
 
                                                         <div
                                                             class="w-[183px] h-[55px] rounded-lg justify-start items-center gap-4 flex ">
@@ -541,80 +554,115 @@
             <% relatedProducts.forEach(product=> { %>
                 <!-- card -->
                 <div
-                                            class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
-                                            <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl "
-                                                href="/user/product/<%= product._id %>">
-                                                <img class="max-h-50 w-[80%] mx-auto object-contain lazyload"
-                                                    src="<%= product.images[0] %>" alt="product image" />
+                    class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
+                    <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl "
+                        href="/user/product/<%= product._id %>">
+                        <img class="max-h-50 w-[80%] mx-auto object-contain lazyload" src="<%= product.images[0] %>"
+                            alt="product image" />
 
-                                                    <!-- Regular Discount Label -->
-                                                <span class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
-                                                    <%= product.discount %> % OFF
-                                                </span>
-                                                   <!-- Special Discount Label - Show if special discount exists -->
-                                                   <% if (product.hasCategoryOffer) { %>
-                                                    <div class="absolute bottom-0 left-0 right-0 bg-red-500 text-white py-1 px-3 text-center transform rotate-0">
-                                                        <span class="text-sm font-semibold ">Special offer for <%=product.category%></span>
-                                                            <span class="block text-xs font-medium">Extra <%= product.effectiveDiscount-product.discount%>% OFF</span>  
-                                                    </div>
-                                                <% } %>
-                                            </a>
-                                            <% if(isLoggedIn) { %>
-                                                <button
-                                                    class="wishlist-btn absolute top-4 right-4 rounded-full p-3 shadow-md bg-white flex mx-auto transition-colors duration-200 <%- product.isWishlisted ? 'text-red-500' : 'text-gray-600' %>"
-                                                    data-product-id="<%= product._id %>" data-is-wishlisted="<%= product.isWishlisted %>"
-                                                    onclick="toggleWishlist(this)">
-                                                    <i
-                                                        class="<%- product.isWishlisted ? 'fa-solid' : 'fa-regular' %> fa-heart h-6 w-6 heart-icon"></i>
-                                                </button>
-                                                <% }else{ %>
-                                                    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md"
-                                                        onclick="redirectToLogin()">
-                                                        <img src="/Icons/Wishlist.svg" class="opacity-20"></a>
-                                                    </button>
-                                                    <% } %>
-                                            <div class="mt-4 px-5 pb-5">
-                                                <a href="/user/product/<%= product._id %>">
-                                                    <h5
-                                                        class="text-sm md:text-md font-medium tracking-tight text-slate-900 h-10 overflow-hidden">
-                                                        <%= product.productName %>
-                                                    </h5>
-                                                </a>
-                                                <div class="mt-2 mb-5 flex items-center justify-between">
-                                                    <p>
-                                                        <span
-                                                            class="text-sm lg:text-lg md:text-md font-bold text-slate-900">₹
-                                                            <%= product.discountedPrice.toLocaleString("en-IN") %>
-                                                        </span>
-                                                        <span
-                                                            class="text-xs lg:text-xs md:text-xs text-gray-600 line-through ml-2">
-                                                            ₹<%= product.price.toLocaleString("en-IN") %>
-                                                        </span>
-                                                    </p>
-                                                    <div
-                                                        class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
-                                                        <span>
-                                                            <svg aria-hidden="true" class="h-5 w-5 text-black"
-                                                                fill="Current" viewBox="0 0 20 20"
-                                                                xmlns="http://www.w3.org/2000/svg">
-                                                                <path
-                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                                                </path>
+                        <!-- Regular Discount Label -->
+                        <span
+                            class="absolute top-0 left-0 m-2 rounded-full bg-yellow-300 px-2 text-center text-sm font-medium text-white">
+                            <%= product.discount %> % OFF
+                        </span>
+                        <!-- Special Discount Label - Show if special discount exists -->
+                        <% if (product.hasCategoryOffer) { %>
+                            <div
+                                class="absolute bottom-0 left-0 right-0 bg-red-500 text-white py-1 px-3 text-center transform rotate-0">
+                                <span class="text-sm font-semibold ">Special offer for <%=product.category%></span>
+                                <span class="block text-xs font-medium">Extra <%=
+                                        product.effectiveDiscount-product.discount%>% OFF</span>
+                            </div>
+                            <% } %>
+                    </a>
+                    <% if(isLoggedIn) { %>
+                        <button
+                            class="wishlist-btn absolute top-4 right-4 rounded-full p-3 shadow-md bg-white flex mx-auto transition-colors duration-200 <%- product.isWishlisted ? 'text-red-500' : 'text-gray-600' %>"
+                            data-product-id="<%= product._id %>" data-is-wishlisted="<%= product.isWishlisted %>"
+                            onclick="toggleWishlist(this)">
+                            <i
+                                class="<%- product.isWishlisted ? 'fa-solid' : 'fa-regular' %> fa-heart h-6 w-6 heart-icon"></i>
+                        </button>
+                        <% }else{ %>
+                            <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md"
+                                onclick="redirectToLogin()">
+                                <img src="/Icons/Wishlist.svg" class="opacity-20"></a>
+                            </button>
+                            <% } %>
+                                <div class="mt-4 px-5 pb-5">
+                                    <a href="/user/product/<%= product._id %>">
+                                        <h5
+                                            class="text-sm md:text-md font-medium tracking-tight text-slate-900 h-10 overflow-hidden">
+                                            <%= product.productName %>
+                                        </h5>
+                                    </a>
+                                    <div class="mt-2 mb-5 flex items-center justify-between">
+                                        <p>
+                                            <span class="text-sm lg:text-lg md:text-md font-bold text-slate-900">₹
+                                                <%= product.discountedPrice.toLocaleString("en-IN") %>
+                                            </span>
+                                            <span class="text-xs lg:text-xs md:text-xs text-gray-600 line-through ml-2">
+                                                ₹<%= product.price.toLocaleString("en-IN") %>
+                                            </span>
+                                        </p>
+                                        <div
+                                            class="mr-2 ml-3 rounded bg-purple-200 px-2.5 py-0.5 text-sm font-semibold flex">
+                                            <span>
+                                                <svg aria-hidden="true" class="h-5 w-5 text-black" fill="Current"
+                                                    viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                                    </path>
+                                                </svg>
+                                            </span>
+                                            5.0
+                                        </div>
+                                    </div>
+                                    <div class="button-container">
+                                        <% if(product.totalStock<1) { %>
+                                            <button disabled
+                                                class="w-full flex items-center justify-center rounded-md bg-gray-300 px-5 py-2.5 text-center text-sm font-medium text-gray-600 cursor-not-allowed">
+                                                Out of Stock
+                                            </button>
+                                            <% } else if(isLoggedIn) { %>
+                                                <% if(product.inCart) { %>
+                                                    <a href="/user/cart"
+                                                        class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                            stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                        </svg>
+                                                        Go to Cart
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1)">
+                                                            <path
+                                                                d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
+                                                            </path>
+                                                            <path
+                                                                d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
+                                                            </path>
+                                                        </svg>
+                                                    </a>
+                                                    <% } else { %>
+                                                        <button data-product_id="<%= product._id %>"
+                                                            onclick="addToCart(this)"
+                                                            class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                                             </svg>
-                                                        </span>
-                                                        5.0
-                                                    </div>
-                                                </div>
-                                                <div class="button-container">
-                                                    <% if(product.totalStock<1) { %>
-                                                        <button disabled
-                                                            class="w-full flex items-center justify-center rounded-md bg-gray-300 px-5 py-2.5 text-center text-sm font-medium text-gray-600 cursor-not-allowed">
-                                                            Out of Stock
+                                                            Add to Cart
                                                         </button>
-                                                        <% } else if(isLoggedIn) { %>
-                                                            <% if(product.inCart) { %>
-                                                                <a href="/user/cart"
-                                                                    class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+
+                                                        <% } %>
+                                                            <% } else { %>
+                                                                <button onclick="redirectToLogin()"
+                                                                    title="⚠️ Please log in to add items"
+                                                                    class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
                                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                                         class="mr-2 h-6 w-6" fill="none"
                                                                         viewBox="0 0 24 24" stroke="currentColor"
@@ -623,54 +671,13 @@
                                                                             stroke-linejoin="round"
                                                                             d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                                                     </svg>
-                                                                    Go to Cart
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                                        height="24" viewBox="0 0 24 24"
-                                                                        style="fill: rgba(255, 255, 255, 1)">
-                                                                        <path
-                                                                            d="M10.296 7.71 14.621 12l-4.325 4.29 1.408 1.42L17.461 12l-5.757-5.71z">
-                                                                        </path>
-                                                                        <path
-                                                                            d="M6.704 6.29 5.296 7.71 9.621 12l-4.325 4.29 1.408 1.42L12.461 12z">
-                                                                        </path>
-                                                                    </svg>
-                                                                </a>
-                                                                <% } else { %>
-                                                                    <button data-product_id="<%= product._id %>"
-                                                                        onclick="addToCart(this)"
-                                                                        class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            class="mr-2 h-6 w-6" fill="none"
-                                                                            viewBox="0 0 24 24" stroke="currentColor"
-                                                                            stroke-width="2">
-                                                                            <path stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                                        </svg>
-                                                                        Add to Cart
-                                                                    </button>
+                                                                    Add to Cart
+                                                                </button>
+                                                                <% } %>
 
-                                                                    <% } %>
-                                                                        <% } else { %>
-                                                                            <button onclick="redirectToLogin()"
-                                                                                title="⚠️ Please log in to add items"
-                                                                                class="w-full flex items-center justify-center rounded-md bg-button-color px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                    class="mr-2 h-6 w-6" fill="none"
-                                                                                    viewBox="0 0 24 24"
-                                                                                    stroke="currentColor"
-                                                                                    stroke-width="2">
-                                                                                    <path stroke-linecap="round"
-                                                                                        stroke-linejoin="round"
-                                                                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                                                </svg>
-                                                                                Add to Cart
-                                                                            </button>
-                                                                            <% } %>
-
-                                                </div>
-                                            </div>
-                                        </div>
+                                    </div>
+                                </div>
+                </div>
 
                 <% }) %>
         </div>

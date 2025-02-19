@@ -1,12 +1,13 @@
 // public/js/search.js
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.querySelector('.searchInput');
-    const liveResults = document.getElementById('liveSearchResults');
+    const searchInput = document.querySelectorAll('.searchInput');
+    const liveResults = document.querySelector('.liveSearchResults');
   
     if (searchInput && liveResults) {
       let timeout;
       
-      searchInput.addEventListener('input', async (e) => {
+      searchInput.forEach(input=>
+        input.addEventListener('input', async (e) => {
         const query = e.target.value.trim();
         
         if (query.length < 2) {
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const response = await fetch(`/user/api/search?q=${encodeURIComponent(query)}`);
             const data = await response.json();
-            console.log(data)
+
             // Handle direct redirect for exact match
             if (data.redirect) {
               window.location.href = data.redirect;
@@ -102,9 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
           liveResults.classList.remove('hidden');
           }
         }, 300);
-      });
+      }));
       
-      searchInput.addEventListener('keydown', (e) => {
+      searchInput.forEach(input=>
+        input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault(); // Prevent form submission
   
@@ -114,11 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = firstResult.href; // Navigate to the first result
           }
         }
-      });
+      }));
   
       // Hide results when clicking outside
       document.addEventListener('click', (e) => {
-        if (!e.target.closest('#searchInput, #liveSearchResults')) {
+        if (!e.target.closest('.searchInput, .liveSearchResults')) {
           liveResults.classList.add('hidden');
         }
       });

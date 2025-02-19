@@ -150,7 +150,7 @@ async function downloadInvoice(orderId) {
     <div style="font-family: Arial, sans-serif; padding: 40px;">
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 20px;">
-            <img src="/Images/LOGO.png" alt="Company Logo" style="width: 150px; height: auto;">
+            <img src="/Images/lOGO.png" alt="Company Logo" style="width: 150px; height: auto;">
             <h1 style="font-size: 24px; margin: 10px 0;">Invoice</h1>
         </div>
 
