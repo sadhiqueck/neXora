@@ -69,7 +69,9 @@
                                 </button>
                             </div>
                             <!-- Modal body -->
-                            <form class="p-4 md:p-5" id="editUserForm" action="/admin/add-category" method="post">
+                            <form class="p-4 md:p-5 categoryForm" id="addCategoryForm" action="/admin/add-category"
+                                method="post">
+                                <p class="errorMessage p-4 text-red-500"></p>
                                 <input type="hidden" id="category_add_modal">
                                 <div class="grid gap-4 mb-4 grid-cols-2">
                                     <div class="col-span-2">
@@ -110,44 +112,45 @@
 
         <!-- page content -->
         <div
-        class=" px-6 py-5 flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 ">
-        <div>
-          <form action="/admin/category" method="get" id="sort-form">
+            class=" px-6 py-5 flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 ">
+            <div>
+                <form action="/admin/category" method="get" id="sort-form">
 
-            <label for="table-search-category" class="sr-only">Search</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                </svg>
-              </div>
-              <input type="text" id="table-search" name="search" value="<%=searchQuery%>"
-                class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Search category">
-                <p id="error-message"></p>
+                    <label for="table-search-category" class="sr-only">Search</label>
+                    <div class="relative">
+                        <div
+                            class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="table-search" name="search" value="<%=searchQuery%>"
+                            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            placeholder="Search category">
+                        <p id="error-message"></p>
+                    </div>
+
             </div>
 
+            <!--  sort -->
+            <div class="relative inline-block">
+                <select id="categorySort" name="sort"
+                    class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-8 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="" disabled selected>Sort Category</option>
+                    <optgroup label="Status">
+                        <option value="active" <%=sort==='active' ? 'selected' : '' %>>Active Category</option>
+                        <option value="deleted" <%=sort==='deleted' ? 'selected' : '' %>>Deleted Category</option>
+                    </optgroup>
+                    <optgroup label="Date">
+                        <option value="newest" <%=sort==='newest' ? 'selected' : '' %>>Newest First</option>
+                        <option value="oldest" <%=sort==='oldest' ? 'selected' : '' %>>Oldest First</option>
+                    </optgroup>
+                </select>
+                </form>
+            </div>
         </div>
-
-        <!--  sort -->
-        <div class="relative inline-block">
-          <select id="categorySort" name="sort"
-            class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-8 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="" disabled selected>Sort Category</option>
-            <optgroup label="Status">
-              <option value="active" <%= sort === 'active' ? 'selected' : '' %>>Active Category</option>
-              <option value="deleted" <%= sort === 'deleted' ? 'selected' : '' %>>Deleted Category</option>
-            </optgroup>
-            <optgroup label="Date">
-              <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest First</option>
-              <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
-            </optgroup>
-          </select>
-          </form>
-        </div>
-      </div>
         <div class=" bg-white rounded-lg shadow overflow-x-auto">
 
             <!-- table -->
@@ -208,6 +211,7 @@
                                             <span class="sr-only">Close modal</span>
                                         </button>
                                     </div>
+                                    <p class="errorMessage p-4 text-red-500"></p>
                                     <!-- Modal body -->
                                     <div class="p-4 md:p-5">
                                         <div class="grid gap-4 mb-4 grid-cols-2">
@@ -341,9 +345,11 @@
                                                     <span class="sr-only">Close modal</span>
                                                 </button>
                                             </div>
+                                 
                                             <!-- Modal body -->
-                                            <form class="p-4 md:p-5" id="editUserForm" action="/admin/edit-category"
-                                                method="post">
+                                            <form class="p-4 md:p-5 categoryForm" id="editUserForm"
+                                                action="/admin/edit-category" method="post">
+                                                <p class="errorMessage p-4 text-red-500"></p>
                                                 <input type="hidden" id="editcategoryId" name="id"
                                                     value="<%= category._id %>">
                                                 <div class="grid gap-4 mb-4 grid-cols-2">
@@ -413,45 +419,95 @@
             </table>
         </div>
 
-    
-            
-      <!-- Pagination -->
-      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <div>
-            <p class="text-sm text-gray-700">
-                Showing
-                <span class="font-medium"><%= pagination.startIndex %></span>
-                to
-                <span class="font-medium"><%= pagination.endIndex %></span>
-                of
-                <span class="font-medium"><%= pagination.totalcategory%></span>
-                Categories 
-            </p>
-        </div>
-        <div class="mt-2 flex justify-end">
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <% if (pagination.hasPrevPage) { %>
-                    <a href="?page=<%= pagination.currentPage - 1 %>" 
-                       class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">
-                        Previous
-                    </a>
-                <% } %>
 
-                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-                <a href="?page=<%= i %>" class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>"><%= i %></a>
-                <% }%>
 
-                <% if (pagination.hasNextPage) { %>
-                    <a href="?page=<%= pagination.currentPage + 1 %>" 
-                        class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
-                <% } %>
-            </nav>
+        <!-- Pagination -->
+        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700">
+                    Showing
+                    <span class="font-medium">
+                        <%= pagination.startIndex %>
+                    </span>
+                    to
+                    <span class="font-medium">
+                        <%= pagination.endIndex %>
+                    </span>
+                    of
+                    <span class="font-medium">
+                        <%= pagination.totalcategory%>
+                    </span>
+                    Categories
+                </p>
+            </div>
+            <div class="mt-2 flex justify-end">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                    <% if (pagination.hasPrevPage) { %>
+                        <a href="?page=<%= pagination.currentPage - 1 %>"
+                            class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">
+                            Previous
+                        </a>
+                        <% } %>
+
+                            <% for (let i=1; i <=pagination.totalPages; i++) { %>
+                                <a href="?page=<%= i %>"
+                                    class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>">
+                                    <%= i %>
+                                </a>
+                                <% }%>
+
+                                    <% if (pagination.hasNextPage) { %>
+                                        <a href="?page=<%= pagination.currentPage + 1 %>"
+                                            class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
+                                        <% } %>
+                </nav>
+            </div>
         </div>
-    </div>
     </div>
 
 
     <script>
+
+        const forms = document.querySelectorAll('.categoryForm');
+        forms.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const categoryName= form.querySelector('input[name="categoryName"]').value;
+                const description = form.querySelector('textarea[name="description"]').value;
+
+                if(!categoryName.trim() || !description.trim()) {
+                    notyf.error('Please fill all the fields');
+                    form.querySelectorAll('input, textarea').forEach(input => {
+                        if(!input.value.trim()) {
+                            input.classList.add('border-red-500');
+                            form.querySelector('.errorMessage').textContent = 'Please fill all the fields';
+                        }
+                    })
+                    return;
+                }
+                else if(categoryName.length < 3) {
+                    notyf.error('Category name should be atleast 3 characters long');
+                    form.querySelector('.errorMessage').textContent = 'Category name should be atleast 3 characters long';
+                    form.querySelector('input[name="categoryName"]').classList.add('border-red-500');
+                    return;
+                }
+                else if(/\d/.test(categoryName)) {
+                    notyf.error('Category name should not contain numbers');
+                    form.querySelector('.errorMessage').textContent = 'Category name should not contain numbers';
+                    form.querySelector('input[name="categoryName"]').classList.add('border-red-500');
+                    return;
+                }
+                else if(description.length < 3) {
+                    notyf.error('Category description should be atleast 3 characters long');
+                    form.querySelector('.errorMessage').textContent = 'Category description should be atleast 3 characters long';
+                    form.querySelector('textarea[name="description"]').classList.add('border-red-500');
+                    return;
+                }else{
+                    form.submit();
+                }
+            })
+        })
+
         function deleteCategory(categoryId) {
             window.location.href = `/admin/delete-category/${categoryId}`;
 
@@ -463,24 +519,24 @@
         }
 
         const form = document.getElementById('sort-form');
-    const sort= document.querySelector('select');
-    const searchInput = document.getElementById('table-search');
-    
-    sort.addEventListener('change',()=>{
-      form.submit();
-    })
+        const sort = document.querySelector('select');
+        const searchInput = document.getElementById('table-search');
 
-    searchInput.addEventListener("input", function () {
-        const regex = /^[A-Za-z0-9 ]*$/; 
-        const errorMessage = document.getElementById("error-message");
+        sort.addEventListener('change', () => {
+            form.submit();
+        })
 
-        if (!regex.test(this.value)) {
-            errorMessage.classList.remove("hidden");
-            this.value = this.value.replace(/[^A-Za-z0-9 ]/g, "");
-        } else {
-            errorMessage.classList.add("hidden");
-        }
-    });
+        searchInput.addEventListener("input", function () {
+            const regex = /^[A-Za-z0-9 ]*$/;
+            const errorMessage = document.getElementById("error-message");
+
+            if (!regex.test(this.value)) {
+                errorMessage.classList.remove("hidden");
+                this.value = this.value.replace(/[^A-Za-z0-9 ]/g, "");
+            } else {
+                errorMessage.classList.add("hidden");
+            }
+        });
 
     </script>
 

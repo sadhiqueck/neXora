@@ -194,16 +194,18 @@ const applicableTo = document.getElementById('applicableTo');
     const categories = document.getElementById('categories').selectedOptions;
     const isActive = document.getElementById('isActive').checked;
 
-
     let errors = [];
 
-    
     if (!code) {
       errors.push('Coupon code is required.');  
     }
 
     if (isNaN(value) || value <= 0) {
       errors.push('Discount value must be a positive number.');
+    }
+
+    if (discountType === 'percentage' && value > 100) {
+      errors.push('Discount value cannot be more than 100% for percentage discount type.');
     }
 
     if (maxDiscount && (isNaN(maxDiscount) || maxDiscount <= 0)) {
@@ -222,7 +224,7 @@ const applicableTo = document.getElementById('applicableTo');
       errors.push('Usage limit must be at least 1.');
     }
 
-    if (applicableTo==='specific'&& categories.length === 0) {
+    if (applicableTo === 'specific' && categories.length === 0) {
       errors.push('At least one category must be selected.');
     }
 
@@ -231,7 +233,7 @@ const applicableTo = document.getElementById('applicableTo');
     } else {
       document.getElementById('couponForm').submit();
     }
-  }
+    }
 
   const form=  document.getElementById('couponForm')
   form.addEventListener('submit', validateCouponForm);

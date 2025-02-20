@@ -7,7 +7,7 @@ const Products = require('../../models/productModel')
 
 const loadCategories = async (req, res) => {
     try {
-        if (req.session.admin) {
+
 
             const { sort = '', search = '' } = req.query;
             const page = parseInt(req.query.page) || 1;
@@ -111,12 +111,7 @@ const loadCategories = async (req, res) => {
                     hasNextPage: page < totalPages,
                     hasPrevPage: page > 1
                 }
-            })
-        }
-        else {
-            return res.redirect('/admin/login')
-        }
-
+            });
     } catch (error) {
         console.log(error);
     }

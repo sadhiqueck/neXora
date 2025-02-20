@@ -18,7 +18,7 @@
             <div class="relative">
               <input type="number" name="referralBonus"
                 class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Enter referrer bonus amount" required />
+                placeholder="Enter referrer bonus amount" />
             </div>
             <p class="text-sm text-gray-500 mt-1">Current referrer bonus: <%=
                 referralOffers.referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%>
@@ -32,7 +32,7 @@
             <div class="relative">
               <input type="number" name="refereeBonus"
                 class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                placeholder="Enter referee bonus amount" required />
+                placeholder="Enter referee bonus amount" />
             </div>
             <p class="text-sm text-gray-500 mt-1">Current referee bonus: <%=
                 referralOffers.refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%>
@@ -65,8 +65,7 @@
           </label>
           <% if(categories){ %>
             <select name="category"
-              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              required>
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
               <option value="" disabled selected>Choose a category</option>
               <% categories?.forEach(category=> { %>
                 <% if (!categoryOffers?.some(offer=> offer?.categoryId._id.toString() === category._id.toString())) { %>
@@ -85,8 +84,7 @@
               Discount Type
             </label>
             <select name="discountType"
-              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              required>
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
               <option value="percentage">Percentage</option>
             </select>
           </div>
@@ -97,19 +95,18 @@
             </label>
             <input type="number" name="discountPercentage"
               class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Enter value" required min="1" />
+              placeholder="Enter value" min="1" />
           </div>
         </div>
 
 
-          <div >
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-              Expiry Date
-            </label>
-            <input type="date" name="expiryDate"
-              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              required />
-          </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Expiry Date
+          </label>
+          <input type="date" name="expiryDate"
+            class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
+        </div>
 
 
         <div>
@@ -157,7 +154,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <button class="text-purple-600 hover:text-purple-900 mr-2"
-                  onclick="openEditCategoryOfferModal('<%= JSON.stringify(offer) %>')" >Edit</button>
+                    onclick="openEditCategoryOfferModal('<%= JSON.stringify(offer) %>')">Edit</button>
                   <button class="text-red-600 hover:text-red-900"
                     onclick="deleteOffer('<%= offer._id %>')">Delete</button>
                 </td>
@@ -177,7 +174,8 @@
     <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50" onclick="closeEditCategoryOfferModal()"></div>
 
     <!-- Modal Content -->
-    <div class="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle">
+    <div
+      class="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle">
       <h3 class="text-lg font-medium leading-6 text-gray-900">Edit Category Offer</h3>
       <div class="mt-2">
         <form id="editCategoryOfferForm" class="space-y-4">
@@ -187,23 +185,15 @@
           <!-- Category (Disabled) -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <input
-              type="text"
-              id="editCategoryName"
-              class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
-              disabled
-            />
+            <input type="text" id="editCategoryName"
+              class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed" disabled />
           </div>
 
           <!-- Discount Type -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Discount Type</label>
-            <select
-              name="discountType"
-              id="editDiscountType"
-              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              required
-            >
+            <select name="discountType" id="editDiscountType"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
               <option value="percentage">Percentage</option>
             </select>
           </div>
@@ -211,42 +201,26 @@
           <!-- Discount Value -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Discount Value</label>
-            <input
-              type="number"
-              name="discountPercentage"
-              id="editDiscountPercentage"
+            <input type="number" name="discountPercentage" id="editDiscountPercentage"
               class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              placeholder="Enter value"
-              required
-              min="1"
-            />
+              placeholder="Enter value" min="1" />
           </div>
 
           <!-- Expiry Date -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-            <input
-              type="date"
-              name="expiryDate"
-              id="editExpiryDate"
-              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-              required
-            />
+            <input type="date" name="expiryDate" id="editExpiryDate"
+              class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500" />
           </div>
 
           <!-- Form Actions -->
           <div class="mt-6">
-            <button
-              type="submit"
-              class="flex-1 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors"
-            >
+            <button type="submit"
+              class="flex-1 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors">
               Update Offer
             </button>
-            <button
-              type="button"
-              onclick="closeEditCategoryOfferModal()"
-              class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors"
-            >
+            <button type="button" onclick="closeEditCategoryOfferModal()"
+              class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors">
               Cancel
             </button>
           </div>
@@ -272,6 +246,11 @@
     const referralBonus = formData.get('referralBonus');
     const refereeBonus = formData.get('refereeBonus');
 
+    if (!referralBonus || !refereeBonus) {
+      notyf.error('Please enter both bonuses')
+      return
+    }
+
     try {
       const response = await fetch('/admin/referral-bonus-change', {
         method: 'POST',
@@ -296,10 +275,31 @@
   async function handleCategoryOfferSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const categoryId = formData.get('category');
+    const discountPercentage = formData.get('discountPercentage');
+    const expiryDate = formData.get('expiryDate');
+
+    // Validation
+    if (!categoryId) {
+      notyf.error('Please select a category');
+      document.querySelector('select[name="category"]').classList.add('border-red-500');
+      return;
+    }
+    if (!discountPercentage ||discountPercentage <= 0 || discountPercentage > 100) {
+      notyf.error('Please enter a valid discount percentage');
+      document.querySelector('select[name="discountPercentage"]').classList.add('border-red-500');
+      return;
+    }
+    if (!expiryDate) {
+      notyf.error('Please select an expiry date');
+      document.querySelector('select[name="expiryDate"]').classList.add('border-red-500');
+      return;
+    }
+
     const offerData = {
-      categoryId: formData.get('category'),
-      discountPercentage: formData.get('discountPercentage'),
-      expiryDate: new Date(formData.get('expiryDate'))
+      categoryId,
+      discountPercentage,
+      expiryDate: new Date(expiryDate)
     };
 
     try {
@@ -307,72 +307,84 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ offerData })
-      })
+      });
       if (response.ok) {
-        notyf.success(`Category Offer Created`);
+        notyf.success('Category Offer Created');
         setTimeout(() => {
-          window.location.reload()
+          window.location.reload();
         }, 500);
       } else {
-        const data= await response.json()
-        notyf.error(data.error||'Failed to Add')
+        const data = await response.json();
+        notyf.error(data.error || 'Failed to Add');
       }
     } catch (error) {
-      notyf.error('something wrong')
-      console.log(error)
+      notyf.error('Something went wrong');
+      console.log(error);
     }
-
   }
 
 
-function openEditCategoryOfferModal(offerData) {
- const offer= JSON.parse(offerData)
-  document.getElementById('editOfferId').value = offer._id;
-  document.getElementById('editCategoryName').value = offer.categoryId?.categoryName;
-  document.getElementById('editDiscountType').value = 'percentage'; 
-  document.getElementById('editDiscountPercentage').value = offer.discountPercentage;
-  document.getElementById('editExpiryDate').value =  new Date(offer.expiryDate).toISOString().split('T')[0];
+  function openEditCategoryOfferModal(offerData) {
+    const offer = JSON.parse(offerData)
+    document.getElementById('editOfferId').value = offer._id;
+    document.getElementById('editCategoryName').value = offer.categoryId?.categoryName;
+    document.getElementById('editDiscountType').value = 'percentage';
+    document.getElementById('editDiscountPercentage').value = offer.discountPercentage;
+    document.getElementById('editExpiryDate').value = new Date(offer.expiryDate).toISOString().split('T')[0];
 
 
-  document.getElementById('editCategoryOfferModal').classList.remove('hidden');
-}
-
-
-function closeEditCategoryOfferModal() {
-  document.getElementById('editCategoryOfferModal').classList.add('hidden');
-}
-
-
-document.getElementById('editCategoryOfferForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const formData = new FormData(e.target);
-  const offerId = formData.get('offerId');
-  const updatedData = {
-    discountPercentage: formData.get('discountPercentage'),
-    expiryDate: new Date(formData.get('expiryDate'))
-  };
-
-  try {
-    const response = await fetch(`/admin/category-offer/${offerId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedData)
-    });
-
-    if (response.ok) {
-      notyf.success('Offer updated successfully');
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
-    } else {
-      notyf.error('Failed to update offer');
-    }
-  } catch (error) {
-    notyf.error('Something went wrong');
-    console.log(error);
+    document.getElementById('editCategoryOfferModal').classList.remove('hidden');
   }
-});
+
+
+  function closeEditCategoryOfferModal() {
+    document.getElementById('editCategoryOfferModal').classList.add('hidden');
+  }
+
+
+  document.getElementById('editCategoryOfferForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const offerId = formData.get('offerId');
+    const discountPercentage = formData.get('discountPercentage');
+    const expiryDate = formData.get('expiryDate');
+
+    // Validation
+    if (!discountPercentage || discountPercentage <= 0 || discountPercentage > 100) {
+      notyf.error('Please enter a valid discount percentage (1-100)');
+      return;
+    }
+    if (!expiryDate) {
+      notyf.error('Please select an expiry date');
+      return;
+    }
+
+    const updatedData = {
+      discountPercentage,
+      expiryDate: new Date(expiryDate)
+    };
+
+    try {
+      const response = await fetch(`/admin/category-offer/${offerId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData)
+      });
+
+      if (response.ok) {
+        notyf.success('Offer updated successfully');
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        notyf.error('Failed to update offer');
+      }
+    } catch (error) {
+      notyf.error('Something went wrong');
+      console.log(error);
+    }
+  });
 
   async function deleteOffer(offerId) {
     try {
