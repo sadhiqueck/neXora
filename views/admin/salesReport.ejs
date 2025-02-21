@@ -1,7 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 
 <body class="bg-gray-100">
     <div class=" mx-auto px-4 py-8">
@@ -53,7 +51,7 @@
                 </button>
             </div>
         </form>
-        <main class="container">
+        <main class="Ordercontainer">
             <!-- Metrics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <!-- Total Sales Card -->
@@ -185,7 +183,9 @@
             </div>
         </main>
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         // Revenue Trend Chart
         const revenueData = JSON.parse('<%- JSON.stringify(revenueData) %>')
@@ -225,7 +225,7 @@
         // pdf dopcwnload option
 
         document.getElementById('downloadPdf').addEventListener('click', () => {
-            const element = document.querySelector('.container');
+            const element = document.querySelector('.Ordercontainer');
             html2canvas(element).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); // A4 size page

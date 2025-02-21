@@ -106,8 +106,7 @@ const loadPaymentPage = async (req, res) => {
 
             const isCODAllowed = total < CODLimit ? true : false;
 
-            console.log(isCODAllowed)
-
+            // Fetch user wallet data
             const userWallet = await Wallet.findOne({ user: userId }) //wallet dat        
             //fetch coupons
             const coupons = await Coupons.find({ isActive: true });

@@ -47,7 +47,7 @@
 
                                             <!-- Quantity and Price Section -->
                                             <div
-                                                class="flex flex-row sm:flex-row items-center gap-4 sm:gap-6 pr-2 sm:pr-4 w-full sm:w-auto justify-between sm:justify-end">
+                                                class="parent flex flex-row sm:flex-row items-center gap-4 sm:gap-6 pr-2 sm:pr-4 w-full sm:w-auto justify-between sm:justify-end">
                                                 <div class="flex items-center border rounded-md px-2">
                                                     <button
                                                         class="px-2 text-lg font-bold decrease-btn disabled:opacity-40 disabled:cursor-not-allowed"
@@ -65,7 +65,7 @@
                                                 </div>
                                                 <div class="w-20">
                                                     <p
-                                                        class="text-base sm:text-lg text-end font-bold text-indigo-900 items-end price-area">
+                                                        class="text-base sm:text-lg text-end font-bold text-indigo-900 items-end price-area" data-ogprice="<%=item.productId.price+item.variantPrice%>">
                                                         <%=
                                                             (item.variantPrice*item.quantity).toLocaleString('en-IN',{style:"currency",currency:"INR"})%>
                                                     </p>
@@ -309,8 +309,7 @@
         });
     });
 
-    // updations
-
+    // updations in cart
     document.addEventListener('click', async (e) => {
         if (e.target.classList.contains('increase-btn') || e.target.classList.contains('decrease-btn')) {
             const productId = e.target.dataset.product_id;
@@ -321,47 +320,49 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productId, action })
                 })
+                const data = await response.json()
+                if (data.success) {
+                    const quantityElement = e.target.parentElement.querySelector('span')
+                    const priceElement = e.target.closest('.parent')?.querySelector('.price-area');
+                    const decreaseButton = e.target.parentElement.querySelector('.decrease-btn');
 
-                if (response.ok) {
-                    window.location.reload();
+                    quantityElement.textContent = data.newQuantity;
+                    priceElement.textContent = `${data.newPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" })}`;
 
-                    // const data = await response.json();
-                    // const quantityElement = e.target.parentElement.querySelector('span')
-                    // const priceElement = e.target.closest('.parent')?.querySelector('.price-area');
-                    // const decreaseButton = e.target.parentElement.querySelector('.decrease-btn');
-                    // quantityElement.textContent = data.newQuantity;
-                    // priceElement.textContent = `${data.newPrice.toLocaleString("en-IN",{style:"currency",currency:"INR"})}`;
 
-                    // if (data.newQuantity === 1) {
-                    //     decreaseButton.disabled = true;
-                    //     decreaseButton.style.opacity = "0.4";
-                    //     decreaseButton.style.cursor = "not-allowed";
-                    // } else {
-                    //     decreaseButton.disabled = false;
-                    //     decreaseButton.style.opacity = "1";
-                    //     decreaseButton.style.cursor = "pointer";
-                    // }
+                    if (data.newQuantity === 1) {
+                        decreaseButton.disabled = true;
+                        decreaseButton.style.opacity = "0.4";
+                        decreaseButton.style.cursor = "not-allowed";
+                    } else {
+                        decreaseButton.disabled = false;
+                        decreaseButton.style.opacity = "1";
+                        decreaseButton.style.cursor = "pointer";
+                    }
 
-                    // update cart count
-                    // const cartCount = document.querySelector('.cartBadge');
-                    // cartCount.textContent = data.totalItems;
-
+                    // calculate new summary
+                    const totalQuanities = Array.from(document.querySelectorAll('.quantity')).map(el => parseInt(el.textContent));
+                    const totalItems = totalQuanities.reduce((total, quantity) => total + quantity, 0);
+                    const allProductsPrice = Array.from(document.querySelectorAll('.price-area')).map(el => parseFloat(el.textContent.replace(/[^0-9.]/g, '')));
+                    const subTotal = allProductsPrice.reduce((total, price) => total + price, 0);
+                    const totalSavings = subTotal - data.originalTotal;
+                    const deliveryCharge = subTotal > 10000 ? 0 : 99;
+                    const tax = Math.round(subTotal * 0.18);
+                    const total = subTotal + deliveryCharge;
 
                     // Update Summary
-                    // console.log(data.orginalTotal)
-                    // document.querySelector('.totalItems').textContent = `Subtotal (${data.totalItems} items)`;
-                    // document.querySelector('.subTotal').textContent=`${data.orginalTotal.toLocaleString('en-IN',{style:"currency",currency:"INR"})}`;
-                    // document.querySelector('.discounts').textContent = `${data.totalSavings.toLocaleString('en-IN',{style:"currency",currency:"INR"})}`;
-                    // document.querySelector('.tax').textContent = `${data.tax.toLocaleString('en-IN',{style:"currency",currency:"INR"})}`;
-                    // document.querySelector('.total').textContent = `${data.total.toLocaleString('en-IN',{style:"currency",currency:"INR"})}`;
-                    // document.querySelector('.deliveryCharge').innerHTML = data.deliveryCharge === 0
-                    //     ? `<span class="line-through">₹280.00</span> <span class="text-green-600">Free Delivery</span>`
-                    //     : `₹${data.deliveryCharge}.00`;
+                    document.querySelector('.totalItems').textContent = `Subtotal (${totalItems} items)`;
+                    document.querySelector('.subTotal').textContent = `${data.originalTotal.toLocaleString('en-IN', { style: "currency", currency: "INR" })}`;
+                    document.querySelector('.discounts').textContent = `${totalSavings.toLocaleString('en-IN', { style: "currency", currency: "INR" })}`;
+                    document.querySelector('.tax').textContent = `${tax.toLocaleString('en-IN', { style: "currency", currency: "INR" })}`;
+                    document.querySelector('.total').textContent = `${total.toLocaleString('en-IN', { style: "currency", currency: "INR" })}`;
+                    document.querySelector('.deliveryCharge').innerHTML = deliveryCharge === 0
+                        ? `<span class="line-through">₹99.00</span> <span class="text-green-600">Free Delivery</span>`
+                        : `₹${data.deliveryCharge}.00`;
 
                 } else {
-                    const errorData = await response.json();
-                    notyf.error(errorData.message)
-                    console.log(errorData)
+                    const errorData = data.message || "Failed to update cart";
+                    notyf.error(errorData)
                     const decreaseBtn = e.target.parentElement.querySelector('button')
 
                 }

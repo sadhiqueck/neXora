@@ -50,6 +50,7 @@
                 <!-- active -->
                 <div class="w-30 pl-10 flex space-x-4">
                     <!-- wishlist -->
+                    <% if(title !=='Wishlist'){ %>
                     <div>
                         <a href="/user/wishlist">
                             <button class="relative"> <img src="/Icons/Wishlist.svg" alt="">
@@ -60,7 +61,9 @@
                             </button>
                         </a>
                     </div>
+                    <% } %>
                     <!-- cart -->
+                     <% if(title !=='Cart'){ %>
                     <div>
                         <a href="/user/cart">
                             <button class="relative"> <img src="/Icons/Cart.svg" alt="">
@@ -71,6 +74,7 @@
                             </button>
                         </a>
                     </div>
+                    <% } %>
 
                     <!-- user button -->
                     <div class="relative ml-3 ">

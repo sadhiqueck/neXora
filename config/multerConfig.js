@@ -88,13 +88,7 @@ module.exports = {
                             success: false,
                             message: `File size should not exceed ${maxFileSize / (1024 * 1024)}MB`
                         });
-                    }
-                    // if (err.code === 'LIMIT_FILE_COUNT') {
-                    //     return res.status(400).json({
-                    //         success: false,
-                    //         message: 'Maximum 4 images allowed'
-                    //     });
-                    // }    
+                    } 
                     return res.status(400).json({
                         success: false,
                         message: err.message

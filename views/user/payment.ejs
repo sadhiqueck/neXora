@@ -83,7 +83,7 @@
                         <h2 class="text-lg font-semibold mb-4">Payment Method</h2>
                         <div class="space-y-4">
                             <!-- Cash on Delivery Option -->
-                            <label class="block cursor-pointer" >
+                            <label class="block  <%= isCODAllowed ? 'cursor-pointer' : 'cursor-not-allowed' %>" >
                                 <input type="radio" name="payment" class="hidden peer" value="COD" <%= isCODAllowed ? '' : 'disabled' %>>
                                 <div
                                     class="p-6 rounded-xl border-2  <%= !isCODAllowed ?  'opacity-75 bg-gray-100': '' %> peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-200 transition-all">
@@ -128,8 +128,8 @@
                             </label>
 
                             <!-- Wallet Option -->
-                            <label class="block cursor-pointer">
-                                <input type="radio" name="payment" class="hidden peer" value="Wallet">
+                            <label class="block cursor-not-allowed">
+                                <input type="radio" name="payment" class="hidden peer" value="Wallet" disabled>
                                 <div
                                     class="p-6 rounded-xl border-2 peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-200 transition-all">
                                     <div class="flex items-center gap-4">
@@ -147,8 +147,9 @@
                                                     userWallet?.balance.toLocaleString('en-IN',{style:'currency',currency:"INR"})
                                                     :'₹0.00' %>
                                             </p>
+                                            <p class="text-yellow-400 text-xs ">This Payment Option Temporarily not available⚠️</p>
                                         </div>
-                                    </div>
+                                    </div>  
                                 </div>
                             </label>
                         </div>

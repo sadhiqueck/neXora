@@ -11,7 +11,7 @@ const loadCart = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const cart = await cartDb.findOne({ userId }).populate('products.productId');
-        let deliveryChargeLimit=10000
+        let deliveryChargeLimit = 10000
 
         if (!cart || cart.products.length === 0) {
             return res.render('user/cart', {
@@ -41,40 +41,40 @@ const loadCart = async (req, res) => {
 
         const cartWithDetails = cart.products.map((item) => {
             const product = item.productId;
-        
-            
+
+
             if (product.isDeleted) {
                 cartUpdated = true;
                 return null;
             }
-    
+
             const matchingVariants = product.variants.filter(v => {
                 const colorMatch = v.color === item.variantDetails.color;
-        
+
                 if (item.variantDetails.storage) {
                     return colorMatch &&
                         v.storage !== null &&
                         v.storageUnit !== 'NIL' &&
                         `${v.storage}${v.storageUnit}` === item.variantDetails.storage;
                 }
-        
+
                 return colorMatch && (v.storage === null || v.storageUnit === 'NIL');
             });
-        
-  
+
+
             const selectedVariant = matchingVariants[0];
-        
+
             const priceInfo = calculateEffectivePrice(product, categoryOffers, matchingVariants);
-        
+
             const isOutOfStock = !selectedVariant || selectedVariant.stock < 1;
-        
+
             const adjustedQuantity = isOutOfStock ? 0 : Math.min(item.quantity, selectedVariant.stock);
-        
+
             if (adjustedQuantity !== item.quantity) {
                 cartUpdated = true;
                 item.quantity = adjustedQuantity;
             }
-        
+
             return {
                 ...item.toObject(),
                 variantPrice: priceInfo.discountedPrice,
@@ -104,9 +104,9 @@ const loadCart = async (req, res) => {
 
         const updatedSuggestedProducts = suggestedProducts.map(product => {
             const productObj = product;
-            const variant=productObj.variants.filter(variant =>
+            const variant = productObj.variants.filter(variant =>
                 variant.status === 'active' && variant.stock > 0)
-            const priceInfo = calculateEffectivePrice(product, categoryOffers,variant);
+            const priceInfo = calculateEffectivePrice(product, categoryOffers, variant);
 
             return {
                 ...productObj,
@@ -146,7 +146,7 @@ const loadCart = async (req, res) => {
         const totalItems = validProducts.reduce((total, product) => total + product.quantity, 0);
         const subTotal = validProducts.reduce((total, product) => total + product.quantity * product.variantPrice, 0);
         const originalTotal = validProducts.reduce((total, product) => total + product.quantity * (product.productId.price + (product.variantDetails.additionalPrice || 0)), 0);
-        const totalSavings = subTotal-originalTotal ;
+        const totalSavings = subTotal - originalTotal;
         const deliveryCharge = subTotal > deliveryChargeLimit ? 0 : 99;
         const tax = Math.round(subTotal * 0.18);
         const total = subTotal + deliveryCharge;
@@ -161,7 +161,7 @@ const loadCart = async (req, res) => {
             deliveryCharge,
             tax,
             total,
-            suggestedProducts:updatedSuggestedProducts,
+            suggestedProducts: updatedSuggestedProducts,
             // products
         });
 
@@ -392,49 +392,43 @@ const updateCart = async (req, res) => {
 
         await cart.save();
 
-        //  const cartWithDetails = cart.products.map((item) => {
-        //         const product = item.productId;
-        //         const variant = product.variants.find(v =>
-        //             v.color === item.variantDetails.color &&
-        //             `${v.storage}${v.storageUnit}` === item.variantDetails.storage
-        //         );
+        // calculaten new price
 
-        //         const basePrice = product.price;
+        const categoryOffers = await CategoryOffer.find({
+            expiryDate: { $gt: Date.now() },
+            isActive: true
+        }).populate('categoryId', 'categoryName');
 
-        //         const variantPrice = Math.round((basePrice + (variant?.additionalPrice || 0)) * (1 - product.discount / 100));
-        //         console.log('variantPrice:', variantPrice);
+        const categoryOffer = categoryOffers.find(offer =>
+            offer.categoryId.categoryName === product.category &&
+            offer.expiryDate > Date.now()
+        );
 
-        //         return {
-        //             ...item.toObject(),
-        //             variantPrice,
-        //             productImage: product.images[0]
-        //         };
-        //     });
+        const categoryDiscount = categoryOffer?.discountPercentage || 0;
+        const effectiveDiscount = Math.max(product.discount, categoryDiscount);
 
-        //     const totalItems = cartWithDetails.reduce((total, product) => total + product.quantity, 0);
-        //     const subTotal = cartWithDetails.reduce((total, product) => total + product.quantity * product.variantPrice, 0);
-        //     const originalTotal = cartWithDetails.reduce((total, product) => total + product.quantity * (product.productId.price + (product.variantDetails.additionalPrice || 0)), 0);
-        //     const totalSavings = subTotal - originalTotal;
-        //     const deliveryCharge = subTotal > 498 ? 0 : 99;
-        //     const tax = Math.round(subTotal * 0.18);
-        //     const total = subTotal + deliveryCharge + tax;
+        // Calculate base price with variant adjustments
 
-
-        //     // Calculate individual product price 
-        //     const productTotal = Math.floor(newQuantity * ((product.price + (cartProduct.variantDetails.additionalPrice || 0)) * (1 - product.discount / 100)));
-
+        const basePrice = product.price + (variant.additionalPrice || 0);
+        const discountedPrice = Math.floor(basePrice * (1 - effectiveDiscount / 100));
+        const productTotal = newQuantity * discountedPrice;
+        const originalTotal = await cart.products.reduce(async (totalPromise, item) => {
+            const total = await totalPromise;
+            const product = await productsDB.findById(item.productId);
+            const variant = product.variants.find(v => 
+                v.color === item.variantDetails.color &&
+                (!item.variantDetails.storage || v.storage === null || v.storageUnit === 'NIL' || `${v.storage}${v.storageUnit}` === item.variantDetails.storage)
+            );
+            const basePrice = product.price + (variant.additionalPrice || 0);
+            return total + (item.quantity * basePrice);
+        }, Promise.resolve(0));
 
         return res.status(200).json({
+            success: true,
             message: 'Cart updated successfully',
-            // newQuantity,
-            // newPrice: productTotal,
-            // totalItems,
-            // subTotal,
-            // originalTotal,
-            // tax,
-            // deliveryCharge,
-            // total,
-            // totalSavings
+            newQuantity,
+            newPrice: productTotal,
+            originalTotal
         });
 
     } catch (error) {

@@ -222,7 +222,6 @@
     // Category Distribution Chart
 
     const categoryData = JSON.parse('<%- JSON.stringify(categoryData) %>');
-    console.log(categoryData)
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
     new Chart(categoryCtx, {
         type: 'doughnut',
