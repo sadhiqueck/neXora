@@ -49,17 +49,20 @@
                 <%= order.orderDate.toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}) %>
             </p>
             <div class="space-x-2">
-                <!-- cancel btn -->
-                <button data-modal-target="cancelOrderModal" data-modal-toggle="cancelOrderModal"
-                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg <%= order.status === 'Cancelled' ? 'cursor-not-allowed :' : '' %>"
-                    <%=order.status==='Cancelled' ? 'disabled' :'' %>>
-                    <i class="fas fa-ban mr-2"></i>
-                    <%= order.status==='Cancelled' ? 'Order Cancelled' : 'Cancel Order' %>
-                </button>
+                <% if(order.status !=='Returned' && order.status !=='Delivered' ) {%>
+                    <!-- cancel btn -->
+                    <button data-modal-target="cancelOrderModal" data-modal-toggle="cancelOrderModal"
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg <%= order.status === 'Cancelled' ? 'cursor-not-allowed :' : '' %>"
+                        <%=order.status==='Cancelled' ? 'disabled' :'' %>>
+                        <i class="fas fa-ban mr-2"></i>
+                        <%= order.status==='Cancelled' ? 'Order Cancelled' : 'Cancel Order' %>
+                    </button>
+                    <% } %>
 
-                <button class="bg-gray-200 hover:bg-gray-300 text-gray-600 px-4 py-2 rounded-lg">
-                    <i class="fas fa-print mr-2"></i>Print Order
-                </button>
+                        <button class="bg-gray-200 hover:bg-gray-300 text-gray-600 px-4 py-2 rounded-lg"
+                            onclick="downloadInvoice('<%= order._id %>')">
+                            <i class="fas fa-print mr-2"></i>Print Order
+                        </button>
             </div>
         </div>
 
@@ -178,118 +181,133 @@
 
         <!-- Order Items Section -->
         <div class="lg:col-span-2 space-y-6">
-           <!-- Items Card -->
-<div class="bg-white rounded-xl shadow-sm overflow-hidden">
-    <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-6">Items</h2>
-        <div class="space-y-6">
-            <% order.products.forEach(product=>{ %>
-                <!-- Items-->
-                <div class="flex flex-col space-y-4 border-b border-gray-100 pb-3">
-                    <div class="flex items-start space-x-4">
-                        <img src="<%=product.images %>" alt="Product"
-                            class="w-16 h-14 rounded-lg object-fit bg-gray-100" />
-                        <div class="flex-1 min-w-0">
-                            <div class="flex gap-6">
-                            <h3 class="text-sm font-medium text-gray-900">
-                                <%=product.productName %>
-                            </h3>
-                            <% if (product.paymentStatus ==='Refunded'  ) { %>
-                                <div class="relative inline-flex items-center">
-                                    <span
-                                        class="absolute rounded-full bg-green-200-200 opacity-75"></span>
-                                    <span
-                                        class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-200 shadow-sm">
-                                        <span
-                                            class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
-                                        <span
-                                            class="text-xs font-semibold tracking-wide">Return Approved and Payment
-                                            Refunded to User wallet </span> 
-                                        </div>
-                        <% } %>
-                  
-                        </div>
-                            <p class="text-gray-500 text-sm">Model: <%=product.model %></p>
-                            <p class="text-gray-500 text-sm mt-1">
-                                Color: <%= product.variant.color %>
-                                <%= product.variant.storage ? '| Size: ' + product.variant.storage : '' %>
-                            </p>
-                            <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %></p>
-                            <div class="mt-2 flex items-center space-x-4">
-                                <span>Status:</span>
-                                <select name="productStatus" data-productid="<%= product._id %>"
-                                    class="product-status border rounded-lg px-3 py-2 bg-white 
-                                    <%= product.status === 'Cancelled' ? 'border-red-500 focus:ring-red-500' : 'border-purple-700' %>">
-                                    <option value="Processing" <% if (product.status==="Processing") { %>selected<% } %>>Processing</option>
-                                    <option value="Shipped" <% if (product.status==="Shipped") { %>selected<% } %>>Shipped</option>
-                                    <option value="Out for delivery" <% if (product.status==="Out for delivery") { %>selected<% } %>>Out for delivery</option>
-                                    <option value="Delivered" <% if (product.status==="Delivered") { %>selected<% } %>>Delivered</option>
-                                    <option value="Cancelled" <% if (product.status==="Cancelled") { %>selected<% } %>>Cancelled</option>
-                                    <option value="Returned" <% if (product.status==="Returned") { %>selected<% } %>>Returned</option>
-                                </select>
+            <!-- Items Card -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-6">Items</h2>
+                    <div class="space-y-6">
+                        <% order.products.forEach(product=>{ %>
+                            <!-- Items-->
+                            <div class="flex flex-col space-y-4 border-b border-gray-100 pb-3">
+                                <div class="flex items-start space-x-4">
+                                    <img src="<%=product.images %>" alt="Product"
+                                        class="w-16 h-14 rounded-lg object-fit bg-gray-100" />
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex gap-6">
+                                            <h3 class="text-sm font-medium text-gray-900">
+                                                <%=product.productName %>
+                                            </h3>
+                                            <% if (product.paymentStatus==='Refunded' ) { %>
+                                                <div class="relative inline-flex items-center">
+                                                    <span
+                                                        class="absolute rounded-full bg-green-200-200 opacity-75"></span>
+                                                    <span
+                                                        class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-200 shadow-sm">
+                                                        <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                                                        <span class="text-xs font-semibold tracking-wide">Return
+                                                            Approved and Payment
+                                                            Refunded to User wallet </span>
+                                                </div>
+                                                <% } %>
 
-                                <span>Delivery Date:</span>
-                                <input type="date" data-productid="<%= product._id%>"
-                                    class="deliveryDate border border-blue-700 rounded-lg px-3 py-2"
-                                    value="<%= new Date(product.deliveryDate).toISOString().split('T')[0] %>">
-                            </div>
-                        
-                            <!-- Return Details Section (Initially Hidden) -->
-                            <% if (product.status === "Returned" && product.paymentStatus !=='Refunded') { %>
-                                <div class="mt-4">
-                                    <div class="flex items-center  gap-6">
-                                        <button onclick="toggleReturnDetails('<%= product._id %>')" 
-                                                class="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center">
-                                            <span class="toggle-text-<%= product._id %>">Show Return Details</span>
-                                            <svg class="toggle-icon-<%= product._id %> w-4 h-4 ml-1 transform transition-transform duration-200" 
-                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </button>
-                                        
-                                        <!-- Return Approval Button -->
-                                        <button onclick="handleReturnApproval('<%= product._id %>')"
-                                                class="<%= product.returnApproved ? 'bg-green-100 text-green-800 cursor-not-allowed':'text-white bg-purple-600  hover:bg-purple-700' %> 
-                                                       px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
-                                                <%= product.returnApproved ? 'disabled' : '' %>>
-                                            <%= product.returnApproved ? 'Return Approved' : 'Approve Return' %>
-                                        </button>  
-                                    </div>
-                                 
-                                    
-                                    <div id="return-details-<%= product._id %>"
-                                        class="hidden mt-3 bg-gray-50 p-4 rounded-lg">
-                                        <div class="space-y-2">
-                                            <p class="text-sm text-red-500"><span class="font-medium text-black">Return
-                                                    Reason:</span>
-                                                <%= product.returnDetails.returnReason || 'Not specified' %>
-                                            </p>
-                                            <p class="text-sm"><span class="font-medium">Description:</span>
-                                                <%= product.returnDetails.returnDescription || 'No description provided'
-                                                    %>
-                                            </p>
-                                            <p class="text-sm"><span class="font-medium">Return Date:</span>
-                                                <%= product.returnDetails.returnDate.toLocaleDateString('en-IN', { dateStyle: 'medium' }) %>
-                                            </p>
                                         </div>
+                                        <p class="text-gray-500 text-sm">Model: <%=product.model %>
+                                        </p>
+                                        <p class="text-gray-500 text-sm mt-1">
+                                            Color: <%= product.variant.color %>
+                                                <%= product.variant.storage ? '| Size: ' + product.variant.storage : ''
+                                                    %>
+                                        </p>
+                                        <p class="text-sm text-gray-500 mt-1">Quantity: <%=product.quantity %>
+                                        </p>
+                                        <div class="mt-2 flex items-center space-x-4">
+                                            <span>Status:</span>
+                                            <select name="productStatus" data-productid="<%= product._id %>"
+                                                class="product-status border rounded-lg px-3 py-2 bg-white 
+                                    <%= product.status === 'Cancelled' ? 'border-red-500 focus:ring-red-500' : 'border-purple-700' %>">
+                                                <option value="Processing" <% if (product.status==="Processing" ) { %>
+                                                    selected<% } %>>Processing</option>
+                                                <option value="Shipped" <% if (product.status==="Shipped" ) { %>selected
+                                                    <% } %>>Shipped</option>
+                                                <option value="Out for delivery" <% if
+                                                    (product.status==="Out for delivery" ) { %>selected<% } %>>Out for
+                                                        delivery</option>
+                                                <option value="Delivered" <% if (product.status==="Delivered" ) { %>
+                                                    selected<% } %>>Delivered</option>
+                                                <option value="Cancelled" <% if (product.status==="Cancelled" ) { %>
+                                                    selected<% } %>>Cancelled</option>
+                                                <option value="Returned" <% if (product.status==="Returned" ) { %>
+                                                    selected<% } %>>Returned</option>
+                                            </select>
+
+                                            <span>Delivery Date:</span>
+                                            <input type="date" data-productid="<%= product._id%>"
+                                                class="deliveryDate border border-blue-700 rounded-lg px-3 py-2"
+                                                value="<%= new Date(product.deliveryDate).toISOString().split('T')[0] %>">
+                                        </div>
+
+                                        <!-- Return Details Section (Initially Hidden) -->
+                                        <% if (product.status==="Returned" && product.paymentStatus !=='Refunded' ) { %>
+                                            <div class="mt-4">
+                                                <div class="flex items-center  gap-6">
+                                                    <button onclick="toggleReturnDetails('<%= product._id %>')"
+                                                        class="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center">
+                                                        <span class="toggle-text-<%= product._id %>">Show Return
+                                                            Details</span>
+                                                        <svg class="toggle-icon-<%= product._id %> w-4 h-4 ml-1 transform transition-transform duration-200"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                        </svg>
+                                                    </button>
+
+                                                    <!-- Return Approval Button -->
+                                                    <button onclick="handleReturnApproval('<%= product._id %>')"
+                                                        class="<%= product.returnApproved ? 'bg-green-100 text-green-800 cursor-not-allowed':'text-white bg-purple-600  hover:bg-purple-700' %> 
+                                                       px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200" <%=product.returnApproved ? 'disabled' : '' %>>
+                                                        <%= product.returnApproved ? 'Return Approved'
+                                                            : 'Approve Return' %>
+                                                    </button>
+                                                </div>
+
+
+                                                <div id="return-details-<%= product._id %>"
+                                                    class="hidden mt-3 bg-gray-50 p-4 rounded-lg">
+                                                    <div class="space-y-2">
+                                                        <p class="text-sm text-red-500"><span
+                                                                class="font-medium text-black">Return
+                                                                Reason:</span>
+                                                            <%= product.returnDetails.returnReason || 'Not specified' %>
+                                                        </p>
+                                                        <p class="text-sm"><span class="font-medium">Description:</span>
+                                                            <%= product.returnDetails.returnDescription
+                                                                || 'No description provided' %>
+                                                        </p>
+                                                        <p class="text-sm"><span class="font-medium">Return Date:</span>
+                                                            <%= product.returnDetails.returnDate.toLocaleDateString('en-IN',
+                                                                { dateStyle: 'medium' }) %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                    <div class="text-right space-y-1">
+                                        <p class="text-sm font-medium text-gray-900">
+                                            <%= product.discountedPrice.toLocaleString('en-IN',{style:'currency',currency:"INR"})
+                                                %>
+                                        </p>
+                                        <p class="text-xs text-gray-500">per unit</p>
+                                        <p class="text-xs text-gray-500">Return Period: <%=product.returnPeriod %> days
+                                        </p>
+                                        <p class="text-xs text-gray-500">Warranty: <%=product.warranty %> months</p>
                                     </div>
                                 </div>
-                            <% } %>
-                        </div>
-                        <div class="text-right space-y-1">
-                            <p class="text-sm font-medium text-gray-900">
-                                <%= product.discountedPrice.toLocaleString('en-IN',{style:'currency',currency:"INR"}) %>
-                            </p>
-                            <p class="text-xs text-gray-500">per unit</p>
-                            <p class="text-xs text-gray-500">Return Period: <%=product.returnPeriod %> days</p>
-                            <p class="text-xs text-gray-500">Warranty: <%=product.warranty %> months</p>
-                        </div>
+                            </div>
+                            <% }) %>
                     </div>
                 </div>
-            <% }) %>
-        </div>
-    </div>
-</div>
+            </div>
 
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -374,21 +392,13 @@
                 </div>
             </div>
 
-
-            <!-- Save Changes Btn -->
-            <!-- <div class="mt-6 flex justify-end">
-                <div class="space-x-2">
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
-                        onclick="updateOrderStatus()">
-                        <i class="fas fa-save mr-2"></i>Save Changes
-                    </button>
-                </div>
-            </div> -->
         </div>
 
         <!-- script -->
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script>
 
             const orderId = '<%= order._id %>';
@@ -505,50 +515,170 @@
             })
 
             function toggleReturnDetails(productId) {
-    const detailsDiv = document.getElementById(`return-details-${productId}`);
-    const toggleText = document.querySelector(`.toggle-text-${productId}`);
-    const toggleIcon = document.querySelector(`.toggle-icon-${productId}`);
-    
-    if (detailsDiv.classList.contains('hidden')) {
-        detailsDiv.classList.remove('hidden');
-        toggleText.textContent = 'Hide Return Details';
-        toggleIcon.classList.add('rotate-180');
-    } else {
-        detailsDiv.classList.add('hidden');
-        toggleText.textContent = 'Show Return Details';
-        toggleIcon.classList.remove('rotate-180');
-    }
-}
+                const detailsDiv = document.getElementById(`return-details-${productId}`);
+                const toggleText = document.querySelector(`.toggle-text-${productId}`);
+                const toggleIcon = document.querySelector(`.toggle-icon-${productId}`);
 
-async function handleReturnApproval(productId) {
-    try {
-        const response = await fetch('/admin/return/approve', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ productId,orderId }),
-        });
+                if (detailsDiv.classList.contains('hidden')) {
+                    detailsDiv.classList.remove('hidden');
+                    toggleText.textContent = 'Hide Return Details';
+                    toggleIcon.classList.add('rotate-180');
+                } else {
+                    detailsDiv.classList.add('hidden');
+                    toggleText.textContent = 'Show Return Details';
+                    toggleIcon.classList.remove('rotate-180');
+                }
+            }
 
-        if (!response.ok) {
-            throw new Error('Failed to approve return');
-        }
-        const data= await response.json()
-        if(data.success){
-        notyf.success(data.message||'success')
-        setTimeout(() => {
-         window.location.reload();   
-        }, 500);
-        
-        }
-       else{
-        notyf.error('No response')
-       }
+            async function handleReturnApproval(productId) {
+                try {
+                    const response = await fetch('/admin/return/approve', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId, orderId }),
+                    });
 
-    } catch (error) {
-        console.error('Error approving return:', error);
-        notyf.error('Failed to approve return. Please try again.');
-    }
-}
+                    if (!response.ok) {
+                        throw new Error('Failed to approve return');
+                    }
+                    const data = await response.json()
+                    if (data.success) {
+                        notyf.success(data.message || 'success')
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+
+                    }
+                    else {
+                        notyf.error('No response')
+                    }
+
+                } catch (error) {
+                    console.error('Error approving return:', error);
+                    notyf.error('Failed to approve return. Please try again.');
+                }
+            }
+            async function downloadInvoice(orderId) {
+                try {
+
+                    notyf.success('Downloading...')
+                    // Fetch order details
+                    const response = await fetch(`/admin/order/${orderId}/invoice`);
+                    const order = await response.json();
+
+                    // Create invoice HTML
+                    const invoiceHtml = `
+    <div style="font-family: Arial, sans-serif; padding: 40px;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="/Images/lOGO.png" alt="Nexora" style="width: 150px; height: auto;">
+            <h1 style="font-size: 24px; margin: 10px 0;">Invoice</h1>
+        </div>
+
+        <!-- Order and Customer Details -->
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <h2 style="font-size: 18px; margin-bottom: 10px;">Order Details</h2>
+                    <p><strong>Order ID:</strong> ${order.orderNumber}</p>
+                    <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleDateString()}</p>
+                </div>
+                <div>
+                    <h2 style="font-size: 18px; margin-bottom: 10px;">Customer Details</h2>
+                    <p><strong>Name:</strong> ${order.userId?.username || 'Guest'}</p>
+                    <p><strong>Email:</strong> ${order.userId?.email || 'N/A'}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping and Billing Addresses -->
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <div>
+                <h2 style="font-size: 18px; margin-bottom:10px ;"><b>Shipping Address</b></h2>
+                <p>${order.shippingAddress.fullName}</p>
+                <p>${order.shippingAddress.addressLine1}</p>
+                <p>${order.shippingAddress.addressLine2},${order.shippingAddress.landmark},
+                 ${order.shippingAddress.city},${order.shippingAddress.state} ${order.shippingAddress.pincode}</p>
+                <p>India</p>
+            </div>
+            <div>
+                <h2 style="font-size: 18px; margin-bottom: 10px font-bold;"><b>Billing Address</b></h2>
+                <p>${order.userId?.username}</p>
+                <p>${order.shippingAddress.addressLine1}</p>
+                <p>${order.shippingAddress.addressLine2}, ${order.shippingAddress.state} ${order.shippingAddress.pincode}</p>
+                <p>India</p>
+            </div>
+        </div>
+
+        <!-- Order Items Table -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+                <tr style="background-color: #f3f4f6;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Product</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Quantity</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Discount</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Tax(GST)</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${order.products.map(item =>
+                        ` <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.productName}- ${item.model}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${item.quantity}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 82 / 100).toFixed(2)}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">-₹${(item.price - item.discountedPrice).toFixed(2)}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 18 / 100).toFixed(2)} (18%)</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.quantity * item.discountedPrice).toFixed(2)}</td>
+                    </tr>
+                    
+                `).join('')}
+            </tbody>
+        </table>
+
+        <!-- Order Summary -->
+        <div style="text-align: right;">
+            <p><strong>Subtotal:</strong> ₹${order.originalTotal.toFixed(2)}</p>
+            <p><strong>Discount:</strong>- ₹${((order.totalSavings + order.couponApplied.discount) || 0).toFixed(2)}</p>
+            <p><strong>Shipping Charges:</strong> ₹${((order.deliveryCharge) || 0).toFixed(2)}</p>
+            <p><strong>Total:</strong> ₹${(order.total).toFixed(2)}</p>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #666;">
+            <p>Thank you for shopping with us!</p>
+            <p>Contact us at support@nexora.com for any queries.</p>
+        </div>
+    </div>
+`;
+
+                    // Create a temporary container for the invoice
+                    const tempContainer = document.createElement('div');
+                    tempContainer.innerHTML = invoiceHtml;
+                    document.body.appendChild(tempContainer);
+
+                    // Generate PDF
+                    html2canvas(tempContainer, { scale: 2 }).then((canvas) => {
+                        const imgData = canvas.toDataURL('image/png');
+                        const pdf = new jspdf.jsPDF('p', 'mm', 'a3');
+                        const imgWidth = 210;
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                        pdf.save(`invoice_${order.orderNumber}.pdf`);
+                    });
+                    document.body.removeChild(tempContainer);
+                } catch (error) {
+                    console.log(error);
+                    notyf.error('Cannot download invoice')
+                } finally {
+                    notyf.success('Downloaded')
+                }
+
+            }
+
         </script>
 </body>

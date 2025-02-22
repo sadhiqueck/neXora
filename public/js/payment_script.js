@@ -1,12 +1,10 @@
 // spinner
 
 function showSpinner() {
-    console.log('spinning')
     document.getElementById('loadingSpinner').classList.remove('hidden');
 }
 
 function hideSpinner() {
-    console.log('hidded')
     document.getElementById('loadingSpinner').classList.add('hidden');
 }
 
@@ -20,7 +18,7 @@ async function handleRazorpayPayment(total) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ total })
+            body: JSON.stringify({ total, cartId, cartVersion })
         });
 
         if (createOrderResponse.status == 404) {
@@ -29,12 +27,17 @@ async function handleRazorpayPayment(total) {
                 window.location.href = '/user/cart';
             }, 500);
             return;
+        } else if (createOrderResponse.status == 409) {
+            notyf.error('Your cart changed! Please review before paying.')
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000);
         } else if (!createOrderResponse.ok) {
             throw new Error('Failed to create order');
         }
 
         const { order } = await createOrderResponse.json();
-        console.log(order)
+
 
         // Razorpay options
         const options = {
@@ -101,12 +104,12 @@ async function handleRazorpayPayment(total) {
         const rzp = new Razorpay(options);
         rzp.open();
 
-      
+
         rzp.on('payment.failed', async function (response) {
             try {
                 const appliedCouponData = document.getElementById('appliedCouponData').value;
                 const coupon = appliedCouponData ? JSON.parse(appliedCouponData) : null;
-        
+
                 await fetch('/user/handle-payment-failure', {
                     method: 'POST',
                     headers: {
@@ -117,7 +120,7 @@ async function handleRazorpayPayment(total) {
                         appliedCouponData: coupon
                     })
                 });
-                window.location.href='/user/orders'
+                window.location.href = '/user/orders'
             } catch (error) {
                 console.error('Error handling payment failure:', error);
                 notyf.error('Failed to process payment failure');
@@ -143,6 +146,8 @@ const placeOrder = () => {
             notyf.error('Please select a payment method');
             return;
         }
+
+
         // Get applied coupon details
         const appliedCouponData = document.getElementById('appliedCouponData').value;
         const coupon = appliedCouponData ? JSON.parse(appliedCouponData) : null;
@@ -150,7 +155,8 @@ const placeOrder = () => {
         const payload = {
             paymentMethod: selectedPayment.value,
             appliedCouponData: coupon,
-
+            cartId,
+            cartVersion
         };
 
         if (selectedPayment.value === 'Razorpay') {
@@ -177,6 +183,10 @@ const placeOrder = () => {
                         setTimeout(() => {
                             window.location.href = '/user/cart'
                         }, 500);
+                    } else if (response.status == 409) {
+                        notyf.error('Your cart changed! Please review before paying.')
+                         showCartChangeAlert();
+                        return
                     } else {
                         notyf.error("Failed to place order");
                     }
@@ -296,6 +306,31 @@ function toggleMoreCoupons() {
         viewMoreIcon.style.transform = 'rotate(180deg)';
     }
 }
+
+function showCartChangeAlert() {
+    const modal = document.getElementById('cartChangeModal');
+    const spinner = document.getElementById('refreshSpinner');
+
+    console.log('Modal:', modal);
+    console.log('Spinner:', spinner);
+
+    // Show the modal
+    modal.classList.remove('hidden');
+    console.log('Modal should be visible now');
+
+    // After a brief delay, show spinner and reload
+    setTimeout(() => {
+        spinner.classList.remove('hidden');
+        console.log('Spinner should be visible now');
+
+        // Add a small delay before reload for better UX
+        setTimeout(() => {
+            console.log('Reloading page');
+            window.location.reload();
+        }, 4000);
+    }, 5500);
+}
+
 
 hideSpinner()
 

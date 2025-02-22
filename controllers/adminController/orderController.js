@@ -206,7 +206,7 @@ const cancelAll = async (req, res) => {
         let totalRefund = 0;
         for (const product of order.products) {
 
-            if (['Shipped','Processing', 'Pending'].includes(product.status)) {
+            if (['Shipped', 'Processing', 'Pending'].includes(product.status)) {
                 product.status = 'Cancelled';
                 const productDetails = await productsdb.findById(product.productId);
                 const variantDetails = product.variant;
@@ -252,7 +252,16 @@ const cancelAll = async (req, res) => {
         let finalRefund = null;
         // Process refund
         if (totalRefund > 0 && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
-            const wallet = await Wallet.findOne({ user: userId });
+            let wallet = await Wallet.findOne({ user: userId });
+            if (!wallet) {
+                wallet = new Wallet({
+                    user: userId,
+                    balance: 0,
+                    transactions: [],
+                });
+                await wallet.save();
+            }
+
             if (previousOrderStatus !== 'Shipped') {
                 finalRefund = totalRefund + order?.deliveryCharge || 0;
                 wallet.balance += finalRefund
@@ -325,7 +334,15 @@ const reutrnApproval = async (req, res) => {
         const refundAmount = product.discountedPrice;
 
         // Update wallet
-        const wallet = await Wallet.findOne({ user: userId });
+        let wallet = await Wallet.findOne({ user: userId });
+        if (!wallet) {
+            wallet = new Wallet({
+               user: userId,
+               balance: 0,
+               transactions: [],
+           });
+           await wallet.save();
+           }
         wallet.balance += refundAmount;
         wallet.transactions.push({
             amount: refundAmount,
@@ -346,6 +363,18 @@ const reutrnApproval = async (req, res) => {
 
 
 }
+const getInvoice = async (req, res) => {
+    try {
+        const { orderId } = req.params
+
+        const order = await ordersDb.findById(orderId)
+            .populate('userId', 'username email')
+            .populate('products.productId', 'productName price');
+        res.json(order);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching order details' });
+    }
+}
 
 function computeOrderStatus(products) {
     const statusCounts = {
@@ -360,7 +389,6 @@ function computeOrderStatus(products) {
     products.forEach(product => {
         statusCounts[product.status] = (statusCounts[product.status] || 0) + 1;
     });
-    console.log(statusCounts)
 
     if (statusCounts.Cancelled === products.length) return 'Cancelled';
     if (statusCounts.Returned === products.length) return 'Returned';
@@ -373,4 +401,4 @@ function computeOrderStatus(products) {
 }
 
 
-module.exports = { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval }
+module.exports = { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval, getInvoice }

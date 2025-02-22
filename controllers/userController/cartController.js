@@ -389,7 +389,7 @@ const updateCart = async (req, res) => {
         if (cartProductIndex !== -1 && newQuantity >= 1) {
             cart.products[cartProductIndex].quantity = newQuantity;
         }
-
+        cart.version += 1; //updating version for validation purposes
         await cart.save();
 
         // calculaten new price

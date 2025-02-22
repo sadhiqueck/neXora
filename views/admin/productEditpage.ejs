@@ -380,7 +380,6 @@
     const variantsContainer = document.getElementById('variantsContainer');
     const addVariantButton = document.getElementById('addVariant');
     let variantCount = '<%= product.variants.length %>';
-    console.log(variantCount)
     let activeInput = null;
     let cropper = null;
 
@@ -452,7 +451,6 @@
 
             // Hide the image and show upload UI
             const previewImg = document.querySelector(`#preview-${parseInt(imageIndex) + 1}`);
-            console.log(previewImg)
             if (previewImg) {
                 previewImg.src = '';
             }

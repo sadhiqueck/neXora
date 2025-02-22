@@ -275,18 +275,21 @@
                                                                         class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200 shadow-sm">
                                                                         <span
                                                                             class="h-1.5 w-1.5 rounded-full bg-purple-500"></span>
-                                                                        <span
-                                                                            class="text-xs font-semibold tracking-wide">Item
-                                                                            Returned </span>
-                                                                        <% if(product.paymentStatus==='Refunded' ) {%>
+                                                                        <% if(product.paymentStatus!=='Refunded' ) {%>
                                                                             <span
-                                                                                class="text-xs font-semibold tracking-wide">,
-                                                                                Payment
-                                                                                Refunded to your wallet</span>
-                                                                            <a href="/user/wallet"
-                                                                                class="underline text-xs text-blue-600">Go
-                                                                                to Wallet</a>
-                                                                            <% } %>
+                                                                                class="text-xs font-semibold tracking-wide">Item
+                                                                                Return Requested </span>
+                                                                            <%}%>
+                                                                                <% if(product.paymentStatus==='Refunded'
+                                                                                    ) {%>
+                                                                                    <span
+                                                                                        class="text-xs font-semibold tracking-wide">Item
+                                                                                        Returned,Payment
+                                                                                        Refunded to your wallet</span>
+                                                                                    <a href="/user/wallet"
+                                                                                        class="underline text-xs text-blue-600">Go
+                                                                                        to Wallet</a>
+                                                                                    <% } %>
                                                                     </span>
                                                                 </div>
                                                                 <% } else { %>
@@ -324,11 +327,12 @@
                                             <% } %>
                                     </div>
                                 </div>
-                                    <% if(product.status==='Cancelled' || order.status==='Cancelled') { %>
-                                        <div class="p-4">
-                                            <p class="text-gray-700">Reason :- <span class="text-red-600 italic"><%-product?.cancelDescription%></span></p>
-                                        </div>
-                                   <% } %>
+                                <% if(product.status==='Cancelled' || order.status==='Cancelled' ) { %>
+                                    <div class="p-4">
+                                        <p class="text-gray-700">Reason :- <span
+                                                class="text-red-600 italic"><%-product?.cancelDescription%></span></p>
+                                    </div>
+                                    <% } %>
                             </div>
                         </div>
                         <div class="text-right space-y-1">

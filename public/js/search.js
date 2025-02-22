@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
           e.preventDefault(); // Prevent form submission
   
           const firstResult = liveResults.querySelector('.search-result');
-          console.log(firstResult)
           if (firstResult) {
             window.location.href = firstResult.href; // Navigate to the first result
           }

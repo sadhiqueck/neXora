@@ -435,7 +435,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const updateCombinedOTP = () => {
             const otp = inputs.map(input => input.value || '0').join('');
             otpCombined.value = otp.slice(0, 4); // Combine OTP and keep only the first 4 characters
-            console.log('Combined OTP:', otpCombined.value);
             validateOTP(); // Call validation function
         };
 

@@ -41,8 +41,6 @@ const getSalesReport = async (req, res) => {
         const RecentOrders = orders.slice(0, 10);
 
         const totalDiscounts = orders.reduce((total, val) => total + val.totalSavings + (val.couponApplied.discount || 0), 0)
-        console.log(totalDiscounts)
-
 
         res.render('admin/salesReport', {
             orders,

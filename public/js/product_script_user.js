@@ -67,7 +67,6 @@ function selectColor(button, color) {
 
 // Price update handler
 function updatePrice(additionalPrice, discount, ogPrice) {
-    console.log(productState.basePrice)
     productState.currentPrice = Math.floor((parseInt(ogPrice) + additionalPrice) * (1 - discount / 100));
     document.getElementById('finalPrice').textContent =
         productState.currentPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
@@ -108,7 +107,6 @@ function initializeStorageHandlers() {
 
 // Add to cart handler
 const productDetailsaddToCart = async () => {
-    console.log(productState);
     try {
         const response = await fetch(`/user/cart/${productState.productId}/add`, {
             method: 'POST',

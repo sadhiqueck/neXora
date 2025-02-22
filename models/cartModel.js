@@ -26,6 +26,10 @@ const cartSchema = new Schema({
     isOrdered: {
         type: Boolean,
         default: false
+    },
+    version: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

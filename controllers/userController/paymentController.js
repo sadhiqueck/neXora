@@ -22,6 +22,7 @@ const loadPaymentPage = async (req, res) => {
         let CODLimit = 50000;
         const cart = await cartDb.findOne({ userId }).populate('products.productId')
         const cartId = cart._id
+        const cartVersion=cart.version
         const { selectedAddressId, selectedDeliveryMethod } = req.session;
         const selectedAddress = await addressDb.findById(selectedAddressId);
         const { deliveryType, deliveryDate } = selectedDeliveryMethod;
@@ -125,8 +126,8 @@ const loadPaymentPage = async (req, res) => {
             res.render('user/payment', {
                 title: 'Payment', razorpayKey: process.env.RAZORPAY_KEY_ID, selectedAddress,
                 deliveryType, deliveryDate, subTotal, totalSavings,
-                deliveryCharge, originalTotal, tax, total, userWallet, coupons: combinedCoupons, cartId,
-                isCODAllowed
+                deliveryCharge, originalTotal, tax, total, userWallet,
+                 coupons: combinedCoupons, cartId,cartVersion,isCODAllowed
             })
         }
 

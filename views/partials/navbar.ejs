@@ -259,7 +259,6 @@
         } debounceTimer = setTimeout(async () => {
             try {
 
-                console.log(searchTerm)
                 const response = await fetch(`/user/search?q=${encodeURIComponent(searchTerm)}`);
                 const data = await response.json();
 

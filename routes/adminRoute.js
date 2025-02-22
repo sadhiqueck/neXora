@@ -8,14 +8,15 @@ const { login, loadLogin, loadUsers, deleteUser, blockUser, viewUser, logout } =
 const { loadCategories, addCatgeory, deleteCategory, editCategory, } = require("../controllers/adminController/categoryController");
 const { loadAddProductpage, addProduct, loadProducts, loadProductViewpage,
      loadEditProductpage, editProduct, deleteProduct, updateProductStock } = require('../controllers/adminController/productController')
-const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval } = require('../controllers/adminController/orderController')
+const { loadOrders, updateOrder, updateProductStatus, cancelAll, ChangeDeliveryDate, reutrnApproval,getInvoice } = require('../controllers/adminController/orderController')
 const { getCoupons, createCoupon, loadAddCoupons, loadEditCoupon, updateCoupon, deleteCoupon } = require('../controllers/adminController/couponController')
 const { getOfferPage, referralUpdation, addCategoryOffer, editCategoryOffer, deleteCategoryOffer } = require('../controllers/adminController/offerController');
 const { getSalesReport, fetchAllOrders } = require('../controllers/adminController/salesController')
-const { loadDashboard } = require('../controllers/adminController/dashboardController')
+const { loadDashboard } = require('../controllers/adminController/dashboardController');
+
 // middlewares
 const { authsession, isLogin } = require('../middleware/adminAuth')
-const { validateStockUpdate } = require('../middleware/stockValidation')
+const { validateStockUpdate } = require('../middleware/checkoutValidation')
 
 
 
@@ -54,8 +55,6 @@ router.get('/delete-product/:id', authsession, deleteProduct)
 // stock upation
 router.put('/product/update-stock/:id', authsession, updateProductStock)
 
-
-
 // ordermanagement
 
 router.get('/orders', authsession, loadOrders)
@@ -64,7 +63,7 @@ router.post('/orders/update-product-status', authsession, updateProductStatus)
 router.post('/orders/cancel-all', authsession, cancelAll)
 router.post('/orders/date-change', authsession, ChangeDeliveryDate)
 router.post('/return/approve', authsession, reutrnApproval)
-
+router.get('/order/:orderId/invoice', authsession, getInvoice);
 
 // Coupon Management
 router.get('/coupons', authsession, getCoupons);

@@ -3,7 +3,7 @@ const addressdb = require('../../models/addressModel');
 const productsdb = require('../../models/productModel');
 const Wallet = require('../../models/walletModel')
 const userdb = require('../../models/userModel')
-const Coupons= require('../../models/couponModel')
+const Coupons = require('../../models/couponModel')
 
 const loadOrder = async (req, res) => {
     try {
@@ -21,20 +21,20 @@ const loadOrder = async (req, res) => {
             orderDate: { $lt: thirtyMinutesAgo }
         });
 
-       
+
         for (const order of failedOrders) {
             await revertStockAndCoupon(order);
         }
 
-        
+
         const query = { userId };
 
-     
+
         if (status && status !== 'all') {
             query.status = status;
         }
 
- 
+
         if (timePeriod && timePeriod !== 'all') {
             const days = parseInt(timePeriod);
             const startDate = new Date();
@@ -42,7 +42,7 @@ const loadOrder = async (req, res) => {
             query.orderDate = { $gte: startDate };
         }
 
- 
+
         const [totalOrders, orders] = await Promise.all([
             orderdb.countDocuments(query),
             orderdb.find(query)
@@ -198,7 +198,15 @@ const cancelItem = async (req, res) => {
             }
 
             // Update wallet
-            const wallet = await Wallet.findOne({ user: userId });
+            let wallet = await Wallet.findOne({ user: userId });
+            if (!wallet) {
+                wallet = new Wallet({
+                    user: userId,
+                    balance: 0,
+                    transactions: [],
+                });
+                await wallet.save();
+            }
             wallet.balance += refundAmount;
             wallet.transactions.push({
                 amount: refundAmount,
@@ -238,7 +246,7 @@ const cancelOrder = async (req, res) => {
         let totalRefund = 0;
         for (const product of order.products) {
 
-            if (['Shipped','Processing', 'Pending'].includes(product.status)) {
+            if (['Shipped', 'Processing', 'Pending'].includes(product.status)) {
                 product.status = 'Cancelled';
                 product.cancelDescription = reason; // Save the cancellation reason
                 const productDetails = await productsdb.findById(product.productId);
@@ -276,30 +284,38 @@ const cancelOrder = async (req, res) => {
                 }
 
                 totalRefund += product.discountedPrice;
-    
+
             }
         }
-        let previousOrderStatus= order.status
-    
+        let previousOrderStatus = order.status
+
 
         // Update order status
         order.status = computeOrderStatus(order.products);
 
         // Process refund
-        let finalRefund=null;
+        let finalRefund = null;
 
 
         if (totalRefund > 0 && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
-            const wallet = await Wallet.findOne({ user: userId });
-            if(previousOrderStatus!=='Shipped'){
-                finalRefund= totalRefund + order?.deliveryCharge || 0;
-                wallet.balance +=finalRefund
-            }else{
+            let wallet = await Wallet.findOne({ user: userId });
+            if (!wallet) {
+                wallet = new Wallet({
+                    user: userId,
+                    balance: 0,
+                    transactions: [],
+                });
+                await wallet.save();
+            }
+            if (previousOrderStatus !== 'Shipped') {
+                finalRefund = totalRefund + (order?.deliveryCharge || 0);
+                wallet.balance += finalRefund;
+            } else {
                 wallet.balance += totalRefund;
             }
-          
+
             wallet.transactions.push({
-                amount: finalRefund ?? totalRefund ,
+                amount: finalRefund ?? totalRefund,
                 type: 'credit',
                 description: `Full order refund: ${order.orderNumber}`,
                 status: 'completed'
@@ -384,11 +400,11 @@ const returnItem = async (req, res) => {
 
 const getInvoice = async (req, res) => {
     try {
-        const {orderId}=req.params
+        const { orderId } = req.params
 
         const order = await orderdb.findById(orderId)
             .populate('userId', 'username email')
-            .populate('products.productId', 'productName price'); 
+            .populate('products.productId', 'productName price');
         res.json(order);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching order details' });
@@ -458,10 +474,8 @@ const revertStockAndCoupon = async (order) => {
 
         // Set isOrderable to false and order as failed
         order.isOrderable = false;
-        order.status='Failed';
+        order.status = 'Failed';
         await order.save();
-
-        console.log('Stock and coupon reverted for order:', order._id);
     } catch (error) {
         console.error('Error reverting stock and coupon:', error);
     }

@@ -93,10 +93,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     croppedBlobs[inputIndex] = blob;
 
                     // Update preview
-                    console.log(activeInput.parentElement)
                     const preview = activeInput.parentElement.querySelector('img');
                     const placeholder = activeInput.parentElement.querySelector('div');
-                    console.log(preview);
 
                     if (preview) {
                         const url = URL.createObjectURL(blob);

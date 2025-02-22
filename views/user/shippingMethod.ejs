@@ -164,7 +164,6 @@
             body: JSON.stringify(deliveryData)
         }).then(response => {
             if (response.ok) {
-                console.log('Delivery details saved successfully!');
                 window.location.href = '/user/payment';
             }
             else {

@@ -28,7 +28,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // middlewares
 const { isLogin, authsession, checkoutAccess, validateResetFlow,validateSignupFlow, redirectionUrl } = require("../middleware/userAuth");
 const { validateProductsFilter } = require('../middleware/validateProductFilter')
-const { stockStatusValidation } = require('../middleware/stockValidation')
+const { stockStatusValidation,cartVersionValidation } = require('../middleware/checkoutValidation')
 
 
 // signup pages
@@ -93,16 +93,16 @@ router.post('/save-delivery', authsession, saveDeliveryMethod)
 
 // payment page
 router.get('/payment', authsession, checkoutAccess, loadPaymentPage)
-router.post('/place-order', authsession, checkoutAccess, placeOrder)
+router.post('/place-order', authsession, checkoutAccess,cartVersionValidation, placeOrder)
 router.get('/order-success', authsession, checkoutAccess, orderSuccess)
 router.post('/handle-payment-failure', authsession, handlePaymentFailure);
 router.post('/retry-payment', authsession, retryPayment);
-
+// router.post('cartVersion-validation', authsession, checkoutAccess, cartVersionValidation)
 // validate coupon
 router.post('/coupon-validate', authsession, checkoutAccess, validateCoupon)
 
 // razorpay
-router.post('/create-razorpay-order', authsession, checkoutAccess, stockStatusValidation, createRazorpayOrder);
+router.post('/create-razorpay-order', authsession, checkoutAccess, stockStatusValidation,cartVersionValidation, createRazorpayOrder);
 router.post('/verify-payment', authsession, checkoutAccess, verifyPayment);
 router.post('/verify-retryPayment', authsession, verifyRetryPayment)
 

@@ -88,7 +88,6 @@ const removeFromWishlist= async (req, res) => {
         { new: true }
       ).populate('products.product');
       
-      console.log(wishlist)
       res.status(200).json(wishlist?.products || []);
     } catch (err) {
       res.status(500).send('Server error');

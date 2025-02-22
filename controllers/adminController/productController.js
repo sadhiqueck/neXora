@@ -400,8 +400,6 @@ const updateProductStock = async (req, res) => {
     try {
         const { productId, variantUpdates } = req.body;
 
-        console.log(req.body);
-
         const product = await productDB.findById(productId);
 
         if (!product) {
