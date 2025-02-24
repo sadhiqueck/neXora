@@ -24,7 +24,7 @@
             <img src="/Images/lOGO.png" class="h-8" alt="Nexora" />
         </a>
         <div class="flex md:order-2">
-            <form action="">
+            <form action=""  >
                 <div class="relative hidden md:block sm:w-56 md:w-[35vw] ">
                     <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
@@ -38,10 +38,10 @@
                         class="block searchInput  w-full  p-2  ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Search for products, brands, and more" />
                     <!-- search results -->
-
-                    <div id="liveSearchResults"
-                        class="liveSearchResults absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto">
+                    <div id="desktopResultContainer"
+                        class=" absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto">
                     </div>
+                   
                 </div>
             </form>
 
@@ -210,9 +210,9 @@
                                 <input type="text"name="search-navbar"  autocomplete="off"
                                     class="searchInput block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-button-color focus:border-button-color dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="Search..." />
+                                    <div 
+                                    class="liveSearchResults absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto"></div>
                             </form>
-                            <div 
-                            class="liveSearchResults absolute bg-white w-full mt-1 shadow-lg z-50 rounded-lg max-h-96 overflow-y-auto"></div>
                             <ul
                                 class="flex flex-col p-4 md:p-0 mt-4 font-light border border-gray-100 rounded-lg bg-gray-50 sm:space-x-4  md:space-x-6 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                                 <li>
@@ -248,6 +248,12 @@
                     </div>
     </nav>
 <script>
+    const desktopResultContainer= document.getElementById('desktopResultContainer');
+    if (window.innerWidth >= 768) {
+        desktopResultContainer.classList.add('liveSearchResults');
+    } else {
+        desktopResultContainer.classList.remove('liveSearchResults');
+    }
     const searchInput = document.querySelector(' input[name="search-navbar" ]'); const
         searchResults = document.createElement('div');
     searchResults.className = 'absolute w-full bg-white mt-1 rounded-lg shadow-lg max-h-96 overflow-y-auto hidden z-50'
@@ -295,7 +301,6 @@
 
             let html = '';
         }
-
 
     }
 </script>
