@@ -68,22 +68,23 @@ const cartVersionValidation = async (req, res, next) => {
     try {
         const {cartId, cartVersion } = req.body;
 
-        console.log('cartId:', cartId);
-        console.log('cartVersion:', cartVersion);
-
-        const cart = await cartDb.findById(cartId);
+        const cart = await cartDb.findById(cartId).populate({
+            path: 'products.productId',
+            select: 'productName model price discount discountedPrice category returnPeriod warranty images stockQuantity variants',
+        });
 
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }
-        console.log('cart:', cart.version);
 
         if (cartVersion !== cart.version.toString()) {
             console.log('cart version mismatch');
             return res.status(409).json({success:false, message: "Cart version mismatch" });
         }
+        req.session.currenCart=cart;
 
         next();
+
     } catch (error) {
         console.error('Cart version validation error:', error);
         return res.status(500).json({ message: 'Error validating cart version' });

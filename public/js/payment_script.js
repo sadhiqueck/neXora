@@ -20,6 +20,7 @@ async function handleRazorpayPayment(total) {
             },
             body: JSON.stringify({ total, cartId, cartVersion })
         });
+        console.log(createOrderResponse)
 
         if (createOrderResponse.status == 404) {
             notyf.error('Sorry, Product went Stock out');
@@ -29,9 +30,8 @@ async function handleRazorpayPayment(total) {
             return;
         } else if (createOrderResponse.status == 409) {
             notyf.error('Your cart changed! Please review before paying.')
-            setTimeout(() => {
-                window.location.reload()
-            }, 1000);
+             showCartChangeAlert();
+            return
         } else if (!createOrderResponse.ok) {
             throw new Error('Failed to create order');
         }
@@ -84,7 +84,6 @@ async function handleRazorpayPayment(total) {
                         appliedCouponData: coupon
                     })
                 });
-
                 if (verificationResponse.ok) {
                     window.location.href = '/user/order-success';
                 } else {
@@ -185,7 +184,7 @@ const placeOrder = () => {
                         }, 500);
                     } else if (response.status == 409) {
                         notyf.error('Your cart changed! Please review before paying.')
-                         showCartChangeAlert();
+                        showCartChangeAlert();
                         return
                     } else {
                         notyf.error("Failed to place order");
@@ -313,12 +312,9 @@ function showCartChangeAlert() {
 
     console.log('Modal:', modal);
     console.log('Spinner:', spinner);
-
-    // Show the modal
     modal.classList.remove('hidden');
     console.log('Modal should be visible now');
-
-    // After a brief delay, show spinner and reload
+    
     setTimeout(() => {
         spinner.classList.remove('hidden');
         console.log('Spinner should be visible now');
@@ -327,8 +323,8 @@ function showCartChangeAlert() {
         setTimeout(() => {
             console.log('Reloading page');
             window.location.reload();
-        }, 4000);
-    }, 5500);
+        }, 3000);
+    }, 1000);
 }
 
 

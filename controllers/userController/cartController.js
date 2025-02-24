@@ -117,8 +117,6 @@ const loadCart = async (req, res) => {
             };
         });
 
-
-
         if (cartUpdated) {
             await cart.save();
         }

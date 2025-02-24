@@ -97,7 +97,7 @@ router.post('/place-order', authsession, checkoutAccess,cartVersionValidation, p
 router.get('/order-success', authsession, checkoutAccess, orderSuccess)
 router.post('/handle-payment-failure', authsession, handlePaymentFailure);
 router.post('/retry-payment', authsession, retryPayment);
-// router.post('cartVersion-validation', authsession, checkoutAccess, cartVersionValidation)
+
 // validate coupon
 router.post('/coupon-validate', authsession, checkoutAccess, validateCoupon)
 
