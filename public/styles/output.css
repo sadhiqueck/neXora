@@ -5626,6 +5626,10 @@ input:checked + .toggle-bg {
     width: 100%;
   }
 
+  .md\:w-\[90\%\] {
+    width: 90%;
+  }
+
   .md\:max-w-\[90\%\] {
     max-width: 90%;
   }

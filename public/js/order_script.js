@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cancel enitre order
     confirmCancelBtn?.addEventListener('click', async () => {
         const reason = cancelReasonTextarea.value.trim();
-
         if (!reason) {
             notyf.error("Please provide a reason for cancellation");
             return;
@@ -68,10 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let endpoint = '/user/order/return';
             let body = { orderId, reason, description };
 
+
             if (currentProductId) {
                 endpoint = '/user/order/return-item';
                 body.productId = currentProductId;
             }
+
 
             const response = await fetch(endpoint, {
                 method: "POST",
@@ -114,39 +115,37 @@ document.addEventListener('DOMContentLoaded', () => {
         returnDescriptionTextarea.value = '';
         currentProductId = null;
     });
-})
 
 
+    // Cancel Item Buttons
+    const cancelItemBtns = document.querySelectorAll('.cancelItem');
 
+    cancelItemBtns.forEach(button => {
+        button.addEventListener('click', () => {
+            currentProductId = button.getAttribute('data-product-id');
+            console.log(currentProductId)
+            cancelOrderModal.classList.remove('hidden');
+        });
+    });
 
-// Cancel Item Buttons
-const cancelItemBtns = document.querySelectorAll('.cancelItem');
+    // Cancel Order Button
+    const cancelOrderBtn = document.getElementById('orderCancelBtn');
 
-cancelItemBtns.forEach(button => {
-    button.addEventListener('click', () => {
-        currentProductId = button.getAttribute('data-product-id');
+    cancelOrderBtn?.addEventListener('click', () => {
+        currentProductId = null;
         cancelOrderModal.classList.remove('hidden');
     });
-});
 
-// Cancel Order Button
-const cancelOrderBtn = document.getElementById('orderCancelBtn');
+    async function downloadInvoice(orderId) {
+        try {
 
-cancelOrderBtn?.addEventListener('click', () => {
-    currentProductId = null;
-    cancelOrderModal.classList.remove('hidden');
-});
+            notyf.success('Downloading...')
+            // Fetch order details
+            const response = await fetch(`/user/order/${orderId}/invoice`);
+            const order = await response.json();
 
-async function downloadInvoice(orderId) {
-    try {
-
-        notyf.success('Downloading...')
-        // Fetch order details
-        const response = await fetch(`/user/order/${orderId}/invoice`);
-        const order = await response.json();
-
-        // Create invoice HTML
-        const invoiceHtml = `
+            // Create invoice HTML
+            const invoiceHtml = `
     <div style="font-family: Arial, sans-serif; padding: 40px;">
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 20px;">
@@ -203,7 +202,7 @@ async function downloadInvoice(orderId) {
             </thead>
             <tbody>
                 ${order.products.map(item =>
-            ` <tr>
+                ` <tr>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.productName}- ${item.model}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">${item.quantity}</td>
                         <td style="padding: 10px; border: 1px solid #ddd;">₹${(item.price * 82 / 100).toFixed(2)}</td>
@@ -232,27 +231,29 @@ async function downloadInvoice(orderId) {
     </div>
 `;
 
-        // Create a temporary container for the invoice
-        const tempContainer = document.createElement('div');
-        tempContainer.innerHTML = invoiceHtml;
-        document.body.appendChild(tempContainer);
+            // Create a temporary container for the invoice
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = invoiceHtml;
+            document.body.appendChild(tempContainer);
 
-        // Generate PDF
-        html2canvas(tempContainer, { scale: 2 }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const imgWidth = 210;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            // Generate PDF
+            html2canvas(tempContainer, { scale: 2 }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-            pdf.save(`invoice_${order.orderNumber}.pdf`);
-        });
-        document.body.removeChild(tempContainer);
-    } catch (error) {
-        console.log(error);
-        notyf.error('Cannot download invoice')
-    } finally {
-        notyf.success('Downloaded')
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`invoice_${order.orderNumber}.pdf`);
+            });
+            document.body.removeChild(tempContainer);
+        } catch (error) {
+            console.log(error);
+            notyf.error('Cannot download invoice')
+        } finally {
+            notyf.success('Downloaded')
+        }
+
     }
 
-}
+})
