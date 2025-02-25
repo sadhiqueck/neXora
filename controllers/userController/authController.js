@@ -234,8 +234,7 @@ const forgotPassword = async (req, res) => {
 
 const loadResetOtpPage = async (req, res) => {
   try {
-
-    res.render('user/forgotupdatePassword', { title: "Verify Otp" })
+   return res.render('user/forgotUpdatePassword', { title: "Verify Otp" })
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Something went wrong!" })
