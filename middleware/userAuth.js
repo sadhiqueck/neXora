@@ -74,7 +74,7 @@ const redirectionUrl = (req, res, next) => {
 
 const validateResetFlow = (req, res, next) => {
     if (!req.session.resetFlow) {
-        return res.redirect('/user/login');
+        return res.status(403);
     }
     next();
 };
