@@ -20,7 +20,6 @@ async function handleRazorpayPayment(total) {
             },
             body: JSON.stringify({ total, cartId, cartVersion })
         });
-        console.log(createOrderResponse)
 
         if (createOrderResponse.status == 404) {
             notyf.error('Sorry, Product went Stock out');
@@ -30,7 +29,7 @@ async function handleRazorpayPayment(total) {
             return;
         } else if (createOrderResponse.status == 409) {
             notyf.error('Your cart changed! Please review before paying.')
-             showCartChangeAlert();
+            showCartChangeAlert();
             return
         } else if (!createOrderResponse.ok) {
             throw new Error('Failed to create order');
@@ -236,6 +235,18 @@ async function applyCoupon() {
             showCouponApplied(data.coupon, data.discount);
             notyf.success('Coupon applied successfully!');
             errorMssg.textContent = ''
+            // Disable coupon options button with data-attribute coupon code
+            const couponButtons = document.querySelectorAll('.avlCodes');
+            couponButtons.forEach(button => {
+                if (button.getAttribute('data-code') === code) {
+                    button.removeAttribute('onclick');
+                    button.querySelector('button').textContent = 'Applied';
+                }
+                else{
+                    button.setAttribute('onclick', `selectCoupon('${button.getAttribute('data-code')}')`);
+                    button.querySelector('button').textContent = 'Apply';
+                }
+            });
         } else {
             notyf.error(data.message || 'Failed to apply coupon');
             errorMssg.textContent = data.message || 'Failed to apply coupon'
@@ -310,18 +321,12 @@ function showCartChangeAlert() {
     const modal = document.getElementById('cartChangeModal');
     const spinner = document.getElementById('refreshSpinner');
 
-    console.log('Modal:', modal);
-    console.log('Spinner:', spinner);
     modal.classList.remove('hidden');
-    console.log('Modal should be visible now');
-    
+
+
     setTimeout(() => {
         spinner.classList.remove('hidden');
-        console.log('Spinner should be visible now');
-
-        // Add a small delay before reload for better UX
         setTimeout(() => {
-            console.log('Reloading page');
             window.location.reload();
         }, 3000);
     }, 1000);

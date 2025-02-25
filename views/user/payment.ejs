@@ -213,8 +213,8 @@
                         <div class="space-y-2">
                             <% if (coupons && coupons.length> 0) { %>
                                 <% coupons.slice(0, 2).forEach(coupon=> { %>
-                                    <div class="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
-                                        onclick="selectCoupon('<%= coupon.code %>')">
+                                    <div class="avlCodes border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
+                                    data-code="<%= coupon.code %>" onclick="selectCoupon('<%= coupon.code %>')">
                                         <div class="flex justify-between items-start">
                                             <div>
                                                 <p class="font-medium text-purple-600">
@@ -237,7 +237,7 @@
                                                     </p>
                                                     <% } %>
                                             </div>
-                                            <button class="text-xs text-purple-600 font-medium">
+                                            <button class=" text-xs text-purple-600 font-medium">
                                                 APPLY
                                             </button>
                                         </div>
@@ -259,8 +259,8 @@
                                             <!-- Hidden Coupons -->
                                             <div id="moreCoupons" class="hidden space-y-2">
                                                 <% coupons.slice(2).forEach(coupon=> { %>
-                                                    <div class="border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
-                                                        onclick="selectCoupon('<%= coupon.code %>')">
+                                                    <div class="avlCodes border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
+                                                         data-code="<%= coupon.code %>" onclick="selectCoupon('<%= coupon.code %>')">
                                                         <div class="flex justify-between items-start">
                                                             <div>
                                                                 <p class="font-medium text-purple-600">
@@ -283,7 +283,7 @@
                                                                 </p>
 
                                                             </div>
-                                                            <button class="text-xs text-purple-600 font-medium"
+                                                            <button class="code text-xs text-purple-600 font-medium"
                                                                 onclick="selectCoupon('<%= coupon.code %>')">
                                                                 APPLY
                                                             </button>

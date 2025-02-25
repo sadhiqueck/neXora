@@ -14,8 +14,8 @@
 
       <!-- breadcrumbs -->
 
-      <div class="flex items-center justify-between pt-8 pb-4 px-6">
-        <nav class="flex" aria-label="Breadcrumb">
+      <div class="flex flex-col md:flex-row md:items-center justify-between pt-4 md:pt-8 pb-4 px-3 md:px-6">
+        <nav class="flex mb-4 md:mb-0" aria-label="Breadcrumb">
           <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
             <li class="inline-flex items-center">
               <a href="/admin/dashboard"
@@ -35,23 +35,12 @@
             </li>
           </ol>
         </nav>
-        <!-- add user and export buttons -->
-        <div class="flex space-x-4">
-          <button type="button" onclick="exportPDF()"
-            class="flex space-x-4 focus:outline-none text-indigo-600 bg-violet-200  hover: focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2.5 mb-2">
-            <span class="pr-2"><img src="/Icons/export.svg" alt=""></span>Export
-          </button>
-
-        </div>
       </div>
-
-
-      <div
-        class=" px-6 py-5 flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 ">
-        <div>
+      
+      <div class="px-3 md:px-6 py-4 flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+        <div class="w-full md:w-auto">
           <form action="/admin/users" method="get" id="sort-form">
-
-            <label for="table-search-users" class="sr-only">Search</label>
+            <label for="table-search" class="sr-only">Search</label>
             <div class="relative">
               <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
@@ -61,16 +50,16 @@
                 </svg>
               </div>
               <input type="text" id="table-search" name="search" value="<%=searchQuery%>"
-                class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full md:w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Search Users">
-                <p id="error-message"></p>
+              <p id="error-message"></p>
             </div>
-
+          </form>
         </div>
-
+      
         <!--  sort -->
-        <div class="relative inline-block">
-          <select id="userSort" name="sort"
+        <div class="relative w-full md:w-auto">
+          <select id="userSort" name="sort" form="sort-form"
             class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-8 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="" disabled selected>Sort Users</option>
             <optgroup label="Status">
@@ -83,244 +72,258 @@
               <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
             </optgroup>
           </select>
-          </form>
         </div>
       </div>
-
+      
       <!-- page content -->
-      <div class=" bg-white rounded-lg shadow overflow-x-auto">
-
+      <div class="bg-white rounded-lg shadow mx-3 md:mx-6 overflow-x-auto">
         <!-- table -->
-
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 user-table"
-          id="user-table">
-          <thead class="text-xs text-gray-700 uppercase bg-purple-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" class="p-4">
-                SNo.
-              </th>
-              <th scope="col" class="px-12 py-3">
-                Customer Name
-              </th>
-              <th scope="col" class="px-4 py-3">
-                Orders
-              </th>
-              <th scope="col" class="px-4 py-3">
-                Balance
-              </th>
-
-              <th scope="col" class="px-9 py-3">
-                Status
-              </th>
-              <th scope="col" class="px-6 py-3">
-                Created At
-              </th>
-              <th scope="col" class="px-6 py-3">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if (users && users.length> 0) { %>
-              <% users.forEach((user, index)=> { %>
-
-                <!-- user view modal -->
-                <div id="user_view<%= index %>" tabindex="-1" aria-hidden="true"
-                  class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                  <div class="relative p-4 w-full max-w-md max-h-full">
-                    <!-- Modal content -->
-                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                      <!-- Modal header -->
-                      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                          User Details
-                        </h3>
-                        <button type="button"
-                          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                          data-modal-toggle="user_view<%= index %>">
-                          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                          </svg>
-                          <span class="sr-only">Close modal</span>
-                        </button>
-                      </div>
-                      <!-- Modal body -->
-                      <div class="p-4 md:p-5">
-                        <div class="grid gap-4 mb-4 grid-cols-2">
-                          <div class="col-span-2">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Name:</p>
-                            <p class="text-sm text-gray-700 dark:text-gray-300">
-                              <%= user.username %>
-                            </p>
-                          </div>
-                          <div class="col-span-2">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Email Address:</p>
-                            <p class="text-sm text-gray-700 dark:text-gray-300">
-                              <%= user.email %>
-                            </p>
-                          </div>
-                          <div class="col-span-2">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Account Created:</p>
-                            <p class="text-sm text-gray-700 dark:text-gray-300">
-                              <%= new Date(user.createdAt).toLocaleString('en-GB', { year: 'numeric' , month: '2-digit'
-                                , day: '2-digit' ,hour: '2-digit' ,minute: '2-digit' ,hour12: false }) %>
-                            </p>
-                          </div>
-                          <div class="col-span-2 sm:col-span-1">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Blocked:</p>
-                            <p class="text-sm text-gray-700 dark:text-gray-300">
-                              <% if (user.isBlocked===true) { %>
-                                Yes
-                                <% } else { %>
-                                  No
-                                  <% } %>
-                            </p>
-                          </div>
-                          <div class="col-span-2 sm:col-span-1">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">Deleted:</p>
-                            <p class="text-sm text-gray-700 dark:text-gray-300">
-                              <% if (user.isDeleted===true) { %>
-                                Yes
-                                <% } else { %>
-                                  No
-                                  <% } %>
-                            </p>
-                          </div>
-                        </div>
-                        <div class="flex justify-end">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 user-table"
+            id="user-table">
+            <thead class="text-xs text-gray-700 uppercase bg-purple-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" class="p-2 md:p-4 hidden md:table-cell">
+                  SNo.
+                </th>
+                <th scope="col" class="px-3 md:px-12 py-3">
+                  Customer Name
+                </th>
+                <th scope="col" class="px-2 md:px-4 py-3 hidden md:table-cell">
+                  Orders
+                </th>
+                <th scope="col" class="px-2 md:px-4 py-3 hidden md:table-cell">
+                  Balance
+                </th>
+                <th scope="col" class="px-3 md:px-9 py-3">
+                  Status
+                </th>
+                <th scope="col" class="px-3 md:px-6 py-3 hidden md:table-cell">
+                  Created At
+                </th>
+                <th scope="col" class="px-3 md:px-6 py-3">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (users && users.length> 0) { %>
+                <% users.forEach((user, index)=> { %>
+      
+                  <!-- user view modal -->
+                  <div id="user_view<%= index %>" tabindex="-1" aria-hidden="true"
+                    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    <div class="relative p-2 md:p-4 w-full max-w-md max-h-full">
+                      <!-- Modal content -->
+                      <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-3 md:p-5 border-b rounded-t dark:border-gray-600">
+                          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            User Details
+                          </h3>
                           <button type="button"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                             data-modal-toggle="user_view<%= index %>">
-                            Close
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                              viewBox="0 0 14 14">
+                              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close modal</span>
                           </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-3 md:p-5">
+                          <div class="grid gap-4 mb-4 grid-cols-2">
+                            <div class="col-span-2">
+                              <p class="text-sm font-medium text-gray-900 dark:text-white">Name:</p>
+                              <p class="text-sm text-gray-700 dark:text-gray-300">
+                                <%= user.username %>
+                              </p>
+                            </div>
+                            <div class="col-span-2">
+                              <p class="text-sm font-medium text-gray-900 dark:text-white">Email Address:</p>
+                              <p class="text-sm text-gray-700 dark:text-gray-300 break-all">
+                                <%= user.email %>
+                              </p>
+                            </div>
+                            <div class="col-span-2">
+                              <p class="text-sm font-medium text-gray-900 dark:text-white">Account Created:</p>
+                              <p class="text-sm text-gray-700 dark:text-gray-300">
+                                <%= new Date(user.createdAt).toLocaleString('en-GB', { year: 'numeric' , month: '2-digit'
+                                  , day: '2-digit' ,hour: '2-digit' ,minute: '2-digit' ,hour12: false }) %>
+                              </p>
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                              <p class="text-sm font-medium text-gray-900 dark:text-white">Blocked:</p>
+                              <p class="text-sm text-gray-700 dark:text-gray-300">
+                                <% if (user.isBlocked===true) { %>
+                                  Yes
+                                  <% } else { %>
+                                    No
+                                    <% } %>
+                              </p>
+                            </div>
+                            <div class="col-span-2 sm:col-span-1">
+                              <p class="text-sm font-medium text-gray-900 dark:text-white">Deleted:</p>
+                              <p class="text-sm text-gray-700 dark:text-gray-300">
+                                <% if (user.isDeleted===true) { %>
+                                  Yes
+                                  <% } else { %>
+                                    No
+                                    <% } %>
+                              </p>
+                            </div>
+                            <div class="col-span-2">
+                              <p class="text-sm font-medium text-gray-900 dark:text-white">Orders:</p>
+                              <p class="text-sm text-gray-700 dark:text-gray-300">
+                                <%= user.totalOrders %>
+                              </p>
+                            </div>
+                            <div class="col-span-2">
+                              <p class="text-sm font-medium text-gray-900 dark:text-white">Balance:</p>
+                              <p class="text-sm text-gray-700 dark:text-gray-300">
+                                ₹<%= user.totalBalance %>
+                              </p>
+                            </div>
+                          </div>
+                          <div class="flex justify-end">
+                            <button type="button"
+                              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                              data-modal-toggle="user_view<%= index %>">
+                              Close
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
-
-                <tr
-                  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <th class="w-1 px-6">
-                    <%= pagination.startIndex + index %> 
-                  </th>
-
-                  <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                    <img class="w-10 h-10 rounded-full" src="/Images/user default profile.jpg " alt="profile image">
-                    <div class="ps-3">
-                      <div class="text-base font-semibold">
-                        <%= user.username %>
-                      </div>
-                      <div class="font-normal text-gray-500">
-                        <%= user.email %>
-                      </div>
-                    </div>
-                  </th>
-                  <td class="px-6 py-4">
-                    <%=user.totalOrders %>
-                  </td>
-                  <td class="px-6 py-4">
-                    ₹<%=user.totalBalance %>
-                  </td>
-
-                  <td class="px-6 py-4">
-                    <% if (user.isDeleted) { %>
-                      <div
-                        class="h-7 px-3 py-1 bg-red-100 rounded-[100px] flex-col justify-center items-center gap-2 inline-flex">
-                        <div
-                          class="text-center text-red-500 text-sm font-semibold font-inter leading-tight tracking-tight p-1.5">
-                          Deleted</div>
-                      </div>
-                      <% } else if (user.isBlocked) { %>
-                        <div
-                          class="h-7 px-3 py-1 bg-orange-100 rounded-[100px] flex-col justify-center items-center gap-2 inline-flex">
-                          <div
-                            class="text-center text-orange-500 text-sm font-semibold font-inter leading-tight tracking-tight p-1.5">
-                            Blocked</div>
+      
+                  <tr
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <th class="w-1 px-6 hidden md:table-cell">
+                      <%= pagination.startIndex + index %>
+                    </th>
+      
+                    <th scope="row" class="flex items-center px-3 md:px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                      <img class="w-8 h-8 md:w-10 md:h-10 rounded-full" src="/Images/user default profile.jpg" alt="profile image">
+                      <div class="ps-2 md:ps-3">
+                        <div class="text-sm md:text-base font-semibold truncate max-w-[120px] md:max-w-none">
+                          <%= user.username %>
                         </div>
-                        <% } else { %>
+                        <div class="font-normal text-gray-500 text-xs md:text-sm truncate max-w-[120px] md:max-w-none">
+                          <%= user.email %>
+                        </div>
+                      </div>
+                    </th>
+                    <td class="px-2 md:px-6 py-4 hidden md:table-cell">
+                      <%=user.totalOrders %>
+                    </td>
+                    <td class="px-2 md:px-6 py-4 hidden md:table-cell">
+                      ₹<%=user.totalBalance %>
+                    </td>
+      
+                    <td class="px-3 md:px-6 py-4">
+                      <% if (user.isDeleted) { %>
+                        <div
+                          class="h-6 md:h-7 px-2 md:px-3 py-0.5 md:py-1 bg-red-100 rounded-[100px] flex-col justify-center items-center gap-1 md:gap-2 inline-flex">
                           <div
-                            class="h-7 px-3 py-1 bg-green-100 rounded-[100px] flex-col justify-center items-center gap-2 inline-flex">
+                            class="text-center text-red-500 text-xs md:text-sm font-semibold font-inter leading-tight tracking-tight p-0.5 md:p-1.5">
+                            Deleted</div>
+                        </div>
+                        <% } else if (user.isBlocked) { %>
+                          <div
+                            class="h-6 md:h-7 px-2 md:px-3 py-0.5 md:py-1 bg-orange-100 rounded-[100px] flex-col justify-center items-center gap-1 md:gap-2 inline-flex">
                             <div
-                              class="text-center text-green-500 text-sm font-semibold font-inter leading-tight tracking-tight p-1.5">
-                              Active</div>
+                              class="text-center text-orange-500 text-xs md:text-sm font-semibold font-inter leading-tight tracking-tight p-0.5 md:p-1.5">
+                              Blocked</div>
                           </div>
-                          <% } %>
-
-                  </td>
-                  <td class="px-6 py-4">
-                    <%= new Date(user.createdAt).toLocaleString('en-GB', { year: 'numeric' , month: '2-digit' ,
-                      day: '2-digit' ,hour: '2-digit' ,minute: '2-digit' ,hour12: false }) %>
-                  </td>
-                  <td class="px-6 pb-10 flex space-x-2">
-                    <!-- onclick="viewUser('<%= user._id %>')" -->
-                    <!-- view button -->
-
-                    <button data-modal-target="user_view<%= index %>" data-modal-toggle="user_view<%= index %>"
-                      type="button"> <img src="/Icons/eye.svg" alt=""></button>
-
-                    <!-- block button -->
-                    <button class="delete-btn" onclick="blockUser('<%= user._id %>')">
-                      <img src="/Icons/block.svg" alt="" style="height: 20px;">
-                    </button>
-                    <!-- delete button -->
-                    <button class="delete-btn" onclick="deleteUser('<%= user._id %>')">
-                      <img src="<%= user.isDeleted ? '/Icons/recover.svg' : '/Icons/trash.svg' %>" alt="Delete">
-                    </button>
-                  </td>
-                </tr>
-                <% }) %>
-                  <% } else { %>
-                    <tr>
-                      <td colspan="3">No users found.</td>
-                    </tr>
-                    <% } %>
-          </tbody>
-        </table>
+                          <% } else { %>
+                            <div
+                              class="h-6 md:h-7 px-2 md:px-3 py-0.5 md:py-1 bg-green-100 rounded-[100px] flex-col justify-center items-center gap-1 md:gap-2 inline-flex">
+                              <div
+                                class="text-center text-green-500 text-xs md:text-sm font-semibold font-inter leading-tight tracking-tight p-0.5 md:p-1.5">
+                                Active</div>
+                            </div>
+                            <% } %>
+                    </td>
+                    <td class="px-3 md:px-6 py-4 hidden md:table-cell">
+                      <%= new Date(user.createdAt).toLocaleString('en-GB', { year: 'numeric' , month: '2-digit' ,
+                        day: '2-digit' ,hour: '2-digit' ,minute: '2-digit' ,hour12: false }) %>
+                    </td>
+                    <td class="px-3 md:px-6 py-4 md:pb-10 text-lg">
+                      <div class="flex space-x-1 md:space-x-2">
+                        <!-- view button -->
+                        <button data-modal-target="user_view<%= index %>" data-modal-toggle="user_view<%= index %>"
+                          type="button" class="p-1">
+                          <img src="/Icons/eye.svg" alt="" class="w-4 h-4 md:w-5 md:h-5">
+                        </button>
+      
+                        <!-- block button -->
+                        <button class="delete-btn p-1" onclick="blockUser('<%= user._id %>')">
+                          <img src="/Icons/block.svg" alt="" class="w-4 h-4 md:w-5 md:h-5">
+                        </button>
+                        
+                        <!-- delete button -->
+                        <button class="delete-btn p-1" onclick="deleteUser('<%= user._id %>')">
+                          <img src="<%= user.isDeleted ? '/Icons/recover.svg' : '/Icons/trash.svg' %>" alt="Delete" class="w-4 h-4 md:w-5 md:h-5">
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="7" class="text-center py-4">No users found.</td>
+                      </tr>
+                      <% } %>
+            </tbody>
+          </table>
+        </div>
       </div>
-
-
-
-
-
-
+      
       <!-- Pagination -->
-      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <div>
-            <p class="text-sm text-gray-700">
-                Showing
-                <span class="font-medium"><%= pagination.startIndex %></span>
-                to
-                <span class="font-medium"><%= pagination.endIndex %></span>
-                of
-                <span class="font-medium"><%= pagination.totalUsers%></span>
-                Users
-            </p>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-3 md:px-6 py-4">
+        <div class="mb-4 sm:mb-0">
+          <p class="text-sm text-gray-700">
+            Showing
+            <span class="font-medium"><%= pagination.startIndex %></span>
+            to
+            <span class="font-medium"><%= pagination.endIndex %></span>
+            of
+            <span class="font-medium"><%= pagination.totalUsers%></span>
+            Users
+          </p>
         </div>
-        <div class="mt-2 flex justify-end">
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <% if (pagination.hasPrevPage) { %>
-                    <a href="?page=<%= pagination.currentPage - 1 %>" 
-                       class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">
-                        Previous
-                    </a>
-                <% } %>
-
-                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-                <a href="?page=<%= i %>" class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>"><%= i %></a>
-                <% }%>
-
-                <% if (pagination.hasNextPage) { %>
-                    <a href="?page=<%= pagination.currentPage + 1 %>" 
-                        class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
-                <% } %>
-            </nav>
+        <div class="flex justify-center sm:justify-end">
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+            <% if (pagination.hasPrevPage) { %>
+              <a href="?page=<%= pagination.currentPage - 1 %>&search=<%= searchQuery %>&sort=<%= sort %>"
+                class="px-2 py-1 md:px-3 md:py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50 text-sm">
+                Previous
+              </a>
+            <% } %>
+      
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+              <% if (pagination.totalPages <= 5 || i === 1 || i === pagination.totalPages || (i >= pagination.currentPage-1 && i <= pagination.currentPage+1)) { %>
+                <a href="?page=<%= i %>&search=<%= searchQuery %>&sort=<%= sort %>" 
+                   class="px-2 py-1 md:px-3 md:py-2 border text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white' %> text-sm">
+                  <%= i %>
+                </a>
+              <% } else if (i === pagination.currentPage-2 || i === pagination.currentPage+2) { %>
+                <span class="px-2 py-1 md:px-3 md:py-2 border bg-white text-gray-500 text-sm">...</span>
+              <% } %>
+            <% } %>
+      
+            <% if (pagination.hasNextPage) { %>
+              <a href="?page=<%= pagination.currentPage + 1 %>&search=<%= searchQuery %>&sort=<%= sort %>"
+                class="px-2 py-1 md:px-3 md:py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50 text-sm">
+                Next
+              </a>
+            <% } %>
+          </nav>
         </div>
-    </div>
-    </div>
+      </div>
 
   </div>
 

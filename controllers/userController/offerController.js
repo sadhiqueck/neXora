@@ -35,7 +35,6 @@ const verifyReferralCode = async (req, res) => {
     try {
 
         const { referralCode } = req.body;
-        console.log(referralCode)
 
         const user = await User.findOne({ referralCode: referralCode.toUpperCase() });
         if (user) {

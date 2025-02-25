@@ -186,12 +186,10 @@ const verifyPayment = async (req, res) => {
         if (generatedSignature !== razorpay_signature) {
             return res.status(400).json({ error: 'Invalid payment signature' });
         }
-        console.log('in verify payment')
 
         // If verification successful, create order
         await createOrderInDB(req, res, 'Razorpay', appliedCouponData, razorpay_payment_id);
 
-        console.log('success create order and return back to verify payujmetn')
         res.status(200).json({ success: true, message: 'Order placed successfully' });
 
     } catch (error) {
@@ -338,11 +336,6 @@ const createOrderInDB = async (req, res, paymentMethod, appliedCouponData, trans
         const userId = req.session.user._id;
         const { deliveryDate, deliveryType } = req.session.selectedDeliveryMethod;
 
-        console.log('in create order db')
-        // const cart = await cartDb.findOne({ userId }).populate({
-        //     path: 'products.productId',
-        //     select: 'productName model price discount discountedPrice category returnPeriod warranty images stockQuantity variants',
-        // });
         const cart = req.session.currenCart;
 
         if (!cart || cart.products.length === 0) {

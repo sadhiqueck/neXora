@@ -1,5 +1,5 @@
 <body>
-    <section class=" font-inter min-h-screen flex flex-row bg-gray-100">
+    <section class="font-inter min-h-screen flex flex-row bg-gray-100 overflow-y-hidden ">
 
         <!--Content space -->
         <div class="flex-1  bg-gray-100">
@@ -213,38 +213,74 @@
 
 
         <!-- Pagination -->
-      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <div>
-            <p class="text-sm text-gray-700">
-                Showing
-                <span class="font-medium"><%= pagination.startIndex %></span>
-                to
-                <span class="font-medium"><%= pagination.endIndex %></span>
-                of
-                <span class="font-medium"><%= pagination.totalcategory%></span>
-                Categories 
-            </p>
-        </div>
-        <div class="mt-2 flex justify-end">
-            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+        <div class="mt-4 flex justify-center sm:justify-end">
+            <nav class="relative z-0 inline-flex flex-wrap rounded-md shadow-sm">
                 <% if (pagination.hasPrevPage) { %>
-                    <a href="?page=<%= pagination.currentPage - 1 %>" 
-                       class="px-3 py-2 rounded-l-md border bg-white text-gray-500 hover:bg-gray-50">
-                        Previous
+                    <a href="?page=<%= pagination.currentPage - 1 %>"
+                        class="relative inline-flex items-center px-2 sm:px-3 py-2 rounded-l-md border bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                        <span class="sr-only">Previous</span>
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="hidden sm:inline-block ml-1">Previous</span>
                     </a>
                 <% } %>
-
-                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-                <a href="?page=<%= i %>" class="px-3 py-2 border  text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100' : 'bg-white'  %>"><%= i %></a>
-                <% }%>
-
+                
+                <!-- Page numbers - Only show limited on mobile -->
+                <% 
+                let startPage = 1;
+                let endPage = pagination.totalPages;
+                
+                // On mobile, show fewer pages
+                if (pagination.totalPages > 5) {
+                    startPage = Math.max(1, pagination.currentPage - 1);
+                    endPage = Math.min(pagination.totalPages, pagination.currentPage + 1);
+                    
+                    // Always show first page
+                    if (startPage > 1) { %>
+                        <a href="?page=1" 
+                           class="relative inline-flex items-center px-3 py-2 border text-sm font-medium text-button-color bg-white">
+                            1
+                        </a>
+                        <% if (startPage > 2) { %>
+                            <span class="relative inline-flex items-center px-2 py-2 border bg-white text-gray-500">
+                                ...
+                            </span>
+                        <% } %>
+                    <% } 
+                } %>
+                
+                <% for (let i = startPage; i <= endPage; i++) { %>
+                    <a href="?page=<%= i %>" 
+                       class="relative inline-flex items-center px-3 py-2 border text-sm font-medium text-button-color <%= pagination.currentPage === i ? 'bg-indigo-100 font-bold' : 'bg-white hover:bg-gray-50' %> transition-colors">
+                        <%= i %>
+                    </a>
+                <% } %>
+                
+                <% if (pagination.totalPages > 5 && endPage < pagination.totalPages) { %>
+                    <% if (endPage < pagination.totalPages - 1) { %>
+                        <span class="relative inline-flex items-center px-2 py-2 border bg-white text-gray-500">
+                            ...
+                        </span>
+                    <% } %>
+                    <a href="?page=<%= pagination.totalPages %>" 
+                       class="relative inline-flex items-center px-3 py-2 border text-sm font-medium text-button-color bg-white hover:bg-gray-50 transition-colors">
+                        <%= pagination.totalPages %>
+                    </a>
+                <% } %>
+                
                 <% if (pagination.hasNextPage) { %>
-                    <a href="?page=<%= pagination.currentPage + 1 %>" 
-                        class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
+                    <a href="?page=<%= pagination.currentPage + 1 %>"
+                        class="relative inline-flex items-center px-2 sm:px-3 py-2 rounded-r-md border bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                        <span class="hidden sm:inline-block mr-1">Next</span>
+                        <span class="sr-only">Next</span>
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
                 <% } %>
             </nav>
         </div>
-    </div>
         </div>
     </section>
     <script>

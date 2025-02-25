@@ -9,7 +9,7 @@
         </div>
 
     <!-- Right Content -->
-    <div class="space-y-6 p-16 w-full mx-auto bg-white rounded-lg shadow-lg border-2  ">
+    <div class="space-y-6 p-2 md:p-16 w-full mx-auto bg-white rounded-lg shadow-lg border-2  ">
         <h2 class="font-semibold mb-10 text-xl">Saved Address</h2>
         <div class="w-full min-h-screen">
             <!-- Address Cards -->
@@ -78,31 +78,26 @@
                         </form>
                         <p class="mssg text-red-500"></p>
                         <!-- Edit Address Modal -->
-                        <div id="editModal<%= index %>"
-                            class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-                            <div class="bg-white rounded-lg shadow-lg md:p-6 p-2 md:w-2/4">
+                        <div id="editModal<%= index %>" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto">
+                            <div class="bg-white rounded-lg shadow-lg p-4 md:p-6 w-full md:w-2/4 mx-2">
                                 <h2 class="text-lg font-semibold mb-4">Edit Address</h2>
                                 <!-- form -->
                                 <form id="editAddressForm<%= index %>" action="/user/update-address" method="POST">
                                     <input type="hidden" name="addressId" value="<%= address._id %>">
                                     <div class="-mx-3 flex flex-wrap mb-5">
                                         <div class="w-full px-3 sm:w-1/2">
-                                            <label for="editFullName<%= index %>"
-                                                class="mb-3 block text-base font-medium text-indigo-900">
+                                            <label for="editFullName<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
                                                 Full Name <span class="text-red-600">*</span>
                                             </label>
-                                            <input type="text" name="fullName" id="editFullName<%= index %>"
-                                                value="<%= address.fullName %>"
+                                            <input type="text" name="fullName" id="editFullName<%= index %>" value="<%= address.fullName %>"
                                                 class="fullName w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]" />
                                         </div>
                                         <div class="w-full px-3 sm:w-1/2">
-                                            <label for="editPhone<%= index %>"
-                                                class="mb-3 block text-base font-medium text-indigo-900">
+                                            <label for="editPhone<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
                                                 Phone Number<span class="text-red-600">*</span>
                                             </label>
-                                            <input type="text" name="phone" id="editPhone<%= index %>"
-                                                value="<%= address.phone %>" placeholder="10 digit mobile number"
-                                                maxlength="10"
+                                            <input type="text" name="phone" id="editPhone<%= index %>" value="<%= address.phone %>"
+                                                placeholder="10 digit mobile number" maxlength="10"
                                                 class="phone w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]" />
                                         </div>
                                     </div>
@@ -110,24 +105,19 @@
                                     <div class="-mx-3 flex flex-wrap">
                                         <div class="w-full px-3 sm:w-1/2">
                                             <div class="mb-3">
-                                                <label for="editAddressLine1<%= index %>"
-                                                    class="mb-3 block text-base font-medium text-indigo-900">
-                                                    Flat, House no., Building, Company<span
-                                                        class="text-red-600">*</span>
+                                                <label for="editAddressLine1<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
+                                                    Flat, House no., Building, Company<span class="text-red-600">*</span>
                                                 </label>
-                                                <input type="text" name="addressLine1" id="editAddressLine1<%= index %>"
-                                                    value="<%= address.addressLine1 %>"
+                                                <input type="text" name="addressLine1" id="editAddressLine1<%= index %>" value="<%= address.addressLine1 %>"
                                                     class="addressLine1 w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]" />
                                             </div>
                                         </div>
                                         <div class="w-full px-3 sm:w-1/2">
                                             <div class="mb-3">
-                                                <label for="editAddressLine2<%= index %>"
-                                                    class="mb-3 block text-base font-medium text-indigo-900">
+                                                <label for="editAddressLine2<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
                                                     Area, Street, Sector, Village<span class="text-red-600">*</span>
                                                 </label>
-                                                <input type="text" name="addressLine2" id="editAddressLine2<%= index %>"
-                                                    value="<%= address.addressLine2 %>"
+                                                <input type="text" name="addressLine2" id="editAddressLine2<%= index %>" value="<%= address.addressLine2 %>"
                                                     class="addressLine2 w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]" />
                                             </div>
                                         </div>
@@ -136,94 +126,62 @@
                                     <div class="-mx-3 flex flex-wrap">
                                         <div class="w-full px-3 sm:w-1/2">
                                             <div class="mb-5">
-                                                <label for="editPincode<%= index %>"
-                                                    class="mb-3 block text-base font-medium text-indigo-900">
+                                                <label for="editPincode<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
                                                     Pincode<span class="text-red-600">*</span>
                                                 </label>
-                                                <input type="text" name="pincode" id="editPincode<%= index %>"
-                                                    value="<%= address.pincode %>" placeholder="6 digits [0-9] PIN code"
-                                                    maxlength="6"
+                                                <input type="text" name="pincode" id="editPincode<%= index %>" value="<%= address.pincode %>"
+                                                    placeholder="6 digits [0-9] PIN code" maxlength="6"
                                                     class="pincode w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]" />
                                             </div>
                                         </div>
                                         <div class="w-full px-3 sm:w-1/2">
                                             <div class="mb-5">
-                                                <label for="editLandmark<%= index %>"
-                                                    class="mb-3 block text-base font-medium text-indigo-900">
+                                                <label for="editLandmark<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
                                                     Landmark(optional)
                                                 </label>
-                                                <input type="text" name="landmark" id="editLandmark<%= index %>"
-                                                    value="<%= address.landmark %>" placeholder="near appolo hospital"
+                                                <input type="text" name="landmark" id="editLandmark<%= index %>" value="<%= address.landmark %>"
+                                                    placeholder="near appolo hospital"
                                                     class="landmark w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]" />
                                             </div>
                                         </div>
 
                                         <div class="w-full px-3 sm:w-1/2">
-                                            <label for="editCity<%= index %>"
-                                                class="mb-3 block text-base font-medium text-indigo-900">
+                                            <label for="editCity<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
                                                 City/Town<span class="text-red-600">*</span>
                                             </label>
-                                            <input type="text" name="city" id="editCity<%= index %>"
-                                                value="<%= address.city %>"
+                                            <input type="text" name="city" id="editCity<%= index %>" value="<%= address.city %>"
                                                 class="city w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]" />
                                         </div>
                                         <div class="w-full px-3 sm:w-1/2">
-                                            <label for="editState<%= index %>"
-                                                class="mb-3 block text-base font-medium text-indigo-900">
+                                            <label for="editState<%= index %>" class="mb-3 block text-base font-medium text-indigo-900">
                                                 State<span class="text-red-600">*</span>
                                             </label>
                                             <select name="state" id="editState<%= index %>"
                                                 class="state w-full rounded-md border border-gray-400 bg-white py-2 text-base outline-none focus:border-[#6A64F1]">
-                                                <option value="" disabled <%=!address.state ? 'selected' : '' %>
-                                                    >Select your state</option>
-                                                <option value="Andhra Pradesh" <%=address.state==="Andhra Pradesh"
-                                                    ? 'selected' : '' %>>Andhra Pradesh</option>
-                                                <option value="Arunachal Pradesh" <%=address.state==="Arunachal Pradesh"
-                                                    ? 'selected' : '' %>
-                                                    >Arunachal Pradesh</option>
-                                                <option value="Assam" <%=address.state==="Assam" ? 'selected' : '' %>
-                                                    >Assam</option>
-                                                <option value="Bihar" <%=address.state==="Bihar" ? 'selected' : '' %>
-                                                    >Bihar</option>
-                                                <option value="Chhattisgarh" <%=address.state==="Chhattisgarh"
-                                                    ? 'selected' : '' %>>Chhattisgarh</option>
-                                                <option value="Goa" <%=address.state==="Goa" ? 'selected' : '' %>
-                                                    >Goa</option>
-                                                <option value="Gujarat" <%=address.state==="Gujarat" ? 'selected' : ''
-                                                    %>>Gujarat</option>
-                                                <option value="Haryana" <%=address.state==="Haryana" ? 'selected' : ''
-                                                    %>>Haryana</option>
-                                                <option value="Himachal Pradesh" <%=address.state==="Himachal Pradesh"
-                                                    ? 'selected' : '' %>
-                                                    >Himachal Pradesh</option>
-                                                <option value="Jharkhand" <%=address.state==="Jharkhand" ? 'selected'
-                                                    : '' %>>Jharkhand</option>
-                                                <option value="Karnataka" <%=address.state==="Karnataka" ? 'selected'
-                                                    : '' %>>Karnataka</option>
-                                                <option value="Kerala" <%=address.state==="Kerala" ? 'selected' : '' %>
-                                                    >Kerala</option>
-                                                <option value="Madhya Pradesh" <%=address.state==="Madhya Pradesh"
-                                                    ? 'selected' : '' %>>Madhya Pradesh</option>
-                                                <option value="Maharashtra" <%=address.state==="Maharashtra"
-                                                    ? 'selected' : '' %>>Maharashtra</option>
-                                                <option value="Manipur" <%=address.state==="Manipur" ? 'selected' : ''
-                                                    %>>Manipur</option>
-                                                <option value="Meghalaya" <%=address.state==="Meghalaya" ? 'selected'
-                                                    : '' %>>Meghalaya</option>
-                                                <option value="Mizoram" <%=address.state==="Mizoram" ? 'selected' : ''
-                                                    %>>Mizoram</option>
-                                                <option value="Nagaland" <%=address.state==="Nagaland" ? 'selected' : ''
-                                                    %>>Nagaland</option>
-                                                <option value="Odisha" <%=address.state==="Odisha" ? 'selected' : '' %>
-                                                    >Odisha</option>
-                                                <option value="Punjab" <%=address.state==="Punjab" ? 'selected' : '' %>
-                                                    >Punjab</option>
-                                                <option value="Rajasthan" <%=address.state==="Rajasthan" ? 'selected'
-                                                    : '' %>>Rajasthan</option>
-                                                <option value="Sikkim" <%=address.state==="Sikkim" ? 'selected' : '' %>
-                                                    >Sikkim</option>
-                                                <option value="Tamil Nadu" <%=address.state==="Tamil Nadu" ? 'selected'
-                                                    : '' %>>Tamil Nadu</option>
+                                                <option value="" disabled <%=!address.state ? 'selected' : '' %>>Select your state</option>
+                                                <option value="Andhra Pradesh" <%=address.state==="Andhra Pradesh" ? 'selected' : '' %>>Andhra Pradesh</option>
+                                                <option value="Arunachal Pradesh" <%=address.state==="Arunachal Pradesh" ? 'selected' : '' %>>Arunachal Pradesh</option>
+                                                <option value="Assam" <%=address.state==="Assam" ? 'selected' : '' %>>Assam</option>
+                                                <option value="Bihar" <%=address.state==="Bihar" ? 'selected' : '' %>>Bihar</option>
+                                                <option value="Chhattisgarh" <%=address.state==="Chhattisgarh" ? 'selected' : '' %>>Chhattisgarh</option>
+                                                <option value="Goa" <%=address.state==="Goa" ? 'selected' : '' %>>Goa</option>
+                                                <option value="Gujarat" <%=address.state==="Gujarat" ? 'selected' : '' %>>Gujarat</option>
+                                                <option value="Haryana" <%=address.state==="Haryana" ? 'selected' : '' %>>Haryana</option>
+                                                <option value="Himachal Pradesh" <%=address.state==="Himachal Pradesh" ? 'selected' : '' %>>Himachal Pradesh</option>
+                                                <option value="Jharkhand" <%=address.state==="Jharkhand" ? 'selected' : '' %>>Jharkhand</option>
+                                                <option value="Karnataka" <%=address.state==="Karnataka" ? 'selected' : '' %>>Karnataka</option>
+                                                <option value="Kerala" <%=address.state==="Kerala" ? 'selected' : '' %>>Kerala</option>
+                                                <option value="Madhya Pradesh" <%=address.state==="Madhya Pradesh" ? 'selected' : '' %>>Madhya Pradesh</option>
+                                                <option value="Maharashtra" <%=address.state==="Maharashtra" ? 'selected' : '' %>>Maharashtra</option>
+                                                <option value="Manipur" <%=address.state==="Manipur" ? 'selected' : '' %>>Manipur</option>
+                                                <option value="Meghalaya" <%=address.state==="Meghalaya" ? 'selected' : '' %>>Meghalaya</option>
+                                                <option value="Mizoram" <%=address.state==="Mizoram" ? 'selected' : '' %>>Mizoram</option>
+                                                <option value="Nagaland" <%=address.state==="Nagaland" ? 'selected' : '' %>>Nagaland</option>
+                                                <option value="Odisha" <%=address.state==="Odisha" ? 'selected' : '' %>>Odisha</option>
+                                                <option value="Punjab" <%=address.state==="Punjab" ? 'selected' : '' %>>Punjab</option>
+                                                <option value="Rajasthan" <%=address.state==="Rajasthan" ? 'selected' : '' %>>Rajasthan</option>
+                                                <option value="Sikkim" <%=address.state==="Sikkim" ? 'selected' : '' %>>Sikkim</option>
+                                                <option value="Tamil Nadu" <%=address.state==="Tamil Nadu" ? 'selected' : '' %>>Tamil Nadu</option>
                                             </select>
                                         </div>
 
@@ -234,31 +192,22 @@
                                         </label>
                                         <div class="flex items-center space-x-6">
                                             <div class="flex items-center">
-                                                <input type="radio" name="addressType" id="homeRadio" value="HOME"
-                                                    <%=address.addressType==='HOME' ? 'checked' : '' %>
-                                                required checked
-                                                class="h-5 w-5 mr-2 text-button-color focus:ring-secondry-button" />
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="20px"
-                                                    viewBox="0 -960 960 960" width="20px" fill="#07074D">
-                                                    <path
-                                                        d="M264-216h96v-240h240v240h96v-348L480-726 264-564v348Zm-72 72v-456l288-216 288 216v456H528v-240h-96v240H192Zm288-327Z" />
+                                                <input type="radio" name="addressType" id="homeRadio" value="HOME" <%=address.addressType==='HOME' ? 'checked' : '' %>
+                                                    required checked class="h-5 w-5 mr-2 text-button-color focus:ring-secondry-button" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#07074D">
+                                                    <path d="M264-216h96v-240h240v240h96v-348L480-726 264-564v348Zm-72 72v-456l288-216 288 216v456H528v-240h-96v240H192Zm288-327Z" />
                                                 </svg>
-                                                <label for="radioButton1"
-                                                    class="pl-1 text-base font-medium text-[#07074D]">
+                                                <label for="radioButton1" class="pl-1 text-base font-medium text-[#07074D]">
                                                     Home
                                                 </label>
                                             </div>
                                             <div class="flex items-center">
-                                                <input type="radio" name="addressType" id="workRadio" value="WORK"
-                                                    <%=address.addressType==='WORK' ? 'checked' : '' %>
-                                                class="h-5 w-5 mr-2 text-button-color focus:ring-secondry-button" />
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="20px"
-                                                    viewBox="0 -960 960 960" width="20px" fill="#07074D">
-                                                    <path
-                                                        d="M144-144v-528h144v-144h360v288h168v384H528v-144h-96v144H144Zm72-72h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-156h72v-72h-72v72Zm144 156h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-144h72v-72h-72v72Zm144 300h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-144h72v-72h-72v72Zm168 456h72v-72h-72v72Zm0-156h72v-72h-72v72Z" />
+                                                <input type="radio" name="addressType" id="workRadio" value="WORK" <%=address.addressType==='WORK' ? 'checked' : '' %>
+                                                    class="h-5 w-5 mr-2 text-button-color focus:ring-secondry-button" />
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#07074D">
+                                                    <path d="M144-144v-528h144v-144h360v288h168v384H528v-144h-96v144H144Zm72-72h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-156h72v-72h-72v72Zm144 156h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-144h72v-72h-72v72Zm144 300h72v-72h-72v72Zm0-156h72v-72h-72v72Zm0-144h72v-72h-72v72Zm168 456h72v-72h-72v72Zm0-156h72v-72h-72v72Z" />
                                                 </svg>
-                                                <label for="radioButton2"
-                                                    class="pl-1 text-base font-medium text-[#07074D]">
+                                                <label for="radioButton2" class="pl-1 text-base font-medium text-[#07074D]">
                                                     Work
                                                 </label>
                                             </div>
@@ -274,8 +223,7 @@
                                         </div>
                                     </div>
 
-                                    <button type="submit" class="bg-button-color text-white px-6 py-2 rounded-md">Save
-                                        Changes</button>
+                                    <button type="submit" class="bg-button-color text-white px-6 py-2 rounded-md">Save Changes</button>
                                     <button data-modal-toggle="editModal<%= index %>"
                                         class="px-6 py-2 border border-button-color text-button-color rounded-lg hover:bg-purple-50 "
                                         type="button">Cancel</button>
@@ -307,7 +255,7 @@
 
 
             <!-- add new address form -->
-            <div class="mx-auto w-full md:max-w-[90%] bg-purple-50 md:p-10 rounded-lg border border-purple-300 relative"
+            <div class=" mx-auto w-full p-2 md:max-w-[90%] bg-purple-50 md:p-10 rounded-lg border border-purple-300 relative"
                 id="adressAddForm" style="display:none; ">
                 <p id="mssg" class="text-red-600 text-center mb-4 mssg"></p>
                 <form action="/user/profile-addAddress" method="POST" id="addressAddForm">

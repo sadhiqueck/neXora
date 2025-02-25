@@ -19,7 +19,7 @@
 </div>
 
 <nav class="bg-white border-gray-200 shadow-md ">
-    <div class="max-w-screen-3xl flex flex-wrap items-center justify-evenly p-4 ">
+    <div class="max-w-screen-3xl flex flex-wrap items-center justify-evenly md:p-4 py-4 mx-auto">
         <a href="/user/home" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="/Images/lOGO.png" class="h-8" alt="Nexora" />
         </a>
@@ -248,16 +248,19 @@
                     </div>
     </nav>
 <script>
+            // for responsive search results
     const desktopResultContainer= document.getElementById('desktopResultContainer');
     if (window.innerWidth >= 768) {
         desktopResultContainer.classList.add('liveSearchResults');
     } else {
         desktopResultContainer.classList.remove('liveSearchResults');
     }
-    const searchInput = document.querySelector(' input[name="search-navbar" ]'); const
-        searchResults = document.createElement('div');
-    searchResults.className = 'absolute w-full bg-white mt-1 rounded-lg shadow-lg max-h-96 overflow-y-auto hidden z-50'
-        ; searchInput.parentElement.appendChild(searchResults); let debounceTimer;
+    
+    const searchInput = document.querySelector(' input[name="search-navbar" ]'); 
+    const searchResults = document.createElement('div');
+    searchResults.className = 'absolute w-full bg-white mt-1 rounded-lg shadow-lg max-h-96 overflow-y-auto hidden z-50'; 
+    searchInput.parentElement.appendChild(searchResults); 
+    let debounceTimer;
     searchInput.addEventListener('input', function (e) {
         clearTimeout(debounceTimer);
         const searchTerm = e.target.value.trim(); if (searchTerm.length < 2) {

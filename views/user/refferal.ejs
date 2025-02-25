@@ -10,24 +10,29 @@
             <%- include('../partials/userProfile_sidebar.ejs') %>
         </div>
 
-        <div class="space-y-6 p-6 w-full mx-auto bg-white rounded-lg shadow-lg border-2">
+        <div class="space-y-6 p-4 md:p-6 w-full mx-auto bg-white rounded-lg shadow-lg border-2">
             <!-- main content -->
-            <div class="container mx-auto px-4 py-8">
+            <div class="container mx-auto md:px-4 md:py-8">
                 <div class="text-center mb-12">
                     <h1 class="text-4xl font-bold text-gray-900 mb-4">Invite Friends & Earn Rewards</h1>
-                    <p class="text-xl text-gray-600 mb-2 font-medium">You will get <span class="font-bold text-indigo-600"><%=referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span> 
-                        and friend will get <span class="font-bold text-indigo-600"><%=refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>.</p>
+                    <p class="text-xl text-gray-600 mb-2 font-medium">You will get <span
+                            class="font-bold text-indigo-600"><%=referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>
+                        and friend will get <span
+                            class="font-bold text-indigo-600"><%=refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>.
+                    </p>
                     <p class="text-xl text-purple-600">Share your love for Nexora and get rewarded!</p>
                 </div>
                 <!-- Referral Section -->
-                <div class="max-w-5xl mx-auto bg-white rounded-lg shadow-md p-6">
+                <div class="max-w-5xl mx-auto bg-white rounded-lg shadow-md p-2 md:p-6">
 
                     <h1 class="text-3xl font-bold text-gray-800 mb-4">Your Referral Code</h1>
 
                     <!-- Referral Code Display -->
                     <div class="mb-8 ">
                         <div class="flex items-center  justify-between bg-gray-100 p-4 rounded-lg">
-                            <span class="text-2xl font-mono font-bold text-indigo-600"><%=user.referralCode %></span>
+                            <span class="text-2xl font-mono font-bold text-indigo-600">
+                                <%=user.referralCode %>
+                            </span>
                             <button onclick="copyCode()"
                                 class="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700 transition-colors"
                                 title="Copy to clipboard">
@@ -47,14 +52,17 @@
                         <!-- Total Earnings -->
                         <div class="bg-white rounded-lg shadow-md p-6 text-center">
                             <h3 class="text-lg font-medium text-gray-600 mb-2">Total Earnings</h3>
-                            <p class="text-3xl font-bold text-indigo-600"><%=totalEarnings.toLocaleString('en-IN',{style:'currency', currency:"INR"})%></p>
+                            <p class="text-3xl font-bold text-indigo-600">
+                                <%=totalEarnings.toLocaleString('en-IN',{style:'currency', currency:"INR"})%></p>
                             <p class="text-sm text-gray-600 mt-2">From <%=totalReferal%> referrals</p>
                         </div>
 
                         <!-- Pending Rewards -->
                         <div class="bg-white rounded-lg shadow-md p-6 text-center">
                             <h3 class="text-lg font-medium text-gray-600 mb-2">Total Referrals</h3>
-                            <p class="text-5xl font-bold text-gray-900"><%=totalReferal%></p>
+                            <p class="text-5xl font-bold text-gray-900">
+                                <%=totalReferal%>
+                            </p>
                         </div>
 
                         <!-- Available Invites -->
@@ -70,57 +78,68 @@
                         <h2 class="text-lg font-semibold text-gray-800 mb-2">How it works</h2>
                         <p class="text-gray-600">
                             Share your referral code with friends. When they Signup using your code,
-                            both you and your friend will receive rewards!,You will get<span class="font-bold"> <%=referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span> 
-                            and freind will get <span class="font-bold"> <%=refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>.                        </p>
+                            both you and your friend will receive rewards!,You will get<span class="font-bold">
+                                <%=referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>
+                            and freind will get <span class="font-bold">
+                                <%=refereeBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%></span>. </p>
                     </div>
 
                     <% if(referralHistory) {%>
-                    <!-- Referral History -->
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800 mb-4 mt-10">Referral History</h2>
-                        <div class="space-y-4">
-                            <!-- Referral History Item -->
-                            <% referralHistory.forEach(referal => { %>
-                                <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                                <div>
-                                    <p class="font-semibold text-gray-800"><%= referal.referee.username %></p>
-                                    <p class="text-sm text-gray-500"><%= referal.referee.email %></p>
-                                    <p class="text-sm text-gray-500">Referred on <%=referal.createdAt.toLocaleDateString('en-IN',{dateStyle:'long'})%></p>
-                                </div>
-                                <span class="text-green-600 font-semibold"><%=referal.referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%> Earned</span>
-                            </div> 
-                         <% }) %>
-                           
+                        <!-- Referral History -->
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800 mb-4 mt-10">Referral History</h2>
+                            <div class="space-y-4">
+                                <!-- Referral History Item -->
+                                <% referralHistory.forEach(referal=> { %>
+                                    <div class="flex items-center w-full justify-between bg-gray-50 p-4 rounded-lg">
+                                        <div class="w-[50%]">
+                                            <p class="font-semibold text-gray-800">
+                                                <%= referal.referee.username %>
+                                            </p>
+                                            <p class="text-sm text-gray-500 overflow-hidden">
+                                                <%= referal.referee.email %>
+                                            </p>
+                                            <p class="text-sm text-gray-500">Referred on
+                                                <%=referal.createdAt.toLocaleDateString('en-IN',{dateStyle:'long'})%>
+                                            </p>
+                                        </div>
+                                        <div class="w-[50%] text-right">
+                                            <span
+                                                class="text-green-600 font-semibold"><%=referal.referralBonus.toLocaleString('en-IN',{style:'currency',currency:'INR'})%>
+                                                    Earned</span>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+
+                            </div>
                         </div>
-                    </div>
-                    <% } %>
+                        <% } %>
                 </div>
             </div>
         </div>
 
 
-            <script>
-                function copyCode() {
-                    const code = '<%-user.referralCode%>';
-                    navigator.clipboard.writeText(code);
+        <script>
+            function copyCode() {
+                const code = '<%-user.referralCode%>';
+                navigator.clipboard.writeText(code);
 
-                    // Visual feedback
-                    const button = event.currentTarget;
-                    button.innerHTML = `
+                // Visual feedback
+                const button = event.currentTarget;
+                button.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
                 <span class="hidden sm:inline">Copied!</span>
             `;
 
-                    setTimeout(() => {
-                        button.innerHTML = `
+                setTimeout(() => {
+                    button.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                     <span class="hidden sm:inline">Copy Code</span>
                 `;
-                    }, 2000);
-                }
-            </script>
-         
+                }, 2000);
+            }
+        </script>

@@ -62,7 +62,7 @@
                                     selectedDeliveryMethod.deliveryType==='custom' ? 'checked' : '' %>/>
                                 <div class="ml-3">
                                     <span class="font-medium">Schedule</span>
-                                    <span class="ml-3 text-gray-600">Pick a custom delivery date</span>
+                                    <span class="md:ml-3  text-gray-600 block sm:inline">Pick a custom delivery date</span>
                                 </div>
                             </div>
                             <div id="selectedDate" class="text-gray-500">
@@ -78,7 +78,7 @@
                     <div class="flex flex-col space-y-2">
                         <label class="text-sm text-gray-600">Select Delivery Date</label>
                         <input type="date" required
-                            class=" w-1/4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dateSelection"
+                            class="  w-full md:w-1/4 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dateSelection"
                             min="" onkeydown="return false;" />
                         <p class="text-xs text-gray-500">Select a date after regular delivery and within 7 days</p>
                     </div>

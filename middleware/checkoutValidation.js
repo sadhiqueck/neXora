@@ -78,7 +78,6 @@ const cartVersionValidation = async (req, res, next) => {
         }
 
         if (cartVersion !== cart.version.toString()) {
-            console.log('cart version mismatch');
             return res.status(409).json({success:false, message: "Cart version mismatch" });
         }
         req.session.currenCart=cart;

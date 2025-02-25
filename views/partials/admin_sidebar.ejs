@@ -1,6 +1,20 @@
-<aside class="w-1/6 h-screen/3 fixed bg-white shadow-md  rounded-lg overflow-hidden">
-    <div class="flex items-center justify-center h-16">
+<!-- hamburger for mobile devices -->
+<button id="sidebarToggle" class="fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md lg:hidden">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+</button>
+
+
+<aside id="sidebar" class="w-64 h-screen fixed inset-0 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out bg-white shadow-md rounded-lg overflow-hidden z-40">
+    <div class="flex items-center justify-between h-16 p-4">
         <img class="h-12" src="/Images/lOGO.png" alt="">
+        <!-- Close button for mobile -->
+        <button id="closeSidebar" class="p-1 rounded-md hover:bg-gray-100 lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
     </div>
     <ul class="flex flex-col py-3">
         <li>
@@ -88,3 +102,60 @@
         </li>
     </ul>
 </aside>
+
+<!-- Overlay for mobile -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-30 lg:hidden"></div>
+
+<script>
+    // Add this to your admin_script.js file or in a script tag at the end of your body
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    // Function to open sidebar
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        sidebarOverlay.classList.remove('opacity-0');
+        sidebarOverlay.classList.add('opacity-50');
+        sidebarOverlay.classList.remove('pointer-events-none');
+        sidebarToggle.classList.add('hidden');
+    }
+    
+    // Function to close sidebar
+    function closeSidebarFunc() {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.remove('opacity-50');
+        sidebarOverlay.classList.add('opacity-0');
+        sidebarOverlay.classList.add('pointer-events-none');
+        sidebarToggle.classList.remove('hidden');
+    }
+    
+    // Toggle sidebar when hamburger icon is clicked
+    sidebarToggle.addEventListener('click', openSidebar);
+    
+    // Close sidebar when X button is clicked
+    closeSidebar.addEventListener('click', closeSidebarFunc);
+    
+    // Close sidebar when clicking outside of it
+    sidebarOverlay.addEventListener('click', closeSidebarFunc);
+    
+    // Close sidebar when window is resized to desktop size
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 1024) { // lg breakpoint in Tailwind
+            closeSidebarFunc();
+        }
+    });
+    
+    // Close sidebar when clicking on a menu item (optional, for better mobile experience)
+    const menuItems = sidebar.querySelectorAll('a');
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            if (window.innerWidth < 1024) {
+                closeSidebarFunc();
+            }
+        });
+    });
+});
+</script>
