@@ -136,9 +136,9 @@ const sendVerificationEmail = async function (email, otp) {
 }
 const sendOTP = async function (req, res) {
 
-    const { username, email, password, referralCode  } = req.body;
+    const { username, email, password, referralCode } = req.body;
     try {
-     
+
         req.session.userData = { username, email, password, referralCode };
 
         // Check if user is already registerd
@@ -146,7 +146,7 @@ const sendOTP = async function (req, res) {
 
 
         if (checkUserPresent) {
-            return res.status(401).json({ success:false, message: "User already exists in this email" });
+            return res.status(401).json({ success: false, message: "User already exists in this email" });
         }
 
         // Generate otp
@@ -171,31 +171,31 @@ const sendOTP = async function (req, res) {
 
         // Send OTP to user's email
         await sendVerificationEmail(email, otp);
-        req.session.resetFlow=true;
-        return res.status(200).json({success:true,message:"Otp Sended Succesfully"})
+        req.session.resetFlow = true;
+        return res.status(200).json({ success: true, message: "Otp Sended Succesfully" })
 
     } catch (error) {
         console.log(error.message);
-        return res.status(500).json({ success:false, error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 };
 
-const LoadOtpVerifyPage= async(req,res)=>{
+const LoadOtpVerifyPage = async (req, res) => {
     res.render("user/otp_verify", {
-         title: 'OTP Verification',
-          mssg: "OTP sent successfully to your email!" 
-        });
+        title: 'OTP Verification',
+        mssg: "OTP sent successfully to your email!"
+    });
 }
 
 // resend otp
 
 const resendOtp = async (req, res) => {
     try {
-        const {email} = req.session.userData;
-     
-        if(!email){
-            return res.status(404).json({error:"No user found in this email!"})
-           
+        const { email } = req.session.userData;
+
+        if (!email) {
+            return res.status(404).json({ error: "No user found in this email!" })
+
         }
 
         let newOtp = otpGenerator.generate(4, {
@@ -215,17 +215,17 @@ const resendOtp = async (req, res) => {
             result = await OTP.findOne({ otp: newOtp });
         }
 
-      
+
         const otpRecord = new OTP({ email, otp: newOtp, createdAt: new Date() });
         await otpRecord.save();
 
 
         await sendVerificationEmail(email, newOtp);
 
-        return res.status(200).json({message:"A new OTP has been sent to your email."})
+        return res.status(200).json({ message: "A new OTP has been sent to your email." })
     } catch (error) {
         console.log('Error during OTP resend:', error.message);
-        return res.status(500).json({error:error.message})
+        return res.status(500).json({ error: error.message })
     }
 };
 
@@ -233,10 +233,14 @@ const sendresetOtp = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) {
-            return res.render('user/forgot-passsword', {
+            return res.render('user/forgotPassword', {
                 title: "Forgot Password",
                 mssg: "Something Wrong. Please try again."
             });
+        }
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(404).json({ message: "User not found in this email!" })
         }
         let otp = otpGenerator.generate(4, {
             upperCaseAlphabets: false,
@@ -259,7 +263,7 @@ const sendresetOtp = async (req, res) => {
         await otpRecord.save();
 
         req.session.resetFlow = true;
-        req.session.userData = {email}
+        req.session.userData = { email }
         await sendVerificationEmail(email, otp);
 
         return res.status(200).json({
@@ -278,4 +282,4 @@ const sendresetOtp = async (req, res) => {
 }
 
 
-module.exports = { sendVerificationEmail, sendOTP, resendOtp, sendresetOtp,LoadOtpVerifyPage }
+module.exports = { sendVerificationEmail, sendOTP, resendOtp, sendresetOtp, LoadOtpVerifyPage }

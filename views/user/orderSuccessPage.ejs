@@ -1,28 +1,300 @@
+<style>
+     #container {
+            background-color: #f3e8ff;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-items: center;
+            align-items: center;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
 
-<body class="bg-purple-100 min-h-screen flex items-center justify-center p-4">
-    <div class="text-center w-full max-w-md mx-auto mt-36 mb-44 bg">
-        <!-- Cart Success Icon -->
-        <div class="mb-6 flex justify-center">
-            <div class="relative">
-              <img src="/Icons/success_cart.svg" alt="Order Placed">
+        .overlay {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(107, 33, 168, 0.15);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(107, 33, 168, 0.1);
+            text-align: center;
+            position: relative;
+            z-index: 20;
+        }
+
+        .success-icon {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: #4b5563;
+            margin-bottom: 2rem;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .primary-button {
+            padding: 0.75rem 2rem;
+            background-color: #7c3aed;
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .primary-button:hover {
+            background-color: #6d28d9;
+        }
+
+        .secondary-button {
+            padding: 0.625rem 1.5rem;
+            border: 1px solid #7c3aed;
+            color: #7c3aed;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .secondary-button:hover {
+            background-color: #f5f3ff;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+    .pre-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #f3e8ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+    }
+    
+    .pre-animation.hide {
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .checkmark {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 2;
+        stroke: #7c3aed;
+        stroke-miterlimit: 10;
+        margin: 20px auto;
+        box-shadow: inset 0 0 0 rgba(124, 58, 237, 0.2);
+        animation: scale 0.3s ease-in-out 1.7s both;
+    }
+    
+    .checkmark__circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke-miterlimit: 10;
+        stroke: #7c3aed;
+        fill: none;
+        animation: stroke 1s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    
+    .checkmark__check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+    
+    @keyframes scale {
+        0%, 100% {
+            transform: none;
+        }
+        50% {
+            transform: scale3d(1.1, 1.1, 1);
+        }
+    }
+         @media (min-width: 640px) {
+            .buttons-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+    
+    </style>
+
+
+<body>
+    <div class="pre-animation">
+        <svg class="checkmark" viewBox="0 0 52 52">
+            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" stroke-width="8"/>
+            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" stroke-width="4"/>
+        </svg>
+    </div>
+
+    <div id="container" class="p-2 md:p-4">
+    <!-- Particles container -->
+    <div id="particles-js"></div>
+
+    <!-- Overlay -->
+        <div class="success-container p-2">
+            <!-- Cart Success Icon -->
+            <div class="success-icon">
+                <div class="relative">
+                    <img src="/Icons/success_cart.svg" alt="Order Placed">
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <h1>Thank you!</h1>
+            <p>Your order was successfully completed</p>
+
+            <!-- Action Buttons -->
+            <div class="buttons-container">
+                <a href="/user/orders" class="primary-button">
+                    My orders
+                </a>
+                <a href="/user/products/all" class="secondary-button">
+                    Continue Shopping
+                </a>
             </div>
         </div>
+</div>
 
-        <!-- Success Message -->
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Thank you!</h1>
-        <p class="text-gray-700 mb-8">Your order was successfully completed</p>
-      
+    <!-- Particles.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": ["#7c3aed", "#a78bfa", "#c4b5fd", "#8b5cf6"]
+                    },
+                    "shape": {
+                        "type": ["circle", "triangle", "star"],
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                    },
+                    "opacity": {
+                        "value": 0.7,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 6,
+                        "random": true,
+                        "anim": {
+                            "enable": false,
+                            "speed": 40,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": false
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 3,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": false
+                        },
+                        "onclick": {
+                            "enable": false
+                        },
+                        "resize": true
+                    }
+                },
+                "retina_detect": true
+            });
+        });
 
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row justify-center gap-4 px-4">
-            <a href="/user/orders" 
-               class="px-8 py-3  bg-button-color text-white rounded-lg font-medium hover:bg-purple-900 transition-colors">
-                My orders
-            </a>
-            <a href="/user/products/all" 
-               class="px-6 py-2.5 border border-button-color text-button-color rounded-lg font-medium hover:bg-purple-50 transition-colors">
-                Continue Shopping
-            </a>
-        </div>
-    </div>
+        setTimeout(function() {
+                const preAnimation = document.querySelector('.pre-animation');
+                preAnimation.classList.add('hide');
+                
+                // Remove the overlay after transition
+                setTimeout(() => {
+                    preAnimation.remove();
+                }, 500);
+            }, 2000);
+    </script>
 </body>
+

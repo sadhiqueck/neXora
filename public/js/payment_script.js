@@ -165,7 +165,7 @@ const placeOrder = () => {
             handleRazorpayPayment(total);
 
         } else {
-            // Handle COD or other methods
+            // Handle COD or Wallet methods
             fetch('/user/place-order', {
                 method: 'POST',
                 headers: {

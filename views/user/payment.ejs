@@ -132,10 +132,10 @@
                             </label>
 
                             <!-- Wallet Option -->
-                            <label class="block cursor-not-allowed">
-                                <input type="radio" name="payment" class="hidden peer" value="Wallet" disabled>
+                            <label class="block ">
+                                <input type="radio" name="payment" class="hidden peer " value="Wallet" >
                                 <div
-                                    class="p-6 rounded-xl border-2 peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-200 transition-all">
+                                    class="p-6 rounded-xl border-2 peer-checked:border-purple-600  peer-checked:bg-purple-50 hover:border-purple-200 transition-all <%= (userWallet && userWallet.balance < total) ? 'opacity-75 bg-gray-50 cursor-not-allowed' :'' %>">
                                     <div class="flex items-center gap-4">
                                         <div
                                             class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
@@ -151,8 +151,12 @@
                                                     userWallet?.balance.toLocaleString('en-IN',{style:'currency',currency:"INR"})
                                                     :'₹0.00' %>
                                             </p>
-                                            <p class="text-yellow-400 text-xs ">This Payment Option Temporarily not
-                                                available⚠️</p>
+                                            <% if (userWallet && userWallet.balance < total) { %>
+                                                <p class="text-red-500 text-sm">Insufficient balance for this transaction</p>
+                                                <script>
+                                                    document.querySelector('input[value="Wallet"]').disabled = true;
+                                                </script>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>

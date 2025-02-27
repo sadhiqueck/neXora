@@ -189,7 +189,7 @@ const cancelItem = async (req, res) => {
         order.status = computeOrderStatus(order.products);
 
         // Process refund if payment was completed
-        if (order.paymentStatus === 'Completed' && ['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
+        if (['Razorpay', 'Wallet'].includes(order.paymentMethod)) {
             let refundAmount;
             if (product.status === 'Shipped' && order.deliveryCharge) {
                 refundAmount = product.discountedPrice - order.deliveryCharge;
@@ -206,7 +206,7 @@ const cancelItem = async (req, res) => {
                     transactions: [],
                 });
                 await wallet.save();
-            }
+            }    
             wallet.balance += refundAmount;
             wallet.transactions.push({
                 amount: refundAmount,
@@ -214,7 +214,6 @@ const cancelItem = async (req, res) => {
                 description: `Refund for cancelled item: ${product.productName}`,
                 status: 'completed'
             });
-
             await wallet.save();
 
             // Update payment status
