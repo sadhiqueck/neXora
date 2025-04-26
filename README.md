@@ -101,7 +101,7 @@
 
 ### Order Details
 
-![nexora ddns net_user_order-details_67bded3635870b61eae91a52](https://github.com/user-attachments/assets/09ce1d86-57e9-49df-adb0-6edc189f
+![nexora ddns net_user_order-details_67bded3635870b61eae91a52](https://github.com/user-attachments/assets/09ce1d86-57e9-49df-adb0-6edc189f)
 
 
 
