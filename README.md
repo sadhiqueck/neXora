@@ -67,7 +67,6 @@
 
 ## 🖼️ Screenshots
 
-*(Make sure to upload your real screenshots into a `/screenshots` folder!)*
 
 ###  Home Page
 ![nexora ddns net_user_home](https://github.com/user-attachments/assets/2ee8620d-7218-4788-bf3a-288ec8d4c949)
