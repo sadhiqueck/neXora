@@ -1,27 +1,30 @@
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const otpSender = async (email, title, body) => {
   try {
-    // Create a Transporter to send emails
-   let transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: 465, 
-  secure: true, 
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});    
-    let info = await transporter.sendMail({
-      from: 'nexoraproject@gmail.com',
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    const { data, error } = await resend.emails.send({
+      from: 'Nexora <onboarding@resend.dev>', // Use Resend's free domain
       to: email,
       subject: title,
       html: body,
-    }); 
-    return info;
+    });
+    
+    if (error) {
+      console.error("❌ Resend error:", error);
+      throw error;
+    }
+    
+    console.log("✅ Email sent successfully! ID:", data.id);
+    return data; // Returns email info similar to nodemailer
+    
   } catch (error) {
-    console.error("Error in otpSender:", error.message);
-    throw error; 
+    console.error("❌ Error in otpSender:", error.message);
+    throw error;
   }
 };
+
+module.exports = otpSender;
 module.exports = otpSender;
