@@ -13,7 +13,7 @@ async function handleRazorpayPayment(total) {
         showSpinner();
 
         //create order on your server
-        const createOrderResponse = await fetch('/user/create-razorpay-order', {
+        const createOrderResponse = await fetch('/create-razorpay-order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -24,7 +24,7 @@ async function handleRazorpayPayment(total) {
         if (createOrderResponse.status == 404) {
             notyf.error('Sorry, Product went Stock out');
             setTimeout(() => {
-                window.location.href = '/user/cart';
+                window.location.href = '/cart';
             }, 500);
             return;
         } else if (createOrderResponse.status == 409) {
@@ -71,7 +71,7 @@ async function handleRazorpayPayment(total) {
                 const coupon = appliedCouponData ? JSON.parse(appliedCouponData) : null;
 
                 // Verify payment on your server
-                const verificationResponse = await fetch('/user/verify-payment', {
+                const verificationResponse = await fetch('/verify-payment', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -84,7 +84,7 @@ async function handleRazorpayPayment(total) {
                     })
                 });
                 if (verificationResponse.ok) {
-                    window.location.href = '/user/order-success';
+                    window.location.href = '/order-success';
                 } else {
                     notyf.error('Payment verification failed');
                 }
@@ -108,7 +108,7 @@ async function handleRazorpayPayment(total) {
                 const appliedCouponData = document.getElementById('appliedCouponData').value;
                 const coupon = appliedCouponData ? JSON.parse(appliedCouponData) : null;
 
-                await fetch('/user/handle-payment-failure', {
+                await fetch('/handle-payment-failure', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ async function handleRazorpayPayment(total) {
                         appliedCouponData: coupon
                     })
                 });
-                window.location.href = '/user/orders'
+                window.location.href = '/orders'
             } catch (error) {
                 console.error('Error handling payment failure:', error);
                 notyf.error('Failed to process payment failure');
@@ -166,7 +166,7 @@ const placeOrder = () => {
 
         } else {
             // Handle COD or Wallet methods
-            fetch('/user/place-order', {
+            fetch('/place-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -175,11 +175,11 @@ const placeOrder = () => {
             })
                 .then(response => {
                     if (response.ok) {
-                        window.location.href = '/user/order-success';
+                        window.location.href = '/order-success';
                     } else if (response.status == 404) {
                         notyf.error('Sorry, Product went Stock out')
                         setTimeout(() => {
-                            window.location.href = '/user/cart'
+                            window.location.href = '/cart'
                         }, 500);
                     } else if (response.status == 409) {
                         notyf.error('Your cart changed! Please review before paying.')
@@ -221,7 +221,7 @@ async function applyCoupon() {
         }
 
 
-        const response = await fetch('/user/coupon-validate', {
+        const response = await fetch('/coupon-validate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

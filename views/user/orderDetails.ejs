@@ -9,7 +9,7 @@
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
                     <li class="inline-flex items-center">
-                        <a href="/user/home"
+                        <a href="/"
                             class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white">
                             <svg class="me-2.5 h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 fill="currentColor" viewBox="0 0 20 20">
@@ -28,7 +28,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="2" d="m9 5 7 7-7 7" />
                             </svg>
-                            <a href="/user/orders"
+                            <a href="/orders"
                                 class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                                 Orders
                             </a>
@@ -270,13 +270,13 @@
                                                     <span class="text-xs font-semibold tracking-wide">Cancelled</span>
                                                     <% if(order.paymentMethod !=='COD' ) {%>
                                                         <span class="hidden sm:inline text-xs font-semibold tracking-wide">, Payment Refunded to your wallet</span>
-                                                        <a href="/user/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
+                                                        <a href="/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
                                                     <% } %>
                                                 </span>
                                             </div>
                                             <% if(order.paymentMethod !=='COD' ) {%>
                                                 <div class="text-xs font-semibold tracking-wide text-center mt-1 sm:hidden">Payment Refunded to your wallet
-                                                    <a href="/user/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
+                                                    <a href="/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
                                                 </div>
                                             <% } %>
                                         <% } else if (product.status==='Delivered' ) { %>
@@ -314,13 +314,13 @@
                                                     <%}%>
                                                     <% if(product.paymentStatus==='Refunded') {%>
                                                         <span class="hidden sm:inline text-xs font-semibold tracking-wide">Item Returned, Payment Refunded to your wallet</span>
-                                                        <a href="/user/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
+                                                        <a href="/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
                                                     <% } %>
                                                 </span>
                                             </div>
                                             <% if(product.paymentStatus==='Refunded' ) {%>
                                                 <div class="text-xs font-semibold tracking-wide text-center mt-1 sm:hidden">Payment Refunded to your wallet
-                                                    <a href="/user/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
+                                                    <a href="/wallet" class="underline text-xs text-blue-600">Go to Wallet</a>
                                                 </div>
                                             <% } %>
                                         <% } else { %>

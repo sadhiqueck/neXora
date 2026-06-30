@@ -58,11 +58,11 @@ router.post('/forgot/verify-otp', validateResetFlow, resetPassword)
 router.get('/auth/google', redirectionUrl, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Callback route after Google authentication   
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/signup', session: true }), googleLogin);
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup', session: true }), googleLogin);
 
 
 //default access
-router.get('/home', loadHome); // home page
+router.get('/', loadHome); // home page
 
 // API endpoint for live search 
 router.get('/api/search', searchResultApi);

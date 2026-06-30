@@ -10,22 +10,22 @@ const authsession = async (req, res, next) => {
             if (user && (user.isBlocked || user.isDeleted)) {
                 req.session.user = null;
                 req.session.isLoggedIn = false;
-                return res.redirect('/user/login');
+                return res.redirect('/login');
             }
             next();
         } else {
-            res.redirect('/user/login');
+            res.redirect('/login');
         }
     } catch (error) {
         console.error("Error in authsession middleware:", error);
-        res.redirect('/user/home');
+        res.redirect('/');
     }
 };
 
 
 const isLogin = (req, res, next) => {
     if (req.session.user) {
-        return res.redirect('/user/home'); // Redirect to home if already logged in
+        return res.redirect('/'); // Redirect to home if already logged in
     }
     next(); // Proceed if not logged in
 };
@@ -35,7 +35,7 @@ const checkoutAccess = (req, res, next) => {
         next();
     }
     else {
-        res.redirect('/user/home');
+        res.redirect('/');
     }
 }
 
@@ -80,7 +80,7 @@ const validateResetFlow = (req, res, next) => {
 };
 const validateSignupFlow = (req, res, next) => {
     if (!req.session.resetFlow) {
-        return res.redirect('/user/signup');
+        return res.redirect('/signup');
     }
     next();
 };

@@ -30,7 +30,7 @@ const loadPaymentPage = async (req, res) => {
 
         if (!cart || !selectedAddressId || !selectedDeliveryMethod) {
             console.log("Error in loading payment page");
-            return res.redirect('/user/selectAddress');
+            return res.redirect('/selectAddress');
         } else {
 
             const categoryOffers = await CategoryOffer.find({
@@ -90,7 +90,7 @@ const loadPaymentPage = async (req, res) => {
             });
 
             if (hasOutOfStock) {
-                res.redirect('/user/cart');
+                res.redirect('/cart');
             }
 
             // Calculate the cart summary

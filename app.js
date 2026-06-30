@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 
 // user layout 
-app.use('/user',(req,res,next)=>{
+app.use('/',(req,res,next)=>{
     app.set('layout', 'layouts/userLayout');
     next(); 
 });
@@ -53,12 +53,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// default route
-app.get('/',(req,res)=>{
-    res.redirect('/user/home')
-})
 app.use('/admin',adminRoute)
-app.use('/user',loginStatus,userRoute)
+app.use('/',loginStatus,userRoute)
 
 // 404 Route
 app.all('*', (req, res, next) => {

@@ -132,7 +132,7 @@ const signup = async (req, res) => {
 
       // Delete the OTP after successful signup
       await OTP.deleteOne({ _id: otpRecord._id });
-      return res.redirect('/user/home')
+      return res.redirect('/')
     }
   } catch (error) {
     console.error('Error during signup:', error.message);
@@ -154,7 +154,7 @@ const googleLogin = async (req, res) => {
     req.session.user = user;
 
 
-    const redirectUrl = req.user.redirectUrl || '/user/home';
+    const redirectUrl = req.user.redirectUrl || '/';
     delete req.session.redirectUrl; 
   
     return res.redirect(redirectUrl);
@@ -224,7 +224,7 @@ const logout = (req, res) => {
     if (err) {
       console.error('Logout error:', err);
     }
-    res.redirect('/user/login');
+    res.redirect('/login');
   });
 }
 
@@ -289,7 +289,7 @@ const resetPassword = async (req, res) => {
       user.password = hashedPassword;
       await user.save();
 
-      return res.redirect('/user/login?mssg="Password Updated Succesfully"')
+      return res.redirect('/login?mssg="Password Updated Succesfully"')
     }
   } catch (error) {
     console.error(error);

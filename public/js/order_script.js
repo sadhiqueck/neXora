@@ -19,11 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            let endpoint = '/user/order/cancel';
+            let endpoint = '/order/cancel';
             let body = { orderId, reason };
 
             if (currentProductId) {
-                endpoint = '/user/order/cancel-item';
+                endpoint = '/order/cancel-item';
                 body.productId = currentProductId;
             }
 
@@ -64,12 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            let endpoint = '/user/order/return';
+            let endpoint = '/order/return';
             let body = { orderId, reason, description };
 
 
             if (currentProductId) {
-                endpoint = '/user/order/return-item';
+                endpoint = '/order/return-item';
                 body.productId = currentProductId;
             }
 
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             notyf.success('Downloading...')
             // Fetch order details
-            const response = await fetch(`/user/order/${orderId}/invoice`);
+            const response = await fetch(`/order/${orderId}/invoice`);
             const order = await response.json();
 
             // Create invoice HTML

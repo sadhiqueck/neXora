@@ -5,7 +5,7 @@
     <!-- Left Sidebar -->
     <div class="bg-white rounded-lg p-6 shadow-lg border-2 border-gray-200 h-fit ">
 
-      <%- include('../partials/userProfile_sidebar.ejs') %>
+      <%- include('../partialsProfile_sidebar.ejs') %>
     </div>
 
 
@@ -16,36 +16,47 @@
       <h2 class="font-semibold mb-6 text-xl">Your Orders</h2>
 
       <!-- Add Filter Controls Here -->
-  <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center border-b pb-4 mb-6">
-    <form method="GET" class="flex flex-wrap gap-4 items-center" id="filterForm">
-      <!-- Status Filter -->
-      <div class="relative">
-        <select name="status"  id="statusOption" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-indigo-500">
-          <option value="">All Statuses</option>
-          <option value="Pending" <%= typeof status !== 'undefined' && status === 'Pending' ? 'selected' : '' %>>Pending</option>
-          <option value="Processing" <%= typeof status !== 'undefined' && status === 'Processing' ? 'selected' : '' %>>Processing</option>
-          <option value="Shipped" <%= typeof status !== 'undefined' && status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-          <option value="Delivered" <%= typeof status !== 'undefined' && status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-          <option value="Cancelled" <%= typeof status !== 'undefined' && status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
-          <option value="Failed" <%= typeof status !== 'undefined' && status === 'Failed' ? 'selected' : '' %>>Failed</option>
-        </select>
-      </div>
+      <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center border-b pb-4 mb-6">
+        <form method="GET" class="flex flex-wrap gap-4 items-center" id="filterForm">
+          <!-- Status Filter -->
+          <div class="relative">
+            <select name="status" id="statusOption"
+              class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-indigo-500">
+              <option value="">All Statuses</option>
+              <option value="Pending" <%=typeof status !=='undefined' && status==='Pending' ? 'selected' : '' %>>Pending
+              </option>
+              <option value="Processing" <%=typeof status !=='undefined' && status==='Processing' ? 'selected' : '' %>
+                >Processing</option>
+              <option value="Shipped" <%=typeof status !=='undefined' && status==='Shipped' ? 'selected' : '' %>>Shipped
+              </option>
+              <option value="Delivered" <%=typeof status !=='undefined' && status==='Delivered' ? 'selected' : '' %>
+                >Delivered</option>
+              <option value="Cancelled" <%=typeof status !=='undefined' && status==='Cancelled' ? 'selected' : '' %>
+                >Cancelled</option>
+              <option value="Failed" <%=typeof status !=='undefined' && status==='Failed' ? 'selected' : '' %>>Failed
+              </option>
+            </select>
+          </div>
 
-      <!-- Time Period Filter -->
-      <div class="relative">
-        <select name="timePeriod" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-indigo-500">
-          <option value="all">All Time</option>
-          <option value="30" <%= typeof timePeriod !== 'undefined' && timePeriod === '30' ? 'selected' : '' %>>Last 30 Days</option>
-          <option value="90" <%= typeof timePeriod !== 'undefined' && timePeriod === '90' ? 'selected' : '' %>>Last 3 Months</option>
-          <option value="180" <%= typeof timePeriod !== 'undefined' && timePeriod === '180' ? 'selected' : '' %>>Last 6 Months</option>
-        </select>
-      </div>
+          <!-- Time Period Filter -->
+          <div class="relative">
+            <select name="timePeriod"
+              class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-indigo-500">
+              <option value="all">All Time</option>
+              <option value="30" <%=typeof timePeriod !=='undefined' && timePeriod==='30' ? 'selected' : '' %>>Last 30
+                Days</option>
+              <option value="90" <%=typeof timePeriod !=='undefined' && timePeriod==='90' ? 'selected' : '' %>>Last 3
+                Months</option>
+              <option value="180" <%=typeof timePeriod !=='undefined' && timePeriod==='180' ? 'selected' : '' %>>Last 6
+                Months</option>
+            </select>
+          </div>
 
-      <% if (typeof status !== 'undefined' || typeof timePeriod !== 'undefined') { %>
-        <a href="/user/orders" class="text-red-500 hover:text-red-700 px-4 py-2">Clear Filters</a>
-      <% } %>
-    </form>
-  </div>
+          <% if (typeof status !=='undefined' || typeof timePeriod !=='undefined' ) { %>
+            <a href="/orders" class="text-red-500 hover:text-red-700 px-4 py-2">Clear Filters</a>
+            <% } %>
+        </form>
+      </div>
 
 
       <!-- Order list container -->
@@ -56,68 +67,70 @@
             <div <% if(order.status==="Cancelled" || order.paymentStatus==='Failed' ) {%>
               class="bg-white rounded-lg shadow-md p-4 sm:p-6 font-inter border-l-4 border-red-600 bg-red-50/30";
               <% }else if(order.status==="Delivered" ){ %>
-              class="bg-white rounded-lg shadow-md p-4 sm:p-6 font-inter border-l-4 border-green-500 bg-green-50/30";
-              <% }else{ %>
-              class="bg-white rounded-lg shadow-md p-4 sm:p-6 font-inter border-l-4 border-indigo-500 bg-green-50/30";
-              <% } %>>
-          
-              <!-- Header with dynamic background -->
-              <div class="items-center rounded-t-lg -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 mb-4 px-4 sm:px-6 py-2
+                class="bg-white rounded-lg shadow-md p-4 sm:p-6 font-inter border-l-4 border-green-500 bg-green-50/30";
+                <% }else{ %>
+                  class="bg-white rounded-lg shadow-md p-4 sm:p-6 font-inter border-l-4 border-indigo-500
+                  bg-green-50/30";
+                  <% } %>>
+
+                    <!-- Header with dynamic background -->
+                    <div class="items-center rounded-t-lg -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 mb-4 px-4 sm:px-6 py-2
                   <%= order.status === 'Cancelled' || order.paymentStatus === 'Failed'? 'bg-red-100/50' : 
                      order.status === 'Delivered' ? 'bg-green-100/50' : 
                      'bg-purple-100' %>">
-                  <div class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
-                      <div class="text-sm">
+                      <div class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
+                        <div class="text-sm">
                           Order-Date:
                           <span class="<%= order.status === 'Cancelled' ? 'text-red-900' : 
                                           order.status === 'Delivered' ? 'text-green-900' : 
                                           'text-blue-900' %>">
-                              <%= order.orderDate.toLocaleString('en-IN',{ year:'numeric', month:'short', day:'numeric' }) %>
+                            <%= order.orderDate.toLocaleString('en-IN',{ year:'numeric', month:'short', day:'numeric' })
+                              %>
                           </span>
-                      </div>
-                      <div class="flex flex-col sm:flex-row sm:gap-8 text-sm text-gray-700">
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:gap-8 text-sm text-gray-700">
                           <div class="text-xs text-gray-700">
-                              Order Id- #<%= order.orderNumber%>
+                            Order Id- #<%= order.orderNumber%>
                           </div>
+                        </div>
                       </div>
-                  </div>
-                  <div class="flex justify-end mt-2">
-                      <% if(order.status !=='Pending' && order.status !=='Failed') {%>
-                      <a href="/user/order-details/<%=order._id%>">
-                          <button class="text-xs font-medium
+                      <div class="flex justify-end mt-2">
+                        <% if(order.status !=='Pending' && order.status !=='Failed' ) {%>
+                          <a href="/order-details/<%=order._id%>">
+                            <button class="text-xs font-medium
                               <%= order.status === 'Cancelled' ? 'text-red-900 hover:text-red-700' : 
                                  order.status === 'Delivered' ? 'text-green-900 hover:text-green-700' : 
                                  'text-blue-900 hover:text-blue-700' %>">
                               View Order Details
-                          </button>
-                      </a>
-                      <% }else if(order.paymentStatus==='Failed' && order.isOrderable){ %>
-                      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                          <p class="text-red-600 text-sm sm:mt-1">Payment Failed!</p>
-                          <button onclick="retryPayment('<%=order._id %>')"
-                              class="text-sm font-medium text-red-600 hover:text-red-700 bg-white px-4 py-1 rounded-md border border-red-700">
-                              Retry Payment
-                          </button>
+                            </button>
+                          </a>
+                          <% }else if(order.paymentStatus==='Failed' && order.isOrderable){ %>
+                            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                              <p class="text-red-600 text-sm sm:mt-1">Payment Failed!</p>
+                              <button onclick="retryPayment('<%=order._id %>')"
+                                class="text-sm font-medium text-red-600 hover:text-red-700 bg-white px-4 py-1 rounded-md border border-red-700">
+                                Retry Payment
+                              </button>
+                            </div>
+                            <% } %>
                       </div>
-                      <% } %>
-                  </div>
-              </div>
-          
-              <!-- Main content -->
-              <div class="flex flex-col lg:flex-row items-start justify-between gap-4 lg:gap-0
+                    </div>
+
+                    <!-- Main content -->
+                    <div class="flex flex-col lg:flex-row items-start justify-between gap-4 lg:gap-0
                   <%= order.status === 'Cancelled' ? 'opacity-75' : '' %>">
-                  <!-- Left side with products and details -->
-                  <div class="w-full lg:w-3/4 flex flex-col gap-6">
-                      <% order.products.forEach(product=> { %>
-                      <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
-                          <div class="w-16 h-16">
-                              <img src="<%= product.images %>" alt="<%= product.productName %>"
-                                  class="w-full h-full object-contain bg-gray-50 rounded-md
+                      <!-- Left side with products and details -->
+                      <div class="w-full lg:w-3/4 flex flex-col gap-6">
+                        <% order.products.forEach(product=> { %>
+                          <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
+                            <div class="w-16 h-16">
+                              <img src="<%= product.images %>" alt="<%= product.productName %>" class="w-full h-full object-contain bg-gray-50 rounded-md
                                   <%= order.status === 'Cancelled' ? 'filter grayscale' : '' %>" />
-                          </div>
-                          <div class="flex flex-col gap-0.5 flex-1">
-                              <h3 class="font-normal text-sm sm:text-base <%= order.status === 'Cancelled' ? 'text-gray-500' : 'text-gray-900' %>">
-                                  <%= product.productName %>- <%=product.variant.storage||' '%> (<%=product.variant.color %>)
+                            </div>
+                            <div class="flex flex-col gap-0.5 flex-1">
+                              <h3
+                                class="font-normal text-sm sm:text-base <%= order.status === 'Cancelled' ? 'text-gray-500' : 'text-gray-900' %>">
+                                <%= product.productName %>- <%=product.variant.storage||' '%> (<%=product.variant.color %>)
                               </h3>
                               <p class="text-sm font-light text-gray-500">
                                   Quantity: <%= product.quantity %>
@@ -125,50 +138,53 @@
                               <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-2">
                                   <p class="text-xs text-gray-600">
                                       Payment Method:
-                                      <span class="<%= order.status === 'Cancelled' ? 'text-red-800' :
-                                          order.status==='Delivered' ? 'text-green-800' : 'text-blue-800' %>">
-                                          <%= order.paymentMethod %>
+                                      <span class="<%= order.status === ' Cancelled' ? 'text-red-800' :
+                                    order.status==='Delivered' ? 'text-green-800' : 'text-blue-800' %>">
+                                    <%= order.paymentMethod %>
                                       </span>
-                                  </p>
-                                  <% if(order.status !=='Failed') {%>
-                                  <p class="text-xs font-light text-gray-600">
-                                      <%= order.status==='Cancelled' ? 'Cancelled on:' : 'Expected Delivery by:' %>
-                                      <span class="<%= order.status === 'Cancelled' ? 'text-red-800' : 
+                                      </p>
+                                      <% if(order.status !=='Failed' ) {%>
+                                        <p class="text-xs font-light text-gray-600">
+                                          <%= order.status==='Cancelled' ? 'Cancelled on:' : 'Expected Delivery by:' %>
+                                            <span class="<%= order.status === 'Cancelled' ? 'text-red-800' : 
                                                     order.status === 'Delivered' ? 'text-green-800' : 
                                                     'text-blue-800' %>">
-                                          <%= product.deliveryDate.toLocaleDateString('en-IN',{dateStyle:"medium"}) %>
-                                      </span>
-                                  </p>
-                                  <% } %>
-                              </div>
+                                              <%= product.deliveryDate.toLocaleDateString('en-IN',{dateStyle:"medium"})
+                                                %>
+                                            </span>
+                                        </p>
+                                        <% } %>
+                            </div>
                           </div>
                       </div>
                       <% }); %>
-                  </div>
-          
-                  <!-- Right side with payment info -->
-                  <div class="flex flex-row lg:flex-col justify-between lg:justify-start lg:w-1/4 items-start lg:items-end gap-3 w-full">
+                    </div>
+
+                    <!-- Right side with payment info -->
+                    <div
+                      class="flex flex-row lg:flex-col justify-between lg:justify-start lg:w-1/4 items-start lg:items-end gap-3 w-full">
                       <div class="text-right">
-                          <div class="text-sm text-gray-600">Total Amount</div>
-                          <div class="<%= order.status === 'Cancelled' ? 'text-red-700 line-through' : 
+                        <div class="text-sm text-gray-600">Total Amount</div>
+                        <div class="<%= order.status === 'Cancelled' ? 'text-red-700 line-through' : 
                                         order.status === 'Delivered' ? 'text-green-700' : 
                                         order.status === 'Pending' || order.status === 'Failed' ? 'text-red-700' : 
                                         'text-blue-700' %> font-medium">
-                              <%= order.total.toLocaleString('en-IN',{style:'currency',currency:"INR"})%>
-                          </div>
+                          <%= order.total.toLocaleString('en-IN',{style:'currency',currency:"INR"})%>
+                        </div>
                       </div>
-          
+
                       <div class="text-right">
-                          <div class="text-sm text-gray-600">Order Status</div>
-                          <!-- Status badges remain unchanged as they're already responsive -->
-                          <% if (order.status==='Cancelled' ) { %>
-                              <div class="relative inline-flex items-center">
-                                  <span class="absolute rounded-full bg-red-200 opacity-75"></span>
-                                  <span class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 shadow-sm">
-                                      <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                                      <span class="text-xs font-semibold tracking-wide">Cancelled</span>
-                                  </span>
-                              </div>
+                        <div class="text-sm text-gray-600">Order Status</div>
+                        <!-- Status badges remain unchanged as they're already responsive -->
+                        <% if (order.status==='Cancelled' ) { %>
+                          <div class="relative inline-flex items-center">
+                            <span class="absolute rounded-full bg-red-200 opacity-75"></span>
+                            <span
+                              class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 shadow-sm">
+                              <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                              <span class="text-xs font-semibold tracking-wide">Cancelled</span>
+                            </span>
+                          </div>
                           <% } else if (order.status==='Delivered' ) { %>
                             <div class="relative inline-flex items-center">
                               <span
@@ -216,18 +232,18 @@
                                         <span class="text-xs font-semibold tracking-wide">Order Not Placed</span>
                                       </span>
                                     </div>
-                                  <% }else if (order.status==='Failed') { %>
-                                    <div class="relative inline-flex items-center">
-                                      <span class="absolute rounded-full bg-red-200-200 opacity-75"></span>
-                                      <span
-                                        class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 shadow-sm">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                                        <span class="text-xs font-semibold tracking-wide">Order Failed</span>
-                                      </span>
-                                    </div>
-                                    <% } else { %>
-                                      <div class="text-indigo-600">Processing</div>
-                                      <% } %>
+                                    <% }else if (order.status==='Failed' ) { %>
+                                      <div class="relative inline-flex items-center">
+                                        <span class="absolute rounded-full bg-red-200-200 opacity-75"></span>
+                                        <span
+                                          class="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 shadow-sm">
+                                          <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                                          <span class="text-xs font-semibold tracking-wide">Order Failed</span>
+                                        </span>
+                                      </div>
+                                      <% } else { %>
+                                        <div class="text-indigo-600">Processing</div>
+                                        <% } %>
                       </div>
                     </div>
             </div>
@@ -235,12 +251,13 @@
       <% }) %>
         <% } else { %>
           <h1 class="font-medium text-xl text-center text-gray-600"><i>"No orders found!"</i></h1>
-          <a href="/user/products/all" class="text-red-500 flex justify-center underline hover:text-red-900">
+          <a href="/products/all" class="text-red-500 flex justify-center underline hover:text-red-900">
             Continue Shopping
           </a>
           <% } %>
     </div>
-    <div class=" flex flex-col justify-items-center items-center mx-auto  p-4 gap-3 sm:flex-row sm:flex-1 sm:items-center sm:justify-between">
+    <div
+      class=" flex flex-col justify-items-center items-center mx-auto  p-4 gap-3 sm:flex-row sm:flex-1 sm:items-center sm:justify-between">
       <div class="text-center sm:text-start">
         <p class="text-sm text-gray-700">
           Showing
@@ -257,7 +274,7 @@
           </span>
           Orders
         </p>
-      </div>  
+      </div>
       <!-- Pagination -->
       <div class="mt-2 flex justify-end ">
         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
@@ -267,14 +284,14 @@
               Previous
             </a>
             <% } %>
-    
+
               <% for (let i=1; i<=pagination.totalPages; i++) { %>
                 <a href="?page=<%= i %>"
                   class="px-3 py-2 border  text-button-color <%= pagination.currentPage == i ? 'bg-indigo-100' : 'bg-white'  %>">
                   <%= i %>
                 </a>
                 <% }%>
-    
+
                   <% if (pagination.hasNextPage) { %>
                     <a href="?page=<%= pagination.currentPage + 1 %>"
                       class="px-3 py-2 rounded-r-md border bg-white text-gray-500 hover:bg-gray-50">Next</a>
@@ -286,19 +303,19 @@
 </div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-const filterForm= document.getElementById('filterForm');
-const options= filterForm.querySelectorAll('select')
+  const filterForm = document.getElementById('filterForm');
+  const options = filterForm.querySelectorAll('select')
 
-options.forEach(option=>{
-  option.addEventListener('change',()=>{
-    filterForm.submit();
+  options.forEach(option => {
+    option.addEventListener('change', () => {
+      filterForm.submit();
+    })
   })
-})
 
   async function retryPayment(orderId) {
     try {
       // Call the backend to create a new Razorpay order
-      const response = await fetch('/user/retry-payment', {
+      const response = await fetch('/retry-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -337,7 +354,7 @@ options.forEach(option=>{
 
         image: '/Images/lOGO.png',
         handler: async function (response) {
-          const verificationResponse = await fetch('/user/verify-retryPayment', {
+          const verificationResponse = await fetch('/verify-retryPayment', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -352,7 +369,7 @@ options.forEach(option=>{
 
           if (verificationResponse.ok) {
             // Payment successful
-            window.location.href = '/user/order-success';
+            window.location.href = '/order-success';
           } else {
             // Payment verification failed
             notyf.error('Payment verification failed');

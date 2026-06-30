@@ -183,7 +183,7 @@ const profileAddAddress = async (req, res) => {
             newAddress.isDefault = true;
         }
         const savedAddress = await newAddress.save();
-        return res.redirect('/user/profile-address');
+        return res.redirect('/profile-address');
     } catch (err) {
         console.error('Error adding address:', err);
         return res.status(500).json({ error: 'Failed to add address' });
@@ -226,7 +226,7 @@ const updateAddress = async (req, res) => {
             return res.status(404).json({ error: 'Address not found' });
         }
 
-        return res.redirect('/user/profile-address');
+        return res.redirect('/profile-address');
     } catch (err) {
         console.error('Error updating address:', err);
         return res.status(500).json({ error: 'Failed to update address' });

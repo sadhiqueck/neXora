@@ -30,7 +30,7 @@
         <div class="space-y-4">
             <% if(addresses && addresses.length> 0) { %>
                 <% addresses.forEach((address, index)=> { %>
-                    <form action="/user/select-address" method="POST">
+                    <form action="/select-address" method="POST">
                         <!-- Address Card -->
                         <div class="bg-purple-50 p-4 rounded-lg border border-purple-200 relative">
                             <label class="flex items-start w-full cursor-pointer">
@@ -67,7 +67,7 @@
                                     <p class="text-sm text-gray-600">(+91) <%= address.phone %>
                                     </p>
                                 </div>
-                                <a href="/user/profile-address">
+                                <a href="/profile-address">
                                 <div class="flex space-x-2">
                                     <button class="p-1 flex text-blue-800 " type="button" >Edit
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-3.5 text-gray-600"
@@ -106,7 +106,7 @@
         <div class="mx-auto w-full p-2 max-w-[680px] bg-purple-50 md:p-10 rounded-lg border border-purple-300 relative"
             id="adressAddForm" style="display:none; ">
             <p id="mssg" class="text-red-600 text-center mb-4"></p>
-            <form action="/user/addAddress" method="POST" id="addressAddForm">
+            <form action="/addAddress" method="POST" id="addressAddForm">
                 <div class="-mx-3 flex flex-wrap mb-5">
                     <div class="w-full px-3 sm:w-1/2">
                         <label for="name" class="mb-3 block text-base font-medium text-indigo-900">
@@ -269,7 +269,7 @@
 
     <!-- Navigation Buttons -->
     <div class="flex justify-end space-x-4 mt-8">
-        <a href="/user/cart">
+        <a href="/cart">
             <button
                 class="px-6 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
                 Back to Cart

@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function addToCart(button) {
     const productId = button.getAttribute('data-product_id');
     try {
-        const response = await fetch('/user/cart/add', {
+        const response = await fetch('/cart/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productId })
@@ -86,7 +86,7 @@ async function addToCart(button) {
 
             const buttonContainer = button.parentElement;
             buttonContainer.innerHTML = `
-        <a href="/user/cart" class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+        <a href="/cart" class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
            <svg xmlns="http://www.w3.org/2000/svg"
            class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" stroke-width="2">
@@ -122,7 +122,7 @@ function redirectToLogin() {
     const currentPath = window.location.pathname + window.location.search;
     notyf.error("Login First!!");
     setTimeout(() => {
-        window.location.href = `/user/login?redirect=${encodeURIComponent(currentPath)}`;
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
     }, 600);
 
 
@@ -137,7 +137,7 @@ async function toggleWishlist(button) {
 
         button.disabled = true;
         const method = isWishlisted ? 'DELETE' : 'POST';
-        const endpoint = `/user/wishlist/${productId}`;
+        const endpoint = `/wishlist/${productId}`;
 
         const response = await fetch(endpoint, {
             method: method,
@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 try {
 
-                    const response = await fetch('/user/login', {
+                    const response = await fetch('/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email, password })
@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const data = await response.json();
 
                     if (data.success) {
-                        const redirectUrl = urlParams.get('redirect') || '/user/home';
+                        const redirectUrl = urlParams.get('redirect') || '/';
                         console.log('url', urlParams.get('redirect'))
                         window.location.href = redirectUrl;
                     } else {
@@ -267,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
             Signin with Google...
         `;
 
-            let googleAuthUrl = '/user/auth/google';
+            let googleAuthUrl = '/auth/google';
             if (redirectUrl) {
                 googleAuthUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
             }
@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 usernameInput.value = titleCasedName;
                 try {
                     showSpinner()
-                    const response = await fetch('/user/send-otp', {
+                    const response = await fetch('/send-otp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username, email, password, referralCode })
@@ -361,7 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (data.success) {
                         notyf.success('OTP Sended Succesfully')
                         setTimeout(() => {
-                            window.location.href = '/user/verify-otp';
+                            window.location.href = '/verify-otp';
                         }, 300);
 
                     } else {
@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
             SignUp with Google...
         `;
     
-            let googleAuthUrl = '/user/auth/google';
+            let googleAuthUrl = '/auth/google';
             if (redirectUrl) {
                 googleAuthUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
             }
@@ -546,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Resend OTP function
         const resendOTP = () => {
             try {
-                fetch('/user/resend-otp', { method: 'POST' })
+                fetch('/resend-otp', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
                             notyf.success('OTP re-sent successfully.');

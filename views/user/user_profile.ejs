@@ -80,7 +80,7 @@
                                                         <%= defaultAddress.city %>, <%= defaultAddress.state %>- <%=
                                                                     defaultAddress.pincode %>
                                         </span>
-                                        <a href="/user/profile-address">
+                                        <a href="/profile-address">
                                             <button class="text-gray-400 hover:text-blue-500 mt-1">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -139,7 +139,7 @@
 
                     // Send update request to the server
                     try {
-                        const response = await fetch('/user/update-name', {
+                        const response = await fetch('/update-name', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -151,7 +151,7 @@
                             const data = await response.json();
                             document.getElementById('nameDisplay').textContent = data.username;
                             toggleEditMode(event);
-                            window.location.href='/user/profile'
+                            window.location.href='/profile'
                         } else {
                             throw new Error('Failed to update name');
                         }

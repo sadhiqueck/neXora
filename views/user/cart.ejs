@@ -106,7 +106,7 @@
 
 
                 </div>
-                <a href="/user/products/all">
+                <a href="/products/all">
                     <button class="mt-2 text-purple-600 font-semibold hover:underline">Back to Shop</button>
                 </a>
             </div>
@@ -173,7 +173,7 @@
                     </button>
                     <% }else{ %>
 
-                        <form id="checkoutForm" action="/user/selectAddress" method="POST">
+                        <form id="checkoutForm" action="/selectAddress" method="POST">
                             <button type="submit"
                                 class="mt-6 w-full bg-purple-600 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-purple-700">Checkout
                             </button>
@@ -187,7 +187,7 @@
 
     <h3 class="text-2xl font-semibold text-gray-900 dark:text-white font-inter ml-10 mt-10">People also bought</h3>
     <div class="w-[90%] mx-auto  flex justify-end">
-        <a href="/user/products/all"><button class="p-2 border-2 rounded-md border-black">View all --></button></a>
+        <a href="/products/all"><button class="p-2 border-2 rounded-md border-black">View all --></button></a>
     </div>
     <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4 pt-10 mx-auto w-full p-6 pb-14">
 
@@ -196,7 +196,7 @@
             <div
                 class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
                 <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4"
-                    href="/user/product/<%= product._id %>">
+                    href="/product/<%= product._id %>">
                     <img class="max-h-50 w-[80%] mx-auto object-contain lazyload" src="<%= product.images[0] %>"
                         alt="product image" />
                     <!-- Regular Discount Label -->
@@ -230,7 +230,7 @@
                         </button>
                         <% } %>
                             <div class="mt-4 px-5 pb-5 ">
-                                <a href="/user/product/<%= product._id %>">
+                                <a href="/product/<%= product._id %>">
                                     <h5
                                         class="text-sm md:text-md font-medium tracking-tight text-slate-900 h-10 overflow-hidden">
                                         <%= product.productName %>
@@ -282,7 +282,7 @@
         <div class="rounded-lg w-full ">
             <div class=" text-center mt-10 justify-center items-center flex flex-col">
                 <h2 class="text-4xl font-bold mb-6 text-secondry-button pt-6">Your cart is empty</h2>
-                <a href="/user/products/all"><button
+                <a href="/products/all"><button
                         class=" text-md  text-purple-600 font-semibold hover:underline">Continue Shopping </button></a>
                 <img src="/Images/empty-cart.svg" alt="empty cart" class="mx-auto w-1/2">
             </div>
@@ -294,7 +294,7 @@
     const remove_btn = document.querySelectorAll('.remove-btn').forEach(button => {
         button.addEventListener('click', async function () {
             const productId = button.getAttribute('data-product_id');
-            const response = await fetch(`/user/cart/remove/${productId}`, {
+            const response = await fetch(`/cart/remove/${productId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ productId })
@@ -315,7 +315,7 @@
             const productId = e.target.dataset.product_id;
             const action = e.target.classList.contains('increase-btn') ? 'increase' : 'decrease';
             try {
-                const response = await fetch('/user/cart/update', {
+                const response = await fetch('/cart/update', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productId, action })
@@ -377,7 +377,7 @@
     async function moveToCart(button) {
         const productId = button.getAttribute('data-product_id');
         try {
-            const response = await fetch('/user/cart/add', {
+            const response = await fetch('/cart/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ productId })
@@ -403,7 +403,7 @@
 
     async function removeFromCart(productId) {
 
-        const response = await fetch(`/user/cart/remove/${productId}`, {
+        const response = await fetch(`/cart/remove/${productId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productId })
@@ -427,7 +427,7 @@
 
             if (!isWishlisted) {
 
-                const response = await fetch(`/user/wishlist/${productId}`, {
+                const response = await fetch(`/wishlist/${productId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

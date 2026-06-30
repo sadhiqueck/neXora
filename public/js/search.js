@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(timeout);
         timeout = setTimeout(async () => {
           try {
-            const response = await fetch(`/user/api/search?q=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
             const data = await response.json();
 
             // Handle direct redirect for exact match
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
               
               switch(item.type) {
                 case 'product':
-                  link = `/user/product/${item._id}`;
+                  link = `/product/${item._id}`;
                   content = `
                     <div class="flex items-center gap-4 p-4 hover:bg-gray-50">
                       <img src="${item.images[0]}" class="w-16 h-16 object-fit rounded">
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   break;
                   
                 case 'category':
-                  link = `/user/products/${encodeURIComponent(item.categoryName)}?selectedcategories=${encodeURIComponent(item.categoryName)}`;
+                  link = `/products/${encodeURIComponent(item.categoryName)}?selectedcategories=${encodeURIComponent(item.categoryName)}`;
                   content = `
                     <div class="flex items-center gap-4 p-4 hover:bg-gray-50">
                       <div class="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   break;
                   
                 case 'brand':
-                  link = `/user/products/all?brand=${encodeURIComponent(item.name)}`;
+                  link = `/products/all?brand=${encodeURIComponent(item.name)}`;
                   content = `
                     <div class="flex items-center gap-4 p-4 hover:bg-gray-50">
                       <div class="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">

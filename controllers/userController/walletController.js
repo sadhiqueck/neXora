@@ -6,7 +6,7 @@ const getWallet = async (req, res) => {
       const user = req.session.user._id;
   
       if (!user) {
-        return res.redirect('/user/login');
+        return res.redirect('/login');
       }
   
      

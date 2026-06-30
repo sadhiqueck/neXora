@@ -4,22 +4,22 @@
         <!-- Carousel wrapper -->
         <div class="relative overflow-hidden rounded-lg md:h-[400px] lg:h-[500px] h-[250px] ">
             <!-- Item 1 -->
-             <a href="/user/product/678a65ab46d59cde3b298175">
+             <a href="/product/678a65ab46d59cde3b298175">
             <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full bg-[#c1b3f8]" 
             data-carousel-item id="banner_1">
                 <img src="/Images/Meta_banner.png" alt="" class="w-full h-full rounded-lg ">
-                <a href="/user/product/678a65ab46d59cde3b298175"
+                <a href="/product/678a65ab46d59cde3b298175"
                     class="absolute lg:bottom-22 lg:right-[18%] md:bottom-[18%] md:right-[22%] md:px-4 right-[16%] bottom-[18%] py-1 px-5 text-[6px] bg-gray-900 text-main-white lg:py-2 lg:px-12 rounded-lg lg:text-xs hover:bg-gray-800">
                     Buy Now
                 </a>
             </div>
         </a>
             <!-- Item 2 -->
-            <a href="/user/product/678a6fe097c59b8dc11c6cc1">
+            <a href="/product/678a6fe097c59b8dc11c6cc1">
             <div class="hidden duration-700 ease-in-out bg-center rounded-lg h-full" data-carousel-item id="banner_3">
                 <img src="/Images/Banner_3.jpg" alt="" class="w-full h-full bg-cover  rounded-lg ">
 
-                <a href="/user/product/678a6fe097c59b8dc11c6cc1"
+                <a href="/product/678a6fe097c59b8dc11c6cc1"
                     class="absolute lg:bottom-22 lg:right-[28%] lg:py-3 lg:px-16 md:bottom-[16%] md:py-3 md:right-[24%] md:px-8 right-[29%] sm:right-[22%] bottom-[16%] py-1 px-5 text-[6px] bg-main-white text-black rounded-lg lg:text-xs hover:bg-gray-200">
                     Buy Now
                 </a>
@@ -69,7 +69,7 @@
         <div class="flex flex-wrap justify-between">
 
             <!-- Card 1 -->
-            <a href="/user/products/Wearable Devices?selectedcategories%5B%5D=Wearable+Devices"
+            <a href="/products/Wearable Devices?selectedcategories%5B%5D=Wearable+Devices"
                 class="card bg-base-100 w-1/2 sm:w-[48%] md:w-1/5 bg-transparent rounded-lg relative group overflow-hidden">
                 <% if (offeredCategories && offeredCategories['Wearable Devices']) { %>
                     <div
@@ -83,7 +83,7 @@
             </a>
 
             <!-- Card 2 -->
-            <a href="/user/products/Smart Home Devices?selectedcategories%5B%5D=Smart+Home+Devices"
+            <a href="/products/Smart Home Devices?selectedcategories%5B%5D=Smart+Home+Devices"
                 class="card bg-base-100 w-1/2 sm:w-[48%] md:w-1/5 bg-transparent rounded-lg relative group overflow-hidden">
                 <% if (offeredCategories && offeredCategories['Smart Home Devices']) { %>
                     <div
@@ -96,7 +96,7 @@
             </a>
 
             <!-- Card 3 -->
-            <a href="/user/products/Accessories?selectedcategories%5B%5D=Accessories"
+            <a href="/products/Accessories?selectedcategories%5B%5D=Accessories"
                 class="card bg-base-100 w-1/2 sm:w-[48%] md:w-1/5 bg-transparent rounded-lg relative group overflow-hidden">
                 <% if (offeredCategories && offeredCategories['Accessories']) { %>
                     <div
@@ -109,7 +109,7 @@
             </a>
 
             <!-- Card 4 -->
-            <a href="/user/products/Entertainment & Gaming?selectedcategories%5B%5D=Entertainment+%26+Gaming"
+            <a href="/products/Entertainment & Gaming?selectedcategories%5B%5D=Entertainment+%26+Gaming"
                 class="card bg-base-100 w-1/2 md:w-1/3 lg:w-1/3 bg-transparent rounded-lg relative group overflow-hidden">
                 <% if (offeredCategories && offeredCategories['Entertainment & Gaming']) { %>
                     <div
@@ -143,7 +143,7 @@
                     <div
                         class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
                         <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4"
-                            href="/user/product/<%= product._id %>">
+                            href="/product/<%= product._id %>">
                             <img class="max-h-50 w-[80%] mx-auto object-contain lazyload" src="<%= product.images[0] %>"
                                 alt="product image" />
                             <!-- Regular Discount Label -->
@@ -177,7 +177,7 @@
                                 <% } %>
 
                                     <div class="mt-4 px-5 pb-5">
-                                        <a href="/user/product/<%= product._id %>">
+                                        <a href="/product/<%= product._id %>">
                                             <h5
                                                 class="text-sm md:text-md font-medium tracking-tight text-slate-900 h-10 overflow-hidden">
                                                 <%= product.productName %>
@@ -214,7 +214,7 @@
                                                 </button>
                                                 <% } else if(isLoggedIn) { %>
                                                     <% if(product.inCart) { %>
-                                                        <a href="/user/cart"
+                                                        <a href="/cart"
                                                             class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
                                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -290,7 +290,7 @@
             class="mx-auto grid max-w-screen-xl rounded-2xl bg-[#4cbadf] p-4 md:p-8 lg:grid-cols-12 lg:gap-8 lg:p-16 xl:gap-16">
             <div class="  absolute"><img src="/Images/discount.png" class=" pb-3"></div>
             <div class="lg:col-span-5 lg:mt-0 ">
-                <a href="/user/product/678a73a597c59b8dc11c6e0c">
+                <a href="/product/678a73a597c59b8dc11c6e0c">
                     <img class="mb-4 h-56 w-56 sm:h-96 sm:w-96 md:h-full md:w-full "
                         src="/Images/SMart Home/WINBOT W2 PRO OMNI - ECOVACS Website/033333_5461-13.jpg.webp"
                         alt="peripherals" />
@@ -307,7 +307,7 @@
                 <p class="mb-6  text-main-white font-extralight">Combining advanced 3D structured light and an RGB
                     camera,
                     the S8 MaxV Ultra effortlessly Identifles floor and room types very easily.</p>
-                <a href="/user/product/678a73a597c59b8dc11c6e0c"
+                <a href="/product/678a73a597c59b8dc11c6e0c"
                     class="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-center text-base font-medium text-blue-500 hover:bg-main-white focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900">
                     Order Now </a>
             </div>
@@ -335,7 +335,7 @@
                     <div
                         class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md h-[400px]">
                         <a class="relative mx-3 mt-3 flex h-52 overflow-hidden rounded-xl pt-4"
-                            href="/user/product/<%= product._id %>">
+                            href="/product/<%= product._id %>">
                             <img class="max-h-50 w-[80%] mx-auto object-contain" src="<%= product.images[0] %>"
                                 alt="product image" />
                             <!-- Regular Discount Label -->
@@ -368,7 +368,7 @@
                                 </button>
                                 <% } %>
                                     <div class="mt-4 px-5 pb-5 ">
-                                        <a href="/user/product/<%= product._id %>">
+                                        <a href="/product/<%= product._id %>">
                                             <h5
                                                 class="text-sm md:text-md font-medium tracking-tight text-slate-900 h-10 overflow-hidden">
                                                 <%= product.productName %>
@@ -408,7 +408,7 @@
                                                 </button>
                                                 <% } else if(isLoggedIn) { %>
                                                     <% if(product.inCart) { %>
-                                                        <a href="/user/cart"
+                                                        <a href="/cart"
                                                             class="w-full flex items-center justify-center rounded-md bg-indigo-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6"
                                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor"

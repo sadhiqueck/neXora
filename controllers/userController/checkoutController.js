@@ -52,7 +52,7 @@ const addAddress = async (req, res) => {
             newAddress.isDefault = true;
         }
         const savedAddress = await newAddress.save();
-        return res.redirect('/user/selectAddress');
+        return res.redirect('/selectAddress');
     } catch (err) {
         console.error('Error adding address:', err);
         return res.status(500).json({ error: 'Failed to add address' });
@@ -67,7 +67,7 @@ const loadShippingMethod = async (req, res) => {
 
         if (!selectedAddress) {
             console.log("Error in selected address");
-            return res.redirect('/user/selectAddress');
+            return res.redirect('/selectAddress');
         }
         req.session.selectedAddressId = selectedAddress;
         const selectedDeliveryMethod = req.session.selectedDeliveryMethod || {}; //to find if already selected Addres found

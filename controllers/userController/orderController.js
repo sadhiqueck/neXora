@@ -91,7 +91,7 @@ const loadOrderDetails = async (req, res) => {
 
         if (!order) {
             console.log("Order not found");
-            return res.redirect('/user/orders');
+            return res.redirect('/orders');
         }
         // Check if all products are cancelled except one which is delivered or shipped
         const nonCancelledProducts = order.products.filter(product => product.status !== 'Cancelled');
